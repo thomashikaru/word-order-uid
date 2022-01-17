@@ -2,10 +2,10 @@
 # Adapted from https://github.com/facebookresearch/MIXER/blob/master/prepareData.sh
 
 URLS=(
-    "https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-raw-v1.zip"
+    "https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-raw-v1.zip"
 )
 FILES=(
-    "wikitext-103-raw-v1.zip"
+    "wikitext-2-raw-v1.zip"
 )
 
 for ((i=0;i<${#URLS[@]};++i)); do
