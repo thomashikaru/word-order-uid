@@ -135,4 +135,4 @@ experimental/*
 # Weights and Biases logs
 wandb/
 
-examples/language_model/wikitext*
+data/wikitext*
