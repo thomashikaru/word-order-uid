@@ -69,24 +69,24 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_train_tokens",
         type=float,
-        default=8e5,
+        default=1e9,
         help="max number of training examples to sample",
     )
     parser.add_argument(
         "--num_test_tokens",
         type=float,
-        default=1e5,
+        default=1e9,
         help="max number of test examples to sample",
     )
     parser.add_argument(
         "--num_valid_tokens",
         type=float,
-        default=1e5,
+        default=1e9,
         help="max number of validation examples to sample",
     )
     parser.add_argument(
         "--output_prefix",
-        default="wiki40b/",
+        default="wiki40b-txt/",
         help="path to output destination for dataset",
     )
     parser.add_argument("--data_dir", help="path to save data files to")
