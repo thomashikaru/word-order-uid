@@ -32,17 +32,29 @@ def process_tf_dataset(ds, num_tokens, output_file):
 
 def process_lang(lang_code, args):
     # Construct a tf.data.Dataset
-    ds_train = tfds.load(f"wiki40b/{lang_code}", split="train", shuffle_files=True)
+    ds_train = tfds.load(
+        f"wiki40b/{lang_code}",
+        split="train",
+        shuffle_files=True,
+        data_dir=args.data_dir,
+    )
     process_tf_dataset(
         ds_train, args.num_train_tokens, args.output_prefix + lang_code + ".train"
     )
 
-    ds_test = tfds.load(f"wiki40b/{lang_code}", split="test", shuffle_files=True)
+    ds_test = tfds.load(
+        f"wiki40b/{lang_code}", split="test", shuffle_files=True, data_dir=args.data_dir
+    )
     process_tf_dataset(
         ds_test, args.num_test_tokens, args.output_prefix + lang_code + ".test"
     )
 
-    ds_valid = tfds.load(f"wiki40b/{lang_code}", split="validation", shuffle_files=True)
+    ds_valid = tfds.load(
+        f"wiki40b/{lang_code}",
+        split="validation",
+        shuffle_files=True,
+        data_dir=args.data_dir,
+    )
     process_tf_dataset(
         ds_valid, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
     )
@@ -77,6 +89,7 @@ if __name__ == "__main__":
         default="wiki40b/",
         help="path to output destination for dataset",
     )
+    parser.add_argument("--data_dir", help="path to save data files to")
     args = parser.parse_args()
 
     dirname = os.path.dirname(args.output_prefix)
