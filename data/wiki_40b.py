@@ -37,13 +37,18 @@ def process_lang(lang_code, args):
         split="train",
         shuffle_files=True,
         data_dir=args.data_dir,
+        try_gcs=True,
     )
     process_tf_dataset(
         ds_train, args.num_train_tokens, args.output_prefix + lang_code + ".train"
     )
 
     ds_test = tfds.load(
-        f"wiki40b/{lang_code}", split="test", shuffle_files=True, data_dir=args.data_dir
+        f"wiki40b/{lang_code}",
+        split="test",
+        shuffle_files=True,
+        data_dir=args.data_dir,
+        try_gcs=True,
     )
     process_tf_dataset(
         ds_test, args.num_test_tokens, args.output_prefix + lang_code + ".test"
@@ -54,6 +59,7 @@ def process_lang(lang_code, args):
         split="validation",
         shuffle_files=True,
         data_dir=args.data_dir,
+        try_gcs=True,
     )
     process_tf_dataset(
         ds_valid, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
