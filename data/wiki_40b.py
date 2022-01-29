@@ -15,11 +15,11 @@ REGEX = re.compile(f"({r1}|{r2}|{r3}|{r4})")
 
 def process_tf_dataset(ds, num_tokens, output_file):
     # Turn to a numpy df so that we can easily extract text
-    numpy_items = tfds.as_numpy(ds)
+    # numpy_items = tfds.as_numpy(ds)
     token_count = 0
 
     with open(output_file, "a") as f:
-        for item in numpy_items:
+        for item in ds.as_numpy_iterator():
             text = item.get("text").decode("UTF-8")
             text = re.sub(REGEX, " ", text)
             text = re.sub("\s+", " ", text).strip()
@@ -37,18 +37,13 @@ def process_lang(lang_code, args):
         split="train",
         shuffle_files=True,
         data_dir=args.data_dir,
-        try_gcs=True,
     )
     process_tf_dataset(
         ds_train, args.num_train_tokens, args.output_prefix + lang_code + ".train"
     )
 
     ds_test = tfds.load(
-        f"wiki40b/{lang_code}",
-        split="test",
-        shuffle_files=True,
-        data_dir=args.data_dir,
-        try_gcs=True,
+        f"wiki40b/{lang_code}", split="test", shuffle_files=True, data_dir=args.data_dir
     )
     process_tf_dataset(
         ds_test, args.num_test_tokens, args.output_prefix + lang_code + ".test"
@@ -59,7 +54,6 @@ def process_lang(lang_code, args):
         split="validation",
         shuffle_files=True,
         data_dir=args.data_dir,
-        try_gcs=True,
     )
     process_tf_dataset(
         ds_valid, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
