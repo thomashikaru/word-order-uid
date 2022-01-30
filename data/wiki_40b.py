@@ -32,31 +32,31 @@ def process_tf_dataset(ds, num_tokens, output_file):
 
 def process_lang(lang_code, args):
     # Construct a tf.data.Dataset
-    ds_train = tfds.load(
+    ds = tfds.load(
         f"wiki40b/{lang_code}",
         split="train",
         shuffle_files=True,
         data_dir=args.data_dir,
     )
     process_tf_dataset(
-        ds_train, args.num_train_tokens, args.output_prefix + lang_code + ".train"
+        ds, args.num_train_tokens, args.output_prefix + lang_code + ".train"
     )
 
-    ds_test = tfds.load(
+    ds = tfds.load(
         f"wiki40b/{lang_code}", split="test", shuffle_files=True, data_dir=args.data_dir
     )
     process_tf_dataset(
-        ds_test, args.num_test_tokens, args.output_prefix + lang_code + ".test"
+        ds, args.num_test_tokens, args.output_prefix + lang_code + ".test"
     )
 
-    ds_valid = tfds.load(
+    ds = tfds.load(
         f"wiki40b/{lang_code}",
         split="validation",
         shuffle_files=True,
         data_dir=args.data_dir,
     )
     process_tf_dataset(
-        ds_valid, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
+        ds, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
     )
 
 
