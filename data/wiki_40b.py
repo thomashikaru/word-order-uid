@@ -27,7 +27,7 @@ def process_tf_dataset(ds, num_tokens, output_file):
                 f.write(text)
                 f.write("\n")
                 token_count += len(text.split())
-                if token_count > num_tokens:
+                if num_tokens > 0 and token_count > num_tokens:
                     break
 
 
@@ -76,19 +76,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_train_tokens",
         type=float,
-        default=1e9,
+        default=-1.0,
         help="max number of training examples to sample",
     )
     parser.add_argument(
         "--num_test_tokens",
         type=float,
-        default=1e9,
+        default=-1.0,
         help="max number of test examples to sample",
     )
     parser.add_argument(
         "--num_valid_tokens",
         type=float,
-        default=1e9,
+        default=-1.0,
         help="max number of validation examples to sample",
     )
     parser.add_argument(
