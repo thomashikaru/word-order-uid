@@ -4,7 +4,6 @@ import numpy as np
 import re
 import argparse
 import os
-import gc
 
 r1 = "_START_ARTICLE_\n[^_]*"
 r2 = "_START_PARAGRAPH_\n"
@@ -20,15 +19,16 @@ def process_tf_dataset(ds, num_tokens, output_file):
     token_count = 0
 
     with open(output_file, "a") as f:
-        for item in ds.as_numpy_iterator():
-            text = item.get("text").decode("UTF-8")
-            text = re.sub(REGEX, " ", text)
-            text = re.sub("\s+", " ", text).strip()
-            f.write(text)
-            f.write("\n")
-            token_count += len(text.split())
-            if token_count > num_tokens:
-                break
+        for batch in ds.as_numpy_iterator():
+            for item in batch.get("text"):
+                text = item.decode("UTF-8")
+                text = re.sub(REGEX, " ", text)
+                text = re.sub("\s+", " ", text).strip()
+                f.write(text)
+                f.write("\n")
+                token_count += len(text.split())
+                if token_count > num_tokens:
+                    break
 
 
 def process_lang(lang_code, args):
@@ -38,13 +38,18 @@ def process_lang(lang_code, args):
         split="train",
         shuffle_files=True,
         data_dir=args.data_dir,
+        batch_size=args.batch_size,
     )
     process_tf_dataset(
         ds, args.num_train_tokens, args.output_prefix + lang_code + ".train"
     )
 
     ds = tfds.load(
-        f"wiki40b/{lang_code}", split="test", shuffle_files=True, data_dir=args.data_dir
+        f"wiki40b/{lang_code}",
+        split="test",
+        shuffle_files=True,
+        data_dir=args.data_dir,
+        batch_size=args.batch_size,
     )
     process_tf_dataset(
         ds, args.num_test_tokens, args.output_prefix + lang_code + ".test"
@@ -55,13 +60,11 @@ def process_lang(lang_code, args):
         split="validation",
         shuffle_files=True,
         data_dir=args.data_dir,
+        batch_size=args.batch_size,
     )
     process_tf_dataset(
         ds, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
     )
-
-    del ds
-    gc.collect()
 
 
 if __name__ == "__main__":
@@ -93,6 +96,7 @@ if __name__ == "__main__":
         default="wiki40b-txt/",
         help="path to output destination for dataset",
     )
+    parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--data_dir", help="path to save data files to")
     args = parser.parse_args()
 
@@ -102,4 +106,3 @@ if __name__ == "__main__":
 
     for lang_code in args.lang_code_list.split(","):
         process_lang(lang_code, args)
-
