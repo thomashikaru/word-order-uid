@@ -4,6 +4,7 @@ import numpy as np
 import re
 import argparse
 import os
+import gc
 
 r1 = "_START_ARTICLE_\n[^_]*"
 r2 = "_START_PARAGRAPH_\n"
@@ -58,6 +59,9 @@ def process_lang(lang_code, args):
     process_tf_dataset(
         ds, args.num_valid_tokens, args.output_prefix + lang_code + ".valid"
     )
+
+    del ds
+    gc.collect()
 
 
 if __name__ == "__main__":
