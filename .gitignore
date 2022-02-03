@@ -136,3 +136,7 @@ experimental/*
 wandb/
 
 data/wikitext*
+
+# Data Files
+data/tfdata
+data/wiki40b-txt
