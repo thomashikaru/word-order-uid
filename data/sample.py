@@ -24,7 +24,7 @@ def sample_data(input_file, output_file, num_tokens):
         for idx in idxs:
             line = lines[idx]
             tokens += len(line.split())
-            f_out.write(line + "\n")
+            f_out.write(line)
             if tokens > num_tokens:
                 break
 
