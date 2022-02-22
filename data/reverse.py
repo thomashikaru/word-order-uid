@@ -1,5 +1,5 @@
 import sys
-from mosestokenizer import MosesTokenizer, MosesSentenceSplitter
+from mosestokenizer import MosesTokenizer, MosesDetokenizer, MosesSentenceSplitter
 from string import punctuation
 
 in_file = sys.argv[1]
@@ -9,15 +9,18 @@ language = sys.argv[3] if len(sys.argv) > 3 else 'en'
 
 
 f = open(in_file, 'r')
-with open(out_file,'w') as out, MosesTokenizer(language) as tokenize, MosesSentenceSplitter(language) as splitsents:
+with open(out_file,'w') as out, MosesDetokenizer(language) as detokenize, MosesTokenizer(language) as tokenize, MosesSentenceSplitter(language) as splitsents:
     for line in f:        
         if line.isspace():
             out.write('\n')
             continue
+        sents = []
         sents = splitsents([line])
         reversed_sents = []
         for sen in sents:
+            words = []
             words = tokenize(sen.rstrip())[::-1]
+            #words = sen.rstrip().split()[::-1]
             punct_ind = None
             for i, w in enumerate(words):
                 if w in ['.','?','!']:
@@ -25,5 +28,6 @@ with open(out_file,'w') as out, MosesTokenizer(language) as tokenize, MosesSente
                     break
             punct = words.pop(punct_ind) if punct_ind is not None else ''
             reversed_sents.append(' '.join(words + [punct]))
+
         out.write(' '.join(reversed_sents) + '\n')
 f.close()

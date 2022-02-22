@@ -2,8 +2,7 @@ import itertools
 import argparse
 import random
 
-
-def sample_data(input_file, output_file, num_tokens):
+def sample_data(input_file, output_file, num_tokens, seed):
     """Sample lines from input_file until the number of tokens
     exceeds num_tokens or the file is exhausted. 
     Save sampled lines to output_file.
@@ -13,6 +12,7 @@ def sample_data(input_file, output_file, num_tokens):
         output_file (str): output file path
         num_tokens (int): threshold on number of tokens
     """
+    random.seed(seed)
     with open(input_file) as f_in:
         lines = f_in.readlines()
 
@@ -38,6 +38,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_test_tokens", type=int, default=1_000_000)
     parser.add_argument("--lang_code_list")
     parser.add_argument("--ext_list", default="train,test,valid")
+    parser.add_argument("--seed", type=int, default=1)
     args = parser.parse_args()
 
     lang_code_list = args.lang_code_list.split(",")
@@ -48,7 +49,8 @@ if __name__ == "__main__":
         output_file = f"{args.output_prefix}/{lang_code}.{ext}"
 
         if ext == "train":
-            sample_data(input_file, output_file, args.num_train_tokens)
+            sample_data(input_file, output_file, args.num_train_tokens, args.seed)
         else:
-            sample_data(input_file, output_file, args.num_test_tokens)
+            sample_data(input_file, output_file, args.num_test_tokens, args.seed)
+
 

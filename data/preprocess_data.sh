@@ -2,22 +2,26 @@ data_dir=$1
 train_pref="train"
 valid_pref="valid"
 test_pref="test"
-for D in $(find $data_dir -mindepth 1 -maxdepth 1 -type d) ; do
-    fairseq-preprocess \
+
+langlist=("wiki40b-txt-final-bpe/en.train")
+for D in "${langlist[@]}" ; do
+#for D in $(find $data_dir -mindepth 1 -maxdepth 1 -name "*.train") ; do
+   prefix=$(basename $D |  cut -d '.' -f1) 
+   fairseq-preprocess \
     	--only-source \
-    	--trainpref $D/$train_pref \
-    	--validpref $D/$valid_pref \
-    	--testpref $D/$test_pref \
-    	--destdir data-bin/$D \
-    	--workers 20
-    python reverse.py $D/$train_pref $D/$train_pref.rev
-    python reverse.py $D/$valid_pref $D/$valid_pref.rev
-    python reverse.py $D/$test_pref $D/$test_pref.rev
-    fairseq-preprocess \
+    	--trainpref $data_dir/$prefix.$train_pref \
+    	--validpref $data_dir/$prefix.$valid_pref \
+    	--testpref $data_dir/$prefix.$test_pref \
+    	--destdir data-bin-bpe/$prefix \
+    	--bpe fastbpe \
+	--workers 20
+    
+   fairseq-preprocess \
         --only-source \
-        --trainpref $D/$train_pref.rev \
-        --validpref $D/$valid_pref.rev \
-        --testpref $D/$test_pref.rev \
-        --destdir data-bin/$D-rev \
-        --workers 20
+        --trainpref $data_dir-rev/$prefix.$train_pref \
+        --validpref $data_dir-rev/$prefix.$valid_pref \
+        --testpref $data_dir-rev/$prefix.$test_pref \
+        --destdir data-bin-bpe/$prefix-rev \
+        --bpe fastbpe \
+	--workers 20
 done
