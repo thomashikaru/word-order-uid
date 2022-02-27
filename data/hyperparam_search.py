@@ -53,8 +53,17 @@ def main(cfg: FairseqConfig):
     ######################################################################
     ################ SETUP STUFF #########################################
     ######################################################################
+
+    parser = options.get_training_parser()
+    args = options.parse_args_and_arch(parser)
+
     if isinstance(cfg, argparse.Namespace):
         cfg = convert_namespace_to_omegaconf(cfg)
+
+    if isinstance(args, argparse.Namespace):
+        args = convert_namespace_to_omegaconf(args)
+
+    cfg = OmegaConf.merge(cfg, args)
 
     utils.import_user_module(cfg.common)
 

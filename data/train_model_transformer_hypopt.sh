@@ -3,7 +3,7 @@ SAVE_DIR=$2
 default=1
 RANDOM_SEED="${3:-$default}"
 
-fairseq-train --task language_modeling \
+python hyperparam_search.py --task language_modeling \
 	  $DATA_DIR \
 	  --save-dir $SAVE_DIR \
 	  --arch transformer_lm --share-decoder-input-output-embed \
