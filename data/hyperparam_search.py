@@ -63,7 +63,7 @@ def main(cfg: FairseqConfig):
     if isinstance(args, argparse.Namespace):
         args = convert_namespace_to_omegaconf(args)
 
-    cfg = OmegaConf.merge(cfg, args)
+    cfg = OmegaConf.merge(args, cfg)
 
     utils.import_user_module(cfg.common)
 
@@ -308,6 +308,7 @@ def train(cfg: DictConfig, trainer: Trainer, task: tasks.FairseqTask, epoch_itr)
         )
 
         tune.report(valid_losses=valid_losses)
+        logging.info(f"validation loss: {valid_losses}")
 
         if should_stop:
             break
@@ -525,8 +526,8 @@ def get_valid_stats(cfg: DictConfig, trainer: Trainer, stats: Dict[str, Any]):
 
 if __name__ == "__main__":
 
-    cuda = False
-    smoke_test = True
+    cuda = True
+    smoke_test = False
     ray.init(num_cpus=2 if smoke_test else None)
 
     # for early stopping
@@ -538,9 +539,9 @@ if __name__ == "__main__":
         mode="min",
         name="exp",
         scheduler=sched,
-        stop={"valid_losses": 10.0, "training_iteration": 5 if smoke_test else 100,},
+        stop={"valid_losses": 10.0, "training_iteration": 5 if smoke_test else 15,},
         resources_per_trial={"cpu": 2, "gpu": int(cuda)},  # set this for GPUs
-        num_samples=1 if smoke_test else 50,
+        num_samples=1 if smoke_test else 5,
         config={
             "weight-decay": tune.uniform(0, 0.3),
             "decoder_embed_dim": tune.choice(256, 512, 768),
