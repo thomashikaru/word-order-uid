@@ -14,12 +14,14 @@ with open(test_file, 'r') as f:
     lprobs = []
     count = 0
     perps = []
+    tokens = []
     for l in lines:
             if custom_lm.encode(l).size(0) > custom_lm.max_positions-2:
                 l = ' '.join(l.split()[:custom_lm.max_positions-2]) 
-            scores = custom_lm.score(l,shorten_method="truncate")['positional_scores']
-            perps.append( scores.mean().neg().exp().item())
-            lprobs.append(scores)
+            out = custom_lm.score(l,shorten_method="truncate")
+            perps.append(out['positional_scores'].mean().neg().exp().item())
+            lprobs.append(out['positional_scores'])
+            tokens.append([custom_lm.tgt_dict[i] for i in out['tokens']])
             
     print(checkpoint_dir, perps)        
-    torch.save(lprobs, out_file)
+    torch.save([lprobs,tokens], out_file)

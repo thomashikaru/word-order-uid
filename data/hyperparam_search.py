@@ -308,7 +308,7 @@ def train(cfg: DictConfig, trainer: Trainer, task: tasks.FairseqTask, epoch_itr)
         )
 
         tune.report(valid_losses=valid_losses)
-        logging.info(f"validation loss: {valid_losses}")
+        logger.info(f"validation loss: {valid_losses}")
 
         if should_stop:
             break
