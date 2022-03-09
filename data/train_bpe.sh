@@ -1,5 +1,5 @@
 OUTPATH=bpe_codes/30k  # path where processed files will be stored
-FASTBPE=../../fastBPE/fast  # path to the fastBPE tool
+FASTBPE=../fastBPE/fast  # path to the fastBPE tool
 NUM_OPS=30000
 INPUT_DIR="wiki40b-txt-final"
 

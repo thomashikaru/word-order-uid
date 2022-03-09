@@ -1,5 +1,5 @@
 BPE_CODES=bpe_codes/30k  # path where processed files will be stored
-FASTBPE=../../fastBPE/fast  # path to the fastBPE tool
+FASTBPE=../fastBPE/fast  # path to the fastBPE tool
 INPUT_DIR="wiki40b-txt-final-doc"
 INPUT_DIR_REV=$INPUT_DIR-rev
 OUT_DIR="wiki40b-txt-final-doc-bpe"
