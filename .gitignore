@@ -140,3 +140,11 @@ data/wikitext*
 # Data Files
 data/tfdata
 data/wiki40b-txt
+
+hyperparam_search_cli.py
+hyperparam_search_hf.py
+sample.sh
+tokenization.py
+wiki40b-txt-s2s/
+wiki40b-txt-sampled/
+en-de/
