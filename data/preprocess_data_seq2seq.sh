@@ -16,8 +16,7 @@ do
         --trainpref $data_dir/$train_pref \
         --validpref $data_dir/$valid_pref \
         --testpref $data_dir/$test_pref \
-        --destdir data-bin-seq2seq/$prefix \
-        # --bpe fastbpe \
+        --destdir data-bin-seq2seq/${langlist[$i]} \
         --workers 20
    
    fairseq-preprocess \
@@ -26,7 +25,6 @@ do
         --trainpref $data_dir-rev/$train_pref \
         --validpref $data_dir-rev/$valid_pref \
         --testpref $data_dir-rev/$test_pref \
-        --destdir data-bin-seq2seq/$prefix-rev \
-        # --bpe fastbpe \
-	    --workers 20
+        --destdir data-bin-seq2seq/${langlist[$i]}-rev \
+	--workers 20
 done

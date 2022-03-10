@@ -5,7 +5,7 @@ langlist=("ru" "vi" "en" "de" "fr")
 extlist=("train" "test" "valid")
 suff="x"
 
-input_dir="wiki40b-txt-normalized"
+input_dir="raw_data/wiki40b-txt-normalized"
 # tmp_dir="wiki40b-txt-tokenized-seq2seq"
 # tmp_dir_rev=$tmp_dir-rev
 output_dir="wiki40b-txt-final-seq2seq"
