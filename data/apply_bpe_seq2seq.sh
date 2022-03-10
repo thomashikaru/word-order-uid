@@ -17,8 +17,8 @@ do
     echo $lang
     for ext in "${extlist[@]}"
     do
-	#$FASTBPE applybpe $OUT_DIR/$lang.$ext $INPUT_DIR/$lang.$ext  $BPE_CODES/$lang.codes
-	$FASTBPE applybpe $OUT_DIR_REV/$lang.$ext  $INPUT_DIR_REV/$lang.$ext $BPE_CODES/$lang.codes
+	$FASTBPE applybpe $OUT_DIR/$lang.$ext $INPUT_DIR/$lang.$ext  $BPE_CODES/$lang.codes
+	#$FASTBPE applybpe $OUT_DIR_REV/$lang.$ext  $INPUT_DIR_REV/$lang.$ext $BPE_CODES/$lang.codes
 done
 done
 

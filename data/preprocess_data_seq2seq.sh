@@ -5,6 +5,7 @@ test_pref="test"
 
 for D in $(find $data_dir -mindepth 1 -maxdepth 1 -name "*.train*") ; do
    prefix=$(basename $D |  cut -d '.' -f1) 
+   echo $prefix
    fairseq-preprocess \
         --only-source \
         --trainpref $data_dir/$prefix.$train_pref \
