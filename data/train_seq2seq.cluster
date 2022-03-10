@@ -19,4 +19,4 @@ bsub -W $TIME \
      -n $NUM_CPUS \
      -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
      -o $OUTFILE \
-     sh train_seq2seq.sh
+     sh train_seq2seq.sh data-bin-seq2seq/en checkpoints-seq2seq/en
