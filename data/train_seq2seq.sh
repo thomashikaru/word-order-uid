@@ -6,4 +6,5 @@ CUDA_VISIBLE_DEVICES=0 fairseq-train \
     --dropout 0.3 --weight-decay 0.0001 \
     --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
     --max-tokens 4096 \
-    --maximize-best-checkpoint-metric
+    --maximize-best-checkpoint-metric \
+    --seed $RANDOM_SEED 5
