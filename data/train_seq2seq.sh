@@ -1,5 +1,5 @@
 CUDA_VISIBLE_DEVICES=0 fairseq-train \
-    data-bin-seq2seq \
+    data-bin-seq2seq-en \
     --arch transformer_iwslt_de_en --share-decoder-input-output-embed \
     --optimizer adam --adam-betas '(0.9, 0.98)' --clip-norm 0.0 \
     --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
