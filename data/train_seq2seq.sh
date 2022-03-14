@@ -9,6 +9,7 @@ CUDA_VISIBLE_DEVICES=0 fairseq-train \
     --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
     --dropout 0.3 --weight-decay 0.0001 \
     --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
-    --max-tokens 4096 \
+    --max-tokens 1024 \
+    --truncate-source \
     --maximize-best-checkpoint-metric \
     --seed $RANDOM_SEED 5

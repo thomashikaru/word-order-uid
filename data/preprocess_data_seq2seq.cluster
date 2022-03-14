@@ -1,11 +1,11 @@
 #!/bin/bash
  
 # Job details
-TIME=04:00  # HH:MM (default: 04:00, max: 240:00)
+TIME=24:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=0  # GPUs per node
 # GPU_MODEL=GeForceGTX1080Ti  # Choices: GeForceGTX1080,GeForceGTX1080Ti,GeForceRTX2080Ti,TeslaV100_SXM2_32GB
-NUM_CPUS=1  # Number of cores (default: 1)
-CPU_RAM=16000  # RAM for each core (default: 1024)
+NUM_CPUS=4  # Number of cores (default: 1)
+CPU_RAM=8000  # RAM for each core (default: 1024)
 OUTFILE=preprocess_data_seq2seq.out  # default: lsf.oJOBID
  
 # Load modules
