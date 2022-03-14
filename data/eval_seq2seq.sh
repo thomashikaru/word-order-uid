@@ -4,5 +4,6 @@ OUTPUT_DIR=$3
 
 fairseq-generate $DATA_DIR \
     --path $CHECKPOINT_DIR \
-    --batch-size 128 --beam 5 --remove-bpe \
-    --results-path $OUTPUT_DIR
+    --max-tokens 4096 --beam 5 --remove-bpe \
+    --results-path $OUTPUT_DIR \
+    --skip-invalid-size-inputs-valid-test
