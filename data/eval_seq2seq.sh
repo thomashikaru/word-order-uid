@@ -6,4 +6,5 @@ fairseq-generate $DATA_DIR \
     --path $CHECKPOINT_DIR \
     --max-tokens 4096 --beam 5 --remove-bpe \
     --results-path $OUTPUT_DIR \
-    --skip-invalid-size-inputs-valid-test
+    --skip-invalid-size-inputs-valid-test \
+    --score-reference

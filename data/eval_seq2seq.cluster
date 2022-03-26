@@ -1,7 +1,7 @@
 #!/bin/bash
  
 # Job details
-TIME=12:00  # HH:MM (default: 04:00, max: 240:00)
+TIME=04:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=1  # GPUs per node
 GPU_MODEL=GeForceGTX1080Ti  # Choices: GeForceGTX1080,GeForceGTX1080Ti,GeForceRTX2080Ti,TeslaV100_SXM2_32GB
 NUM_CPUS=1  # Number of cores (default: 1)
@@ -19,4 +19,4 @@ bsub -W $TIME \
      -n $NUM_CPUS \
      -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
      -o $OUTFILE \
-     sh eval_seq2seq.sh data-bin-seq2seq/fr checkpoints-seq2seq/fr/checkpoint_best.pt eval_results/fr/out.txt
+     sh eval_seq2seq.sh data-bin-seq2seq/fr checkpoints-seq2seq/fr/checkpoint10.pt eval_results/fr_epoch10

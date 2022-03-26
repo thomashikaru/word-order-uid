@@ -11,7 +11,8 @@ CUDA_VISIBLE_DEVICES=0 fairseq-train \
     --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
     --max-tokens 4096 \
     --truncate-source \
-    --max-source-positions 1024 \
-    --max-target-positions 128 \
+    --max-source-positions 512 \
+    --max-target-positions 64 \
     --maximize-best-checkpoint-metric \
-    --seed $RANDOM_SEED 5
+    --seed $RANDOM_SEED 5 \
+    --skip-invalid-size-inputs-valid-test
