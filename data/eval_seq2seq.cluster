@@ -14,9 +14,15 @@ module load python_gpu/3.8.5 hdf5 eth_proxy
 module load geos
 module load libspatialindex
  
+
+langlist=("ru" "vi" "en" "de" "fr" "ru-rev" "vi-rev" "en-rev" "de-rev" "fr-rev")
+
+for lang in "${langlist[@]}"
+do
 # Submit job
-bsub -W $TIME \
-     -n $NUM_CPUS \
-     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-     -o $OUTFILE \
-     sh eval_seq2seq.sh data-bin-seq2seq/fr checkpoints-seq2seq/fr/checkpoint10.pt eval_results/fr_epoch10
+     bsub -W $TIME \
+          -n $NUM_CPUS \
+          -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+          -o $OUTFILE \
+          sh eval_seq2seq.sh data-bin-seq2seq/$lang checkpoints-seq2seq/$lang/checkpoint_last.pt eval_results/$lang/best
+done
