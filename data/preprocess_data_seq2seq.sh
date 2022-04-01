@@ -4,7 +4,8 @@ valid_pref="valid"
 test_pref="test"
 
 # for D in $(find $data_dir -mindepth 1 -maxdepth 1 -name "train*") ; do
-langlist=("en" "fr" "de" "ru" "vi")
+# langlist=("en" "fr" "de" "ru" "vi")
+langlist=("en")
 suff="x"
 
 for lang in ${langlist[@]}
