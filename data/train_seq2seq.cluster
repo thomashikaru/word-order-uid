@@ -14,7 +14,10 @@ module load python_gpu/3.8.5 hdf5 eth_proxy
 module load geos
 module load libspatialindex
 
-langlist=("ru" "vi" "en" "de" "ru-rev" "vi-rev" "en-rev" "de-rev")
+DATA_DIR="data-bin-seq2seq-capital"
+CHECKPOINT_DIR="checkpoints-seq2seq-capital"
+
+langlist=("ru" "vi" "en" "de" "fr" "ru-rev" "vi-rev" "en-rev" "de-rev" "fr-rev")
 # langlist=("fr" "fr-rev")
 
 for lang in "${langlist[@]}"
@@ -24,6 +27,6 @@ do
      -n $NUM_CPUS \
      -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
      -o train_seq2seq_$lang.out \
-     sh train_seq2seq.sh data-bin-seq2seq/$lang checkpoints-seq2seq/$lang
+     sh train_seq2seq.sh $DATA_DIR/$lang $CHECKPOINT_DIR/$lang
 done
 

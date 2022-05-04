@@ -4,14 +4,18 @@ import argparse
 from mosestokenizer import MosesTokenizer, MosesSentenceSplitter
 from string import punctuation
 
+PUNCT_LIST = [".", "?", "!"]
+
 
 def reverse_tokens(words):
     words = words[::-1]
     punct_ind = None
-    for i, w in enumerate(words):
-        if w in [".", "?", "!"]:
-            punct_ind = i
-            break
+    # for i, w in enumerate(words):
+    #     if w in PUNCT_LIST:
+    #         punct_ind = i
+    #         break
+    if words[0] in PUNCT_LIST:
+        punct_ind = 0
     punct = words.pop(punct_ind) if punct_ind is not None else ""
     words = words + [punct]
     return words
@@ -30,7 +34,10 @@ def tokenize_strings_seq2seq(f, out1, out2, args):
             context = []
             for i, sen in enumerate(sents):
                 words = tokenize(sen.rstrip())
+
+                words[0] = words[0].lower()
                 words_out = reverse_tokens(words) if args.reverse else words
+
                 if i != 0:
                     out1.write(" ".join(context) + "\n")
                     out2.write(" ".join(words_out) + "\n")

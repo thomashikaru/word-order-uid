@@ -8,10 +8,10 @@ suff="x"
 input_dir="raw_data/wiki40b-txt-normalized"
 # tmp_dir="wiki40b-txt-tokenized-seq2seq"
 # tmp_dir_rev=$tmp_dir-rev
-output_dir="wiki40b-txt-final-seq2seq"
+output_dir="wiki40b-txt-seq2seq-capital"
 output_dir_rev=$output_dir-rev
 
-mkdir -p $tmp_dir $tmp_dir_rev
+# mkdir -p $tmp_dir $tmp_dir_rev
 mkdir -p $output_dir $output_dir_rev
 
 for lang in "${langlist[@]}"
