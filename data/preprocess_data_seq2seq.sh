@@ -18,18 +18,18 @@ do
    fairseq-preprocess \
         --source-lang $lang \
         --target-lang $lang$suff \
-        --trainpref $data_dir/$train_pref \
-        --validpref $data_dir/$valid_pref \
-        --testpref $data_dir/$test_pref \
+        --trainpref $DATA_DIR/$train_pref \
+        --validpref $DATA_DIR/$valid_pref \
+        --testpref $DATA_DIR/$test_pref \
         --destdir $DEST_DIR/$lang \
         --workers 20
    
    fairseq-preprocess \
         --source-lang $lang \
         --target-lang $lang$suff \
-        --trainpref $data_dir-rev/$train_pref \
-        --validpref $data_dir-rev/$valid_pref \
-        --testpref $data_dir-rev/$test_pref \
+        --trainpref $DATA_DIR-rev/$train_pref \
+        --validpref $DATA_DIR-rev/$valid_pref \
+        --testpref $DATA_DIR-rev/$test_pref \
         --destdir $DEST_DIR/$lang-rev \
 	--workers 20
 done
