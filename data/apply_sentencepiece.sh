@@ -12,6 +12,7 @@ TRAIN_MINLEN=1
 TRAIN_MAXLEN=1024
 
 mkdir -p $OUT_DIR
+mkdir -p $OUT_DIR-rev
 
 # encode train/valid
 echo "encoding train with learned BPE..."
