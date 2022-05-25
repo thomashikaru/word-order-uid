@@ -4,8 +4,8 @@ valid_pref="valid"
 test_pref="test"
 
 # DATA_DIR="wiki40b-txt-final-seq2seq-bpe"
-DATA_DIR="wiki40b-txt-seq2seq-capital-bpe"
-DEST_DIR="data-bin-seq2seq-capital"
+DATA_DIR="wiki40b-txt-seq2seq-capital-sentencepiece"
+DEST_DIR="data-bin-seq2seq-capital-sentencepiece"
 
 # for D in $(find $data_dir -mindepth 1 -maxdepth 1 -name "train*") ; do
 langlist=("en" "fr" "de" "ru" "vi")
