@@ -11,6 +11,8 @@ suff="x"
 TRAIN_MINLEN=1
 TRAIN_MAXLEN=1024
 
+mkdir -p $OUTDIR
+
 # encode train/valid
 echo "encoding train with learned BPE..."
 for lang in "${langlist[@]}"
