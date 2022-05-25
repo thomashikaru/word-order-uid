@@ -13,6 +13,5 @@ CUDA_VISIBLE_DEVICES=0 fairseq-train \
     --max-tokens 4096 \
     --max-source-positions 512 \
     --max-target-positions 128 \
-    --maximize-best-checkpoint-metric \
     --seed $RANDOM_SEED 5 \
     --skip-invalid-size-inputs-valid-test

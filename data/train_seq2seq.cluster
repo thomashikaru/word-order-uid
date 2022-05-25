@@ -17,8 +17,8 @@ module load libspatialindex
 DATA_DIR="data-bin-seq2seq-capital"
 CHECKPOINT_DIR="checkpoints-seq2seq-capital"
 
-langlist=("ru" "vi" "en" "de" "fr" "ru-rev" "vi-rev" "en-rev" "de-rev" "fr-rev")
-# langlist=("fr" "fr-rev")
+# langlist=("ru" "vi" "en" "de" "fr" "ru-rev" "vi-rev" "en-rev" "de-rev" "fr-rev")
+langlist=("de-rev" "en-rev" "ru")
 
 for lang in "${langlist[@]}"
 do
