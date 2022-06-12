@@ -71,12 +71,9 @@ if __name__ == "__main__":
         input_path = os.path.join(args.data_dir, f"{args.lang}.{partition}")
         output_path = os.path.join(args.parse_dir, f"{args.lang}.{partition}.conllu")
 
-        with open(input_path) as f:
-            documents = f.readlines()
+        with open(input_path) as f_in, open(output_path, "w") as f_out:
 
-        with open(output_path, "w") as f:
-
-            for i, document in enumerate(documents):
+            for document in f_in:
 
                 # split sentences
                 sentences = sent_tokenize([document])
@@ -93,4 +90,4 @@ if __name__ == "__main__":
                     sys.stderr.write("\n")
                     sys.exit(1)
 
-                f.write(processed)
+                f_out.write(processed)
