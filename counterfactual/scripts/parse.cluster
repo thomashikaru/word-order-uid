@@ -1,7 +1,7 @@
 #!/bin/bash
  
 # Job details
-TIME=04:00  # HH:MM (default: 04:00, max: 240:00)
+TIME=12:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=0  # GPUs per node
 NUM_CPUS=1  # Number of cores (default: 1)
 CPU_RAM=8000  # RAM for each core (default: 1024)
@@ -12,8 +12,8 @@ module load python_gpu/3.8.5 hdf5 eth_proxy
 module load geos
 module load libspatialindex
 
-DATA_DIR="wiki40b-txt-final"
-RESULTS_DIR="wiki40b-txt-parsed" 
+DATA_DIR="../../data/raw_data/wiki40b-txt"
+RESULTS_DIR="../../data/wiki40b-txt-parsed" 
 
 langlist=("ru" "vi" "en" "de" "fr")
 
@@ -24,5 +24,5 @@ do
           -n $NUM_CPUS \
           -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
           -o logs_parse/parse_$lang.out \
-          sh parse.sh $lang $DATA_DIR/$lang $RESULTS_DIR/$lang
+          sh parse.sh $lang $DATA_DIR $RESULTS_DIR
 done

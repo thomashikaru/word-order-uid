@@ -8,10 +8,10 @@ from mosestokenizer import MosesTokenizer, MosesSentenceSplitter
 
 UDPIPE_MODEL_LOOKUP = {
     "en": "../udpipe_models/english-lines-ud-2.5-191206.udpipe",
-    "ru": "udpipe_models/russian-syntagrus-ud-2.5-191206.udpipe",
-    "de": "udpipe_models/german-hdt-ud-2.5-191206.udpipe",
-    "fr": "udpipe_models/french-partut-ud-2.5-191206.udpipe",
-    "vi": "udpipe_models/vietnamese-vtb-ud-2.5-191206.udpipe",
+    "ru": "../udpipe_models/russian-syntagrus-ud-2.5-191206.udpipe",
+    "de": "../udpipe_models/german-hdt-ud-2.5-191206.udpipe",
+    "fr": "../udpipe_models/french-partut-ud-2.5-191206.udpipe",
+    "vi": "../udpipe_models/vietnamese-vtb-ud-2.5-191206.udpipe",
 }
 
 

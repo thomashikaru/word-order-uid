@@ -6,7 +6,7 @@ NUM_GPUS=0  # GPUs per node
 # GPU_MODEL=GeForceGTX1080Ti  # Choices: GeForceGTX1080,GeForceGTX1080Ti,GeForceRTX2080Ti,TeslaV100_SXM2_32GB
 NUM_CPUS=4  # Number of cores (default: 1)
 CPU_RAM=8000  # RAM for each core (default: 1024)
-OUTFILE=preprocess_data_seq2seq.out  # default: lsf.oJOBID
+OUTFILE=preprocess_data_seq2seq_531.out  # default: lsf.oJOBID
  
 # Load modules
 module load gcc/6.3.0
