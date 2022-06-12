@@ -102,7 +102,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         line["dependency_key"] = key
 
         # do some fancy stuff, not exactly sure what this does
-        direction = "DH" if dhWeights[key] else "HD"
+        direction = "DH" if (model == "REAL_REAL" or dhWeights[key]) else "HD"
         headIndex = line["head"] - 1
         sentence[headIndex]["children_" + direction] = sentence[headIndex].get(
             "children_" + direction, []
@@ -123,6 +123,9 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
                 assert 0 not in line["children_HD"]
                 eliminated = eliminated + [sentence[x - 1] for x in line["children_HD"]]
 
+        # a sentence is a list of dicts; filter out dicts that were removed
+        linearized = filter(lambda x: "removed" not in x, sentence)
+
     # for other orderings, order children relatively
     else:
         for line in sentence:
@@ -137,13 +140,21 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
                 )
                 line["children_HD"] = childrenLinearized
 
-    # recursively linearize a sentence
-    linearized = []
-    recursivelyLinearize(sentence, root, linearized, Variable(torch.FloatTensor([0.0])))
+        # recursively linearize a sentence
+        linearized = []
+        recursivelyLinearize(
+            sentence, root, linearized, Variable(torch.FloatTensor([0.0]))
+        )
 
-    # a sentence is a list of dicts; filter out dicts that were removed
-    if model == "REAL_REAL":
-        linearized = filter(lambda x: "removed" not in x, sentence)
+        # store new dependency links
+        moved = [None] * len(sentence)
+        for i, x in enumerate(linearized):
+            moved[x["index"] - 1] = i
+        for i, x in enumerate(linearized):
+            if x["head"] == 0:  # root
+                x["reordered_head"] = 0
+            else:
+                x["reordered_head"] = 1 + moved[x["head"] - 1]
 
     if debug:
         print("Original")
@@ -151,15 +162,6 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         print("Linearized")
         print(" ".join(list(map(lambda x: x["word"], linearized))))
 
-    # store new dependency links
-    moved = [None] * len(sentence)
-    for i, x in enumerate(linearized):
-        moved[x["index"] - 1] = i
-    for i, x in enumerate(linearized):
-        if x["head"] == 0:  # root
-            x["reordered_head"] = 0
-        else:
-            x["reordered_head"] = 1 + moved[x["head"] - 1]
     return linearized
 
 
@@ -236,8 +238,12 @@ if __name__ == "__main__":
     # load and iterate over a corpus
     corpus = CorpusIteratorFuncHead(args.filename, args.language, "train")
     corpusIterator = corpus.iterator()
-    for sentence in corpusIterator:
+    for i, (sentence, newdoc) in enumerate(corpusIterator):
         ordered = orderSentence(sentence, args.model, dhWeights, distanceWeights)
         output = " ".join(list(map(lambda x: x["word"], ordered)))
+
+        if newdoc and i != 0:
+            sys.stdout.write("\n")
+
         sys.stdout.write(output)
-        sys.stdout.write("\n\n")
+        sys.stdout.write(". ")

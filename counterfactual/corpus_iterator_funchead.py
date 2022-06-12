@@ -58,10 +58,11 @@ class CorpusIteratorFuncHead:
 
     def iterator(self, rejectShortSentences=False):
         iterator = self.basis.iterator(rejectShortSentences=rejectShortSentences)
-        for sentence in iterator:
+        for sentence, newdoc in iterator:
             reverse_content_head(sentence)
-            yield sentence
+            yield sentence, newdoc
 
     def getSentence(self, index):
-        return reverse_content_head(self.basis.getSentence(index))
+        sentence, newdoc = self.basis.getSentence(index)
+        return reverse_content_head(sentence), newdoc
 

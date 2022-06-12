@@ -6,6 +6,14 @@ import pandas as pd
 import os
 from mosestokenizer import MosesTokenizer, MosesSentenceSplitter
 
+UDPIPE_MODEL_LOOKUP = {
+    "en": "../udpipe_models/english-lines-ud-2.5-191206.udpipe",
+    "ru": "udpipe_models/russian-syntagrus-ud-2.5-191206.udpipe",
+    "de": "udpipe_models/german-hdt-ud-2.5-191206.udpipe",
+    "fr": "udpipe_models/french-partut-ud-2.5-191206.udpipe",
+    "vi": "udpipe_models/vietnamese-vtb-ud-2.5-191206.udpipe",
+}
+
 
 if __name__ == "__main__":
 
@@ -14,9 +22,7 @@ if __name__ == "__main__":
         "--lang", help="2-letter language code such as en, ru, vi, etc.", default="en"
     )
     parser.add_argument(
-        "--udpipe_model_path",
-        help="path to UDPipe model file for this language",
-        default="udpipe_models/english-lines-ud-2.5-191206.udpipe",
+        "--udpipe_model_path", help="path to UDPipe model file for this language"
     )
     parser.add_argument(
         "--data_dir",
@@ -40,7 +46,12 @@ if __name__ == "__main__":
 
     # load UDPipe Model
     sys.stderr.write("Loading model: ")
-    model = Model.load(args.udpipe_model_path)
+
+    if args.udpipe_model_path is None:
+        model = Model.load(UDPIPE_MODEL_LOOKUP[args.lang])
+        sys.stderr.write(f"{model}\n")
+    else:
+        model = Model.load(args.udpipe_model_path)
     if not model:
         sys.stderr.write(f"Cannot load model from file '{args.udpipe_model_path}'\n")
         sys.exit(1)

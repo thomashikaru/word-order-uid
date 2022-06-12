@@ -139,7 +139,10 @@ data/wikitext*
 
 # Data Files
 data/tfdata
-data/wiki40b-txt
+data/wiki40b-txt*
+evaluation
+examples/translation
+counterfactual/udpipe_models
 
 hyperparam_search_cli.py
 hyperparam_search_hf.py

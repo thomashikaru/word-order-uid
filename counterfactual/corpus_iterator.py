@@ -110,9 +110,13 @@ class CorpusIterator:
         # sentence = list of lists of fields
         sentence = list(map(lambda x: x.split("\t"), sentence.split("\n")))
 
+        newdoc = False
+
         result = []
         for i in range(len(sentence)):
             if sentence[i][0].startswith("#"):
+                if sentence[i][0].startswith("# newdoc"):
+                    newdoc = True
                 continue
             if "-" in sentence[i][0]:  # if it is NUM-NUM
                 continue
@@ -135,7 +139,7 @@ class CorpusIterator:
                 sentence[i]["dep"] = "punct"
 
             result.append(sentence[i])
-        return result
+        return result, newdoc
 
     def getSentence(self, index):
         result = self.processSentence(self.data[index])
