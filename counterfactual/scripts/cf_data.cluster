@@ -4,7 +4,7 @@
 TIME=24:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=0  # GPUs per node
 NUM_CPUS=1  # Number of cores (default: 1)
-CPU_RAM=2000  # RAM for each core (default: 1024)
+CPU_RAM=8000  # RAM for each core (default: 1024)
  
 # Load modules
 module load gcc/6.3.0
@@ -18,7 +18,15 @@ RESULTS_DIR="../../data/wiki40b-txt-cf"
 langlist=("ru" "vi" "en" "de" "fr")
 partitions=("train" "test" "valid")
 languages=("Russian" "Vietnamese" "English" "German" "French")
-models=("REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL")
+
+# REAL word order
+models_real=("REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL")
+
+# best OV models for respective languages
+models_ov=("1654461679" "9864186953" "4910096554" "7233494255" "1804798267")
+
+# best VO models for respective languages
+models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
 
 # for lang in "${langlist[@]}"
 for i in {1..${#langlist[@]}}
@@ -27,7 +35,7 @@ do
     do
         lang=${langlist[$i]}
         language=${languages[$i]}
-        model=${models[$i]}
+        model=${models_real[$i]}
 
         mkdir -p $RESULTS_DIR/$lang/$model
 
