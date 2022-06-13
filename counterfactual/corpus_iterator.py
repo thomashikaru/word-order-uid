@@ -89,13 +89,14 @@ class CorpusIterator:
 
         # read corpus: data = list of parse strings
         # data = readUDCorpus(language, partition)
-        data = read_conllu_file(filename)
+        # data = read_conllu_file(filename)
+        # self.data = data
 
-        self.data = data
         self.filename = filename
         self.partition = partition
         self.language = language
-        assert len(data) > 0, (filename, language, partition)
+
+        # assert len(data) > 0, (filename, language, partition)
 
     def permute(self):
         random.shuffle(self.data)
@@ -146,8 +147,21 @@ class CorpusIterator:
         return result
 
     def iterator(self, rejectShortSentences=False):
-        for sentence in self.data:
-            if len(sentence) < 3 and rejectShortSentences:
-                continue
-            yield self.processSentence(sentence)
+
+        with open(self.filename) as f_in:
+
+            buffer = []
+
+            for line in f_in:
+                if line != "\n":
+                    buffer.append(line)
+                else:
+                    sentence = "".join(buffer).strip()
+                    buffer = []
+                    yield (self.processSentence(sentence))
+
+            # for sentence in self.data:
+            #     if len(sentence) < 3 and rejectShortSentences:
+            #         continue
+            #     yield self.processSentence(sentence)
 
