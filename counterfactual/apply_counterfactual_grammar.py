@@ -13,7 +13,6 @@ import sys
 import random
 from collections import deque
 import argparse
-from random import random
 import os
 import torch
 import torch.nn as nn
