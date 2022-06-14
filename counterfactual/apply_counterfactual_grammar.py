@@ -39,7 +39,7 @@ def makeCoarse(x):
 def initializeOrderTable(filename, language):
     depsVocab = set()
     for partition in ["train", "dev"]:
-        for sentence in CorpusIteratorFuncHead(
+        for sentence, newdoc in CorpusIteratorFuncHead(
             filename, language, partition
         ).iterator():
             for line in sentence:
