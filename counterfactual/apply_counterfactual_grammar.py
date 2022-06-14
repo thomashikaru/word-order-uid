@@ -102,7 +102,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         line["dependency_key"] = key
 
         # do some fancy stuff, not exactly sure what this does
-        direction = "DH" if (model == "REAL_REAL" or dhWeights[key]) else "HD"
+        direction = "DH" if (model == "REAL_REAL" or dhWeights.get(key)) else "HD"
         headIndex = line["head"] - 1
         sentence[headIndex]["children_" + direction] = sentence[headIndex].get(
             "children_" + direction, []
@@ -224,7 +224,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--base_dir",
         help="base directory of grammar file",
-        default="grammars/manual_output_funchead_two_coarse_lambda09_best_large",
+        default="../grammars/manual_output_funchead_two_coarse_lambda09_best_large",
     )
     parser.add_argument(
         "--filename", help="filename of CONLLU data", default="en.tiny.conllu"

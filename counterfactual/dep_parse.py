@@ -76,7 +76,7 @@ if __name__ == "__main__":
             for document in f_in:
 
                 if (len(document.strip())) == 0:
-                    sys.stderror.write("There was a blank line in the input file\n")
+                    sys.stderr.write("There was a blank line in the input file\n")
                     continue
 
                 # split sentences
