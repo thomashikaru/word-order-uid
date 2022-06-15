@@ -1,11 +1,17 @@
+# Generate dependency parses in CoNNL-U format for a given dataset
+# Author: Thomas Hikaru Clark (thclark@mit.edu)
+# Example Usage:
+# python dep_parse.py --lang en --udpipe_model_path models/model.udpipe \
+#   --data_dir wiki40b-txt-final --parse_dir wiki40b-txt-parsed \
+#   --partitions "train,test,valid"
+
 from ufal.udpipe import Model, Pipeline, ProcessingError
 import sys
 import argparse
-import numpy as np
-import pandas as pd
 import os
 from mosestokenizer import MosesTokenizer, MosesSentenceSplitter
 
+# mapping from language code to preferred UDPipe model
 UDPIPE_MODEL_LOOKUP = {
     "en": "../udpipe_models/english-lines-ud-2.5-191206.udpipe",
     "ru": "../udpipe_models/russian-syntagrus-ud-2.5-191206.udpipe",
@@ -46,7 +52,6 @@ if __name__ == "__main__":
 
     # load UDPipe Model
     sys.stderr.write("Loading model: ")
-
     if args.udpipe_model_path is None:
         model = Model.load(UDPIPE_MODEL_LOOKUP[args.lang])
         sys.stderr.write(f"{model}\n")
@@ -73,15 +78,16 @@ if __name__ == "__main__":
 
         with open(input_path) as f_in, open(output_path, "w") as f_out:
 
+            # use iterator over lines in f_in to save memory
             for document in f_in:
 
+                # Moses tokenizer will fail if the line is blank
                 if (len(document.strip())) == 0:
                     sys.stderr.write("There was a blank line in the input file\n")
                     continue
 
                 # split sentences
                 sentences = sent_tokenize([document])
-
                 sentences_tokenized = [word_tokenize(s) for s in sentences]
                 sentences = [" ".join(s) for s in sentences_tokenized]
                 sentences = "\n".join(sentences)

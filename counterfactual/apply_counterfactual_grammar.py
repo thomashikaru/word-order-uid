@@ -36,6 +36,15 @@ def makeCoarse(x):
 
 
 def initializeOrderTable(filename, language):
+    """Get the set of dependency relations used in this particular grammar
+
+    Args:
+        filename (str): path to file
+        language (str): name of language, e.g. 'English'
+
+    Returns:
+        set: set of dependency relations, e.g. {'case', 'nmod'}
+    """
     depsVocab = set()
     for partition in ["train", "dev"]:
         for sentence, newdoc in CorpusIteratorFuncHead(
@@ -165,6 +174,19 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
 
 
 def get_model_specs(filename, model, language, base_dir):
+    """Retrieve the model specifications from the grammar descriptions file,
+    or generate random grammar specifications if model=='RANDOM'
+
+    Args:
+        filename (str): path to dataset file
+        model (str): name of model, e.g. 'REAL_REAL', 'RANDOM', or '7580379440'
+        language (str): name of language, e.g. 'English'
+        base_dir (str): path to directory containing grammar description file
+
+    Returns:
+        Tuple[dict, dict]: two dictionaries corresponding to 1) dependency-head weights
+        and 2) distance weights
+    """
 
     dhWeights = {}
     distanceWeights = {}
@@ -241,8 +263,10 @@ if __name__ == "__main__":
         ordered = orderSentence(sentence, args.model, dhWeights, distanceWeights)
         output = " ".join(list(map(lambda x: x["word"], ordered)))
 
+        # Add a new line if the just-processed sentence starts a new document
         if newdoc and i != 0:
             sys.stdout.write("\n")
 
         sys.stdout.write(output)
-        sys.stdout.write(". ")
+        sys.stdout.write(". ")  # add a period after every sentence
+

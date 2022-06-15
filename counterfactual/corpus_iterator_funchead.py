@@ -1,24 +1,17 @@
+# Wrapper around corpus_iterator.py
+# Applies a change to the dependency annotation to reverse the head-dep
+#   direction for certain relations: cc, case, mark, conj...
+# Original Author: Michael Hahn
+# Adapted by: Thomas Hikaru Clark (thclark@mit.edu)
+
 from corpus_iterator import CorpusIterator
 import copy
 import sys
 import json
 
-header = [
-    "index",
-    "word",
-    "lemma",
-    "posUni",
-    "posFine",
-    "morph",
-    "head",
-    "dep",
-    "_",
-    "_",
-]
-
 
 def reverse_content_head(sentence):
-    """Apply dependency parse convention change (Deviation from vanilla UD)
+    """Apply dependency parse convention change (deviation from vanilla UD)
 
     Args:
         sentence (List[Dict[str,int]]): a list of dictionaries, each corresponding to a word,
@@ -49,7 +42,7 @@ def reverse_content_head(sentence):
     # make sure none of the original dependency relations remain
     for i in range(len(sentence)):
         if sentence[i]["dep"] in CH_CONVERSION_ORDER:
-            sys.stderr.write(json.dumps(str(sentence), indent=4))
+            sys.stderr.write(json.dumps(sentence, indent=4))
             sys.stderr.write("\n")
             return None
 
@@ -61,12 +54,6 @@ class CorpusIteratorFuncHead:
         self.basis = CorpusIterator(
             filename, language, partition=partition, storeMorph=storeMorph,
         )
-
-    def permute(self):
-        self.basis.permute()
-
-    def length(self):
-        return self.basis.length()
 
     def iterator(self, rejectShortSentences=False):
         iterator = self.basis.iterator(rejectShortSentences=rejectShortSentences)
