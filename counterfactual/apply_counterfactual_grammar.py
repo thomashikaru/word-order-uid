@@ -46,13 +46,10 @@ def initializeOrderTable(filename, language):
         set: set of dependency relations, e.g. {'case', 'nmod'}
     """
     depsVocab = set()
-    for partition in ["train", "dev"]:
-        for sentence, newdoc in CorpusIteratorFuncHead(
-            filename, language, partition
-        ).iterator():
-            for line in sentence:
-                line["coarse_dep"] = makeCoarse(line["dep"])
-                depsVocab.add(line["coarse_dep"])
+    for sentence, newdoc in CorpusIteratorFuncHead(filename, language).iterator():
+        for line in sentence:
+            line["coarse_dep"] = makeCoarse(line["dep"])
+            depsVocab.add(line["coarse_dep"])
     return depsVocab
 
 
@@ -110,7 +107,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         line["dependency_key"] = key
 
         # do some fancy stuff, not exactly sure what this does
-        direction = "DH" if (model == "REAL_REAL" or dhWeights.get(key)) else "HD"
+        direction = "DH" if (model == "REAL_REAL" or dhWeights.get(key) > 0) else "HD"
         headIndex = line["head"] - 1
         sentence[headIndex]["children_" + direction] = sentence[headIndex].get(
             "children_" + direction, []
