@@ -1,10 +1,10 @@
 #!/bin/bash
  
 # Job details
-TIME=24:00  # HH:MM (default: 04:00, max: 240:00)
+TIME=01:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=0  # GPUs per node
 NUM_CPUS=1  # Number of cores (default: 1)
-CPU_RAM=8000  # RAM for each core (default: 1024)
+CPU_RAM=2048  # RAM for each core (default: 1024)
  
 # Load modules
 module load gcc/6.3.0
@@ -16,34 +16,71 @@ DATA_DIR="../../data/wiki40b-txt-parsed"
 RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
 langlist=("ru" "vi" "en" "de" "fr")
+# langlist=("en")
+
 partitions=("train" "test" "valid")
+
 languages=("Russian" "Vietnamese" "English" "German" "French")
+# languages=("English")
 
 # REAL word order
 models_real=("REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL")
 
 # best OV models for respective languages
 models_ov=("1654461679" "9864186953" "4910096554" "7233494255" "1804798267")
+# models_ov=("4910096554")
 
 # best VO models for respective languages
 models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
+# models_vo=("6448967977")
+
+# RANDOM word order
+models_rand=("RANDOM" "RANDOM" "RANDOM" "RANDOM" "RANDOM")
+
+mkdir -p logs_cf_data
 
 # for lang in "${langlist[@]}"
-for i in {1..${#langlist[@]}}
+for i in "${!langlist[@]}"
 do
     for partition in "${partitions[@]}"
     do
         lang=${langlist[$i]}
         language=${languages[$i]}
-        model=${models_real[$i]}
-
+        
+	# Random Orders
+	model=${models_rand[$i]}
         mkdir -p $RESULTS_DIR/$lang/$model
-
-        # Submit job
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/cf_data_$lang.out \
-            sh cf_data.sh $language $DATA_DIR/$lang.$partition $RESULTS_DIR/$lang/$model/$lang.$partition
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+
+	# Real Orders
+	model=${models_real[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+
+	# VO orders
+	model=${models_vo[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+
+	# OV Orders
+	model=${models_ov[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
     done
 done

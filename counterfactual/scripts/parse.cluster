@@ -15,7 +15,8 @@ module load libspatialindex
 DATA_DIR="../../data/raw_data/wiki40b-txt-final"
 RESULTS_DIR="../../data/wiki40b-txt-parsed" 
 
-langlist=("ru" "vi" "en" "de" "fr")
+# langlist=("ru" "vi" "en" "de" "fr")
+langlist=("fr")
 
 for lang in "${langlist[@]}"
 do

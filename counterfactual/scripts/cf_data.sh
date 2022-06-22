@@ -1,6 +1,7 @@
 #!/bin/bash
 LANGUAGE=$1
-DATAFILE=$2
-RESULTSFILE=$3
+MODEL=$2
+DATAFILE=$3
+RESULTSFILE=$4
 
-python ../apply_counterfactual_grammar.py --language $LANGUAGE --filename $DATAFILE > $RESULTSFILE
+python ../apply_counterfactual_grammar.py --language $LANGUAGE --model $MODEL --filename $DATAFILE > $RESULTSFILE
