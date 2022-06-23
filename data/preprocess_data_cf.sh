@@ -8,9 +8,10 @@ destdir="data-bin-cf-bpe"
 for D in $(find $datadir -mindepth 1 -maxdepth 1 -type d)
 do
     lang=$(basename $D) 
-    for M in $(find $datadir/$D -mindepth 1 -maxdepth 1 -type d)
+    for M in $(find $datadir/$lang -mindepth 1 -maxdepth 1 -type d)
     do
         model=$(basename $M)
+	mkdir -p $destdir/$lang/$model
         fairseq-preprocess \
                 --only-source \
                 --trainpref $datadir/$lang/$model/$lang.$train_pref \
