@@ -16,16 +16,21 @@ deps = [
     "amod",
     "appos",
     "aux",
-    "case",
     "ccomp",
+    "clf",
     "compound",
     "conj",
     "csubj",
+    "dep",
     "det",
+    "discourse",
+    "dislocated",
     "expl",
     "fixed",
     "flat",
+    "goeswith",
     "iobj",
+    "list",
     "lifted_case",
     "lifted_cc",
     "lifted_cop",
@@ -35,13 +40,16 @@ deps = [
     "nummod",
     "obj",
     "obl",
+    "orphan",
     "parataxis",
     "punct",
+    "reparandum",
+    "vocative",
     "xcomp",
 ]
 
-N_DEPS = 28
-N_COLS = 7
+N_DEPS = len(deps)
+N_COLS = 9
 
 example = """1	The	the	DET	DEF	Definite=Def|PronType=Art	2	det	_	_
 2	danger	danger	NOUN	SG-NOM	Number=Sing	8	nsubj	_	_
