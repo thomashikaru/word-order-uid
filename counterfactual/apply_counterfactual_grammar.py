@@ -20,6 +20,8 @@ import torch.nn.functional
 from torch.autograd import Variable
 from corpus_iterator_funchead import CorpusIteratorFuncHead
 
+recursionlimit = sys.getrecursionlimit()
+sys.setrecursionlimit(min(4000, 2 * recursionlimit))
 
 def makeCoarse(x):
     """Make coarse, i.e. chop off anything after the colon
