@@ -64,8 +64,11 @@ example = """1	The	the	DET	DEF	Definite=Def|PronType=Art	2	det	_	_
 def verify_input(text):
     lines = text.split("\n")
     lines = filter(lambda x: not x.startswith("#"), lines)
-    for line in lines:
-        if len(line.split("\t")) != 10:
+    for i, line in enumerate(lines):
+        fields = line.split("\t")
+        if len(fields) != 10:
+            return False
+        if int(fields[0]) != i + 1:
             return False
     return True
 
@@ -146,7 +149,7 @@ for i, dhcol in enumerate(dhcols):
         for dep in deps[start::N_COLS]:
             if dep in dh_weights:
                 dh_weights[dep] = st.slider(
-                    dep, -1.0, 1.0, dh_weights[dep], key="dh" + dep
+                    dep, -1.0, 1.0, dh_weights[dep], key="dh" + dep, format="%.2f"
                 )
         start += 1
 
@@ -164,7 +167,12 @@ for i, distcol in enumerate(distcols):
         for dep in deps[start::N_COLS]:
             if dep in distance_weights:
                 distance_weights[dep] = st.slider(
-                    dep, -1.0, 1.0, distance_weights[dep], key="dist" + dep
+                    dep,
+                    -1.0,
+                    1.0,
+                    distance_weights[dep],
+                    key="dist" + dep,
+                    format="%.2f",
                 )
         start += 1
 
@@ -180,7 +188,16 @@ with treebox:
         for i, s in enumerate(sentence):
             s["index"] = i + 1
         data = convert_sentence(sentence)
-        visualize_parser(data, manual=True)
+        visualize_parser(
+            data,
+            manual=True,
+            displacy_options={
+                "distance": 150,
+                "word_spacing": 45,
+                "offset_x": 45,
+                "bg": "#FFFFFF",
+            },
+        )
     except IndexError:
         st.error(
             "Something went wrong (probably a problem with the input formatting). Please try reloading the page."
