@@ -137,17 +137,18 @@ st.caption(
     "A positive weight for a given relation means that the dependent will occur before the head in linear order."
 )
 dhcols = st.columns(N_COLS)
-n_rows = ceil(N_DEPS / N_COLS)
+# n_rows = ceil(N_DEPS / N_COLS)
 start = 0
 for i, dhcol in enumerate(dhcols):
     with dhcol:
         slider_vals = {}
-        for dep in deps[start : min(start + n_rows, N_DEPS)]:
+        # for dep in deps[start : min(start + n_rows, N_DEPS)]:
+        for dep in deps[start::N_COLS]:
             if dep in dh_weights:
                 dh_weights[dep] = st.slider(
                     dep, -1.0, 1.0, dh_weights[dep], key="dh" + dep
                 )
-        start += n_rows
+        start += 1
 
 # sliders for distance weights
 st.header("Distance Weights")
@@ -159,12 +160,18 @@ start = 0
 for i, distcol in enumerate(distcols):
     with distcol:
         slider_vals = {}
-        for dep in deps[start : min(start + n_rows, N_DEPS)]:
+        # for dep in deps[start : min(start + n_rows, N_DEPS)]:
+        for dep in deps[start::N_COLS]:
             if dep in distance_weights:
                 distance_weights[dep] = st.slider(
                     dep, -1.0, 1.0, distance_weights[dep], key="dist" + dep
                 )
-        start += n_rows
+        start += 1
+
+st.header("About")
+st.caption(
+    "This visualizer is built on top of code from the following GitHub repo: https://github.com/m-hahn/grammar-optim, which accompanies the paper 'Universals of word order reflect optimization of grammars for efficient communication' by Hahn et al. (2020)."
+)
 
 # update the treebox
 with treebox:
