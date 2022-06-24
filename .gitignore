@@ -140,6 +140,14 @@ data/wikitext*
 # Data Files
 data/tfdata
 data/wiki40b-txt*
+data/data-bin*
+data/checkpoints*
+data/bpe_codes
+data/*.out
+data/eval_results*
+data/logs*
+counterfactual/scripts/logs*
+data/raw_data
 evaluation
 examples/translation
 counterfactual/udpipe_models
@@ -151,3 +159,10 @@ tokenization.py
 wiki40b-txt-s2s/
 wiki40b-txt-sampled/
 en-de/
+
+fastBPE/
+kenlm/
+data/sentencepiece/
+data/mosesdecoder/
+data/oldlogs/
+data/perps/
