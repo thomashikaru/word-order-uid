@@ -1,5 +1,12 @@
+# This script loads a trained fairseq language model and evaluates it on a test set
+# Command-line arguments:
+# 1. directory with checkpoint. assumes the dir contains a checkpoint_best.pt
+# 2. directory with test data. expects the result of fairseq-preprocess (bin data)
+# 3. file with test data. expects plain text with bpe
+# 4. output file where logprobs and tokens will be saved
+
+
 import sys
-import os
 import torch
 from fairseq.models.transformer_lm import TransformerLanguageModel
 

@@ -166,3 +166,5 @@ data/sentencepiece/
 data/mosesdecoder/
 data/oldlogs/
 data/perps/
+
+.vscode
