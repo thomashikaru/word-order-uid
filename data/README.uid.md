@@ -10,3 +10,14 @@ This repo is forked from fairseq. This README contains information specific to o
 - `train*`: These scripts train language models. There are a variety of architectures, such as LSTM, vanilla transformer, and seq2seq (or encoder-decoder) models. 
 
 Additionally, there are scripts for downloading the `wiki40b` dataset and for downsampling the dataset.
+
+
+## Steps for reproducing counterfactual LM comparison
+
+1. Generate counterfactual data
+1. Train BPE on all data
+1. Apply BPE to counterfactual data
+1. Preprocess data (fairseq-preprocess)
+1. Train LMs (fairseq-train)
+1. Evaluate LMs (custom script)
+1. Perform Analysis

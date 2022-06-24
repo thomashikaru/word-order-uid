@@ -15,16 +15,13 @@ module load libspatialindex
 DATA_DIR="../../data/wiki40b-txt-parsed"
 RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
-# langlist=("ru" "vi" "en" "de" "fr")
-langlist=("ru")
+langlist=("ru" "vi" "en" "de" "fr")
+# langlist=("ru")
 
 partitions=("train" "test" "valid")
 
 languages=("Russian" "Vietnamese" "English" "German" "French")
 # languages=("English")
-
-# REAL word order
-models_real=("REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL" "REAL_REAL")
 
 # best OV models for respective languages
 models_ov=("1654461679" "9864186953" "4910096554" "7233494255" "1804798267")
@@ -34,8 +31,8 @@ models_ov=("1654461679" "9864186953" "4910096554" "7233494255" "1804798267")
 models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
 # models_vo=("6448967977")
 
-# RANDOM word order
-models_rand=("RANDOM" "RANDOM" "RANDOM" "RANDOM" "RANDOM")
+# random seeds for RANDOM models
+seeds=(1 2 3)
 
 mkdir -p logs_cf_data
 
@@ -46,41 +43,51 @@ do
     do
         lang=${langlist[$i]}
         language=${languages[$i]}
+
+        # command line arguments to cf_data.sh:
+        # 1) language
+        # 2) name of model, e.g. REAL_REAL or grammar ID
+        # 3) input data file (.conllu file)
+        # 4) output data file (.train/.valid/.test files)
+        # 5) random seed (integer)
         
-	# Random Orders
-	model=${models_rand[$i]}
-        mkdir -p $RESULTS_DIR/$lang/$model
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+        # Random Orders
+        model="RANDOM"
+        for seed in ${seeds[@]}
+        do
+            mkdir -p $RESULTS_DIR/$lang/$model-$seed
+            bsub -W $TIME \
+                -n $NUM_CPUS \
+                -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+                -o logs_cf_data/cf_data_${lang}_$model.out \
+                sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model-$seed/$lang.$partition $seed
+        done
 
-	# Real Orders
-	model=${models_real[$i]}
+        # Real Orders
+        model="REAL_REAL"
         mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
             -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
 
-	# VO orders
-	model=${models_vo[$i]}
+        # VO orders
+        model=${models_vo[$i]}
         mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
             -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
 
-	# OV Orders
-	model=${models_ov[$i]}
+        # OV Orders
+        model=${models_ov[$i]}
         mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
             -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
     done
 done

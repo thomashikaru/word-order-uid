@@ -23,6 +23,7 @@ from corpus_iterator_funchead import CorpusIteratorFuncHead
 recursionlimit = sys.getrecursionlimit()
 sys.setrecursionlimit(min(4000, 2 * recursionlimit))
 
+
 def makeCoarse(x):
     """Make coarse, i.e. chop off anything after the colon
 
@@ -196,7 +197,7 @@ def get_model_specs(filename, model, language, base_dir):
     # c) an optimized grammar from a grammar file
 
     # handle the grammar specification and populate the dhWeights and distanceWeights dicts
-    if model == "RANDOM":  # a random ordering
+    if model.startswith("RANDOM"):  # a random ordering
         depsVocab = initializeOrderTable(filename, language)
         itos_deps = sorted(depsVocab)
         for x in itos_deps:
@@ -249,8 +250,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--filename", help="filename of CONLLU data", default="en.tiny.conllu"
     )
+    parser.add_argument(
+        "--seed", help="random seed for making RANDOM grammars", type=int, default=1
+    )
     args = parser.parse_args()
 
+    random.seed(args.seed)
     dhWeights, distanceWeights = get_model_specs(
         args.filename, args.model, args.language, args.base_dir
     )
@@ -267,5 +272,5 @@ if __name__ == "__main__":
             sys.stdout.write("\n")
 
         sys.stdout.write(output)
-        sys.stdout.write(". ")  # add a period after every sentence
+        sys.stdout.write(" . ")  # add a period after every sentence
 

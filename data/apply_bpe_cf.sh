@@ -1,4 +1,4 @@
-BPE_CODES=bpe_codes/30k  # path where processed files will be stored
+BPE_CODES=bpe_codes_cf/30k  # path where processed files will be stored
 FASTBPE=../fastBPE/fast  # path to the fastBPE tool
 INPUT_DIR="wiki40b-txt-cf"
 OUT_DIR="wiki40b-txt-cf-bpe"
