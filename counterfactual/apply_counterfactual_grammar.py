@@ -14,6 +14,7 @@ import random
 from collections import deque
 import argparse
 import os
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional
@@ -111,7 +112,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         key = line["coarse_dep"]
         line["dependency_key"] = key
 
-        # do some fancy stuff, not exactly sure what this does
+        # set the dependent-head directionality based on dhWeights
         direction = "DH" if (model == "REAL_REAL" or dhWeights.get(key) > 0) else "HD"
         headIndex = line["head"] - 1
         sentence[headIndex]["children_" + direction] = sentence[headIndex].get(
@@ -200,11 +201,38 @@ def get_model_specs(filename, model, language, base_dir):
 
     # handle the grammar specification and populate the dhWeights and distanceWeights dicts
     if model.startswith("RANDOM"):  # a random ordering
-        depsVocab = initializeOrderTable(filename, language)
-        itos_deps = sorted(depsVocab)
-        for x in itos_deps:
+        # depsVocab = initializeOrderTable(filename, language)
+        # itos_deps = sorted(depsVocab)
+        # for x in itos_deps:
+        #     dhWeights[x] = random.random() - 0.5
+        #     distanceWeights[x] = random.random() - 0.5
+
+        # read the grammar file
+        grammar_file = os.path.join(base_dir, "auto-summary-lstm.tsv")
+        df = pd.read_csv(grammar_file, sep="\t")
+        df = df[df["Language"] == language]
+
+        # if the given model is already in the grammar file, extract the DH and Distance weights
+        if model in df["FileName"]:
+            df_subset = df[df["FileName"] == model]
+            dhWeights = dict(zip(df_subset["CoarseDependency"], df_subset["DH_Weight"]))
+            distanceWeights = dict(
+                zip(df_subset["CoarseDependency"], df_subset["DistanceWeights"])
+            )
+            return dhWeights, distanceWeights
+
+        # Otherwise, get the list of unique deps in the file and assign random weights in [-0.5, 0.5]
+        deps = sorted(set(df["CoarseDependency"]))
+        for x in deps:
             dhWeights[x] = random.random() - 0.5
             distanceWeights[x] = random.random() - 0.5
+        df_new = pd.DataFrame(
+            {"Language": language, "FileName": model, "CoarseDependency": deps}
+        )
+        df_new["DH_Weight"] = df_new["CoarseDependency"].replace(dhWeights)
+        df_new["DistanceWeight"] = df_new["CoarseDependency"].replace(distanceWeights)
+        df = pd.concat(df, df_new)
+        df.to_csv(grammar_file, index=False)
     elif model == "REAL_REAL":
         pass
     else:

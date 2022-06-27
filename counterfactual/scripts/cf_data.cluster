@@ -63,31 +63,31 @@ do
                 sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model-$seed/$lang.$partition $seed
         done
 
-        # Real Orders
-        model="REAL_REAL"
-        mkdir -p $RESULTS_DIR/$lang/$model
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+        # # Real Orders
+        # model="REAL_REAL"
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
 
-        # VO orders
-        model=${models_vo[$i]}
-        mkdir -p $RESULTS_DIR/$lang/$model
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+        # # VO orders
+        # model=${models_vo[$i]}
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
 
-        # OV Orders
-        model=${models_ov[$i]}
-        mkdir -p $RESULTS_DIR/$lang/$model
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/cf_data_${lang}_$model.out \
-            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+        # # OV Orders
+        # model=${models_ov[$i]}
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
     done
 done
