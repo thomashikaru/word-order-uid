@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # this is crucial for a fair comparison so that the model is evaluated on test data from the same
     # grammar as the training data
     for lang, seed in product(langs, seeds):
-        for part1, part2 in combinations(partitions):
+        for part1, part2 in combinations(partitions, 2):
 
             d1 = dhWeights[f"{lang}.{part1}.{seed}"]
             d2 = dhWeights[f"{lang}.{part2}.{seed}"]

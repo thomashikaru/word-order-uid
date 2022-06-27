@@ -49,7 +49,9 @@ def initializeOrderTable(filename, language):
         set: set of dependency relations, e.g. {'case', 'nmod'}
     """
     depsVocab = set()
-    for sentence, newdoc in CorpusIteratorFuncHead(filename, language).iterator():
+    for sentence, newdoc in CorpusIteratorFuncHead(
+        filename, language, validate=False
+    ).iterator():
         for line in sentence:
             line["coarse_dep"] = makeCoarse(line["dep"])
             depsVocab.add(line["coarse_dep"])
