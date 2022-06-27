@@ -24,6 +24,8 @@ if __name__ == "__main__":
     # construct random grammars using random seeds
     for lang, partition, seed in product(langs, partitions, seeds):
         filename = glob.glob(f"../data/wiki40b-txt-parsed/{lang}.{partition}.conllu")
+        assert(len(filename) == 1)
+        filename = filename[0]
         random.seed(seed)
         depsVocab = initializeOrderTable(filename, langmap[lang])
         itos_deps = sorted(depsVocab)
