@@ -14,6 +14,7 @@ import random
 from collections import deque
 import argparse
 import os
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional
@@ -200,9 +201,16 @@ def get_model_specs(filename, model, language, base_dir):
 
     # handle the grammar specification and populate the dhWeights and distanceWeights dicts
     if model.startswith("RANDOM"):  # a random ordering
-        depsVocab = initializeOrderTable(filename, language)
-        itos_deps = sorted(depsVocab)
-        for x in itos_deps:
+        # depsVocab = initializeOrderTable(filename, language)
+        # itos_deps = sorted(depsVocab)
+        # for x in itos_deps:
+        #     dhWeights[x] = random.random() - 0.5
+        #     distanceWeights[x] = random.random() - 0.5
+        grammar_file = os.path.join(base_dir, "auto-summary-lstm.tsv")
+        df = pd.read_csv(grammar_file, sep="\t")
+        df = df[df["Language"] == language]
+        deps = sorted(set(df["CoarseDependency"]))
+        for x in deps:
             dhWeights[x] = random.random() - 0.5
             distanceWeights[x] = random.random() - 0.5
     elif model == "REAL_REAL":
