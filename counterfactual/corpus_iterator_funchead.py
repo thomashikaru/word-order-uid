@@ -40,14 +40,12 @@ def reverse_content_head(sentence, validate=True):
                 sentence[head]["dep"] = "lifted_" + dep
                 assert sentence[i]["index"] == i + 1
 
-    if not validate:
-        return sentence
-
     # make sure none of the original dependency relations remain
     for i in range(len(sentence)):
         if sentence[i]["dep"] in CH_CONVERSION_ORDER:
-            sys.stderr.write(json.dumps(sentence, indent=4))
-            sys.stderr.write("\n")
+            if validate:
+                sys.stderr.write(json.dumps(sentence))
+                sys.stderr.write("\n")
             return None
 
     return sentence
