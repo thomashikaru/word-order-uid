@@ -59,7 +59,7 @@ do
             bsub -W $TIME \
                 -n $NUM_CPUS \
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-                -o logs_cf_data/cf_data_${lang}_$model.out \
+                -o logs_cf_data/cf_data_${lang}_$model-$seed.out \
                 sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model-$seed/$lang.$partition $seed
         done
 

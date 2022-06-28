@@ -20,6 +20,7 @@ import torch.nn as nn
 import torch.nn.functional
 from torch.autograd import Variable
 from corpus_iterator_funchead import CorpusIteratorFuncHead
+import json
 
 recursionlimit = sys.getrecursionlimit()
 sys.setrecursionlimit(min(4000, 2 * recursionlimit))
@@ -210,29 +211,32 @@ def get_model_specs(filename, model, language, base_dir):
         # read the grammar file
         grammar_file = os.path.join(base_dir, "auto-summary-lstm.tsv")
         df = pd.read_csv(grammar_file, sep="\t")
-        df = df[df["Language"] == language]
+        df_subset = df[df["Language"] == language]
 
         # if the given model is already in the grammar file, extract the DH and Distance weights
-        if model in df["FileName"]:
-            df_subset = df[df["FileName"] == model]
-            dhWeights = dict(zip(df_subset["CoarseDependency"], df_subset["DH_Weight"]))
-            distanceWeights = dict(
-                zip(df_subset["CoarseDependency"], df_subset["DistanceWeights"])
-            )
-            return dhWeights, distanceWeights
+        # if model in df["FileName"]:
+        #     df_subset = df_subset[df_subset["FileName"] == model]
+        #     dhWeights = dict(zip(df_subset["CoarseDependency"], df_subset["DH_Weight"]))
+        #     distanceWeights = dict(
+        #         zip(df_subset["CoarseDependency"], df_subset["DistanceWeights"])
+        #     )
+        #     return dhWeights, distanceWeights
 
         # Otherwise, get the list of unique deps in the file and assign random weights in [-0.5, 0.5]
-        deps = sorted(set(df["CoarseDependency"]))
+        deps = sorted(set(df["CoarseDependency"].astype(str)))
         for x in deps:
             dhWeights[x] = random.random() - 0.5
             distanceWeights[x] = random.random() - 0.5
-        df_new = pd.DataFrame(
-            {"Language": language, "FileName": model, "CoarseDependency": deps}
-        )
-        df_new["DH_Weight"] = df_new["CoarseDependency"].replace(dhWeights)
-        df_new["DistanceWeight"] = df_new["CoarseDependency"].replace(distanceWeights)
-        df = pd.concat(df, df_new)
-        df.to_csv(grammar_file, index=False)
+        sys.stdout.write("dhWeights\n"+json.dumps(dhWeights)+"\n")
+        sys.stdout.write("distanceWeights"+json.dumps(distanceWeights)+"\n")
+
+        # df_new = pd.DataFrame(
+        #     {"Language": language, "FileName": model, "CoarseDependency": deps}
+        # )
+        # df_new["DH_Weight"] = df_new["CoarseDependency"].replace(dhWeights)
+        # df_new["DistanceWeight"] = df_new["CoarseDependency"].replace(distanceWeights)
+        # df = pd.concat([df, df_new])
+        # df.to_csv(grammar_file, sep="\t", index=False)
     elif model == "REAL_REAL":
         pass
     else:

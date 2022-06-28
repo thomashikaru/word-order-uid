@@ -13,8 +13,7 @@ for lang in "${langlist[@]}"
 do
     echo $lang
     cat $INPUT_DIR/$lang/*/$lang.train > $lang-agg.txt
-	# learn bpe codes on the training set (or only use a subset of it)
-	$FASTBPE learnbpe $NUM_OPS tempt.txt > $OUTPATH/$lang.codes
+    # learn bpe codes on the training set (or only use a subset of it)
+    $FASTBPE learnbpe $NUM_OPS $lang-agg.txt > $OUTPATH/$lang.codes
     rm $lang-agg.txt
-
 done
