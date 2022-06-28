@@ -16,7 +16,7 @@ DATA_DIR="../../data/wiki40b-txt-parsed"
 RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
 langlist=("ru" "vi" "en" "de" "fr")
-# langlist=("ru")
+# langlist=("en")
 
 partitions=("train" "test" "valid")
 

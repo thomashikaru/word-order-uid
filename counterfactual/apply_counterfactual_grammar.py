@@ -227,8 +227,8 @@ def get_model_specs(filename, model, language, base_dir):
         for x in deps:
             dhWeights[x] = random.random() - 0.5
             distanceWeights[x] = random.random() - 0.5
-        sys.stdout.write("dhWeights\n"+json.dumps(dhWeights)+"\n")
-        sys.stdout.write("distanceWeights"+json.dumps(distanceWeights)+"\n")
+        sys.stderr.write("dhWeights\n"+json.dumps(dhWeights)+"\n")
+        sys.stderr.write("distanceWeights\n"+json.dumps(distanceWeights)+"\n")
 
         # df_new = pd.DataFrame(
         #     {"Language": language, "FileName": model, "CoarseDependency": deps}
@@ -295,7 +295,7 @@ if __name__ == "__main__":
     )
 
     # load and iterate over a corpus
-    corpus = CorpusIteratorFuncHead(args.filename, args.language, "train")
+    corpus = CorpusIteratorFuncHead(args.filename, args.language, "train", validate=False)
     corpusIterator = corpus.iterator()
     for i, (sentence, newdoc) in enumerate(corpusIterator):
         ordered = orderSentence(sentence, args.model, dhWeights, distanceWeights)
