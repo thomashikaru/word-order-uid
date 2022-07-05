@@ -3,12 +3,17 @@ TIME=01:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=0  # GPUs per node
 NUM_CPUS=1  # Number of cores (default: 1)
 CPU_RAM=16000  # RAM for each core (default: 1024)
-OUTFILE=apply_bpe_cf.out  # default: lsf.oJOBID
-
-BPE_CODES=bpe_codes_cf/30k  # path where processed files will be stored
 FASTBPE=../fastBPE/fast  # path to the fastBPE tool
-INPUT_DIR="wiki40b-txt-cf"
-OUT_DIR="wiki40b-txt-cf-bpe"
+
+# INPUT_DIR="wiki40b-txt-cf"
+# OUT_DIR="wiki40b-txt-cf-bpe"
+# OUTFILE=apply_bpe_cf.out  # default: lsf.oJOBID
+# BPE_CODES=bpe_codes_cf/30k  # path where processed files will be stored
+
+INPUT_DIR="wiki40b-txt-cf-v2"
+OUT_DIR="wiki40b-txt-cf-bpe-v2"
+OUTFILE=apply_bpe_cf_v2.out  # default: lsf.oJOBID
+BPE_CODES=bpe_codes_cf_v2/30k  # path where processed files will be stored
 
 # Load modules
 module load gcc/6.3.0

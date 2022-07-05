@@ -1,7 +1,11 @@
-OUTPATH=bpe_codes_cf/30k  # path where processed files will be stored
 FASTBPE=../fastBPE/fast  # path to the fastBPE tool
 NUM_OPS=30000
-INPUT_DIR="wiki40b-txt-cf"
+
+# INPUT_DIR="wiki40b-txt-cf"
+# OUTPATH=bpe_codes_cf/30k  # path where processed files will be stored
+
+INPUT_DIR="wiki40b-txt-cf-v2"
+OUTPATH=bpe_codes_cf_v2/30k
 
 # Job details
 TIME=01:00  # HH:MM (default: 04:00, max: 240:00)
@@ -31,5 +35,5 @@ do
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
                 -o logs_cf_data/train_bpe_${lang}.out \
                 $FASTBPE learnbpe $NUM_OPS $lang-agg.txt > $OUTPATH/$lang.codes
-    rm $lang-agg.txt
+    # rm $lang-agg.txt
 done

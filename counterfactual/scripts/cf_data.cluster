@@ -12,8 +12,11 @@ module load python_gpu/3.8.5 hdf5 eth_proxy
 module load geos
 module load libspatialindex
 
-DATA_DIR="../../data/wiki40b-txt-parsed"
-RESULTS_DIR="../../data/wiki40b-txt-cf" 
+# DATA_DIR="../../data/wiki40b-txt-parsed"
+# RESULTS_DIR="../../data/wiki40b-txt-cf" 
+
+DATA_DIR="../../data/wiki40b-txt-parsed-v2"
+RESULTS_DIR="../../data/wiki40b-txt-cf-v2" 
 
 langlist=("ru" "vi" "en" "de" "fr")
 # langlist=("en")
@@ -32,7 +35,7 @@ models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
 # models_vo=("6448967977")
 
 # random seeds for RANDOM models
-seeds=(1 2 3)
+seeds=(1 2)
 
 mkdir -p logs_cf_data
 
@@ -63,31 +66,31 @@ do
                 sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model-$seed/$lang.$partition $seed
         done
 
-        # # Real Orders
-        # model="REAL_REAL"
-        # mkdir -p $RESULTS_DIR/$lang/$model
-        # bsub -W $TIME \
-        #     -n $NUM_CPUS \
-        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-        #     -o logs_cf_data/cf_data_${lang}_$model.out \
-        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+        # Real Orders
+        model="REAL_REAL"
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
 
-        # # VO orders
-        # model=${models_vo[$i]}
-        # mkdir -p $RESULTS_DIR/$lang/$model
-        # bsub -W $TIME \
-        #     -n $NUM_CPUS \
-        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-        #     -o logs_cf_data/cf_data_${lang}_$model.out \
-        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+        # VO orders
+        model=${models_vo[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
 
-        # # OV Orders
-        # model=${models_ov[$i]}
-        # mkdir -p $RESULTS_DIR/$lang/$model
-        # bsub -W $TIME \
-        #     -n $NUM_CPUS \
-        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-        #     -o logs_cf_data/cf_data_${lang}_$model.out \
-        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+        # OV Orders
+        model=${models_ov[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
     done
 done

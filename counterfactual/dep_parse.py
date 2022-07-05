@@ -9,7 +9,11 @@ from ufal.udpipe import Model, Pipeline, ProcessingError
 import sys
 import argparse
 import os
-from mosestokenizer import MosesTokenizer, MosesSentenceSplitter
+from mosestokenizer import (
+    MosesPunctuationNormalizer,
+    MosesTokenizer,
+    MosesSentenceSplitter,
+)
 
 # mapping from language code to preferred UDPipe model
 UDPIPE_MODEL_LOOKUP = {
@@ -47,6 +51,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    # create output directory if it doesn't yet exist
     if not os.path.exists(args.parse_dir):
         os.system(f"mkdir -p {args.parse_dir}")
 
@@ -66,12 +71,14 @@ if __name__ == "__main__":
     pipeline = Pipeline(
         model, "horizontal", Pipeline.DEFAULT, Pipeline.DEFAULT, "conllu"
     )
-    error = ProcessingError()
+    err = ProcessingError()
 
     # Make sentence tokenizer
     sent_tokenize = MosesSentenceSplitter(args.lang)
-    word_tokenize = MosesTokenizer(args.lang)
+    word_tokenize = MosesTokenizer(args.lang, no_escape=True)
+    normalize = MosesPunctuationNormalizer(args.lang)
 
+    # iterate over partitions
     for partition in args.partitions.split(","):
         input_path = os.path.join(args.data_dir, f"{args.lang}.{partition}")
         output_path = os.path.join(args.parse_dir, f"{args.lang}.{partition}.conllu")
@@ -88,16 +95,16 @@ if __name__ == "__main__":
 
                 # split sentences
                 sentences = sent_tokenize([document])
-                sentences_tokenized = [word_tokenize(s) for s in sentences]
+                sentences_tokenized = [word_tokenize(normalize(s)) for s in sentences]
                 sentences = [" ".join(s) for s in sentences_tokenized]
                 sentences = "\n".join(sentences)
 
                 # Process data
-                processed = pipeline.process(sentences, error)
-                if error.occurred():
-                    sys.stderr.write("An error occurred in run_udpipe: ")
-                    sys.stderr.write(error.message)
-                    sys.stderr.write("\n")
+                processed = pipeline.process(sentences, err)
+                if err.occurred():
+                    sys.stderr.write(
+                        f"An error occurred in run_udpipe: {err.message}\n"
+                    )
                     sys.exit(1)
 
                 f_out.write(processed)

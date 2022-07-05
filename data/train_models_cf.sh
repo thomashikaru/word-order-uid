@@ -3,9 +3,13 @@
 # Training logs for English-RANDOM would be in logs-cf/en-RANDOM.out
 # Checkpoints for English-RANDOM would be in checkpoints-cf-bpe/en/RANDOM/
 
-LOG_DIR="logs-cf"
-ALL_CHECKPOINTS="checkpoints-cf-bpe"
-datadir="data-bin-cf-bpe"
+# LOG_DIR="logs-cf"
+# ALL_CHECKPOINTS="checkpoints-cf-bpe"
+# datadir="data-bin-cf-bpe"
+
+LOG_DIR="logs-cf-v2"
+ALL_CHECKPOINTS="checkpoints-cf-bpe-v2"
+datadir="data-bin-cf-bpe-v2"
 
 module load gcc/6.3.0
 module load python_gpu/3.8.5 hdf5 eth_proxy

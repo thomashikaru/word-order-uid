@@ -4,9 +4,7 @@
 # Original Author: Michael Hahn
 # Adapted by: Thomas Hikaru Clark (thclark@mit.edu)
 
-from attr import validate
 from corpus_iterator import CorpusIterator
-import copy
 import sys
 import json
 
@@ -21,7 +19,6 @@ def reverse_content_head(sentence, validate=True):
     Returns:
         List[Dict[str,int]]: same format as input
     """
-    # sentence_orig = copy.deepcopy(sentence)
     CH_CONVERSION_ORDER = ["cc", "case", "cop", "mark"]
     # find paths that should be reverted
     for dep in CH_CONVERSION_ORDER:

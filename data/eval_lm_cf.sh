@@ -4,11 +4,17 @@
 # Evaluation logs for English-RANDOM would be in logs-cf-eval/en-RANDOM.out
 # Tokens and Logprobs for English-RANDOM would be in perps-cf/en-RANDOM.pt
 
-DATA_BIN="data-bin-cf-bpe"
-CHECKPOINTS="checkpoints-cf-bpe"
-LOG_DIR="logs-cf-eval"
-OUT_DIR="perps-cf"
-DATA_DIR="wiki40b-txt-cf-bpe"
+# DATA_BIN="data-bin-cf-bpe"
+# CHECKPOINTS="checkpoints-cf-bpe"
+# LOG_DIR="logs-cf-eval"
+# OUT_DIR="perps-cf"
+# DATA_DIR="wiki40b-txt-cf-bpe"
+
+DATA_BIN="data-bin-cf-bpe-v2"
+CHECKPOINTS="checkpoints-cf-bpe-v2"
+LOG_DIR="logs-cf-eval-v2"
+OUT_DIR="perps-cf-v2"
+DATA_DIR="wiki40b-txt-cf-bpe-v2"
 
 module load gcc/6.3.0
 module load python_gpu/3.8.5 hdf5 eth_proxy
@@ -17,22 +23,6 @@ module load libspatialindex
 
 mkdir -p $LOG_DIR
 mkdir -p $OUT_DIR
-
-# for D in $(find $DATA_BIN -mindepth 1 -maxdepth 1 -type d) ; do
-# 	prefix=$(basename $D |  cut -d '.' -f1)
-# 	reverse=(${prefix//-/ })
-# 	if [ -f $OUT_DIR/$prefix.pt ]; then
-#     		continue
-#   	fi
-# 	if [ -z "${reverse[1]}" ]
-# 	then
-# 		bsub -W 4:00 -o $LOG_DIR/per_example_perp.out -R "select[gpu_mtotal0>=10000]"  -R "rusage[mem=60000,ngpus_excl_p=1]" python per_example_perp.py $CHECKPOINTS/$prefix $D $DATA_DIR/$prefix.test $OUT_DIR/$prefix.pt
-# 		echo $CHECKPOINTS/$prefix $D $DATA_DIR/$prefix.test $OUT_DIR/$prefix.pt
-# 	else
-# 		bsub -W 4:00 -o $LOG_DIR/per_example_perp.out -R "select[gpu_mtotal0>=10000]"  -R "rusage[mem=60000,ngpus_excl_p=1]" python per_example_perp.py $CHECKPOINTS/$prefix $D $DATA_DIR-rev/${reverse[0]}.test $OUT_DIR/$prefix.pt
-# 	echo $CHECKPOINTS/$prefix $D $DATA_DIR-rev/${reverse[0]}.test $OUT_DIR/$prefix.pt
-# 	fi
-# done
 
 for D in $(find $DATA_BIN -mindepth 1 -maxdepth 1 -type d)
 do

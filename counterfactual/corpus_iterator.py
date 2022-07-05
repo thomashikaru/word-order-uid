@@ -5,8 +5,6 @@
 # the length() and permute() functions were removed as these
 # are not compatible with the iterator-based approach to file-reading
 
-import random
-
 HEADER = [
     "index",
     "word",
@@ -52,6 +50,25 @@ class CorpusIterator:
         self.language = language
 
     def processSentence(self, sentence):
+        """Process a given sentence string, returning a tuple of the 
+        dependency info in Hahn's format and a boolean for whether the 
+        sentence is the start of a new document. 
+        The latter assumes the input string is the result of calling 
+        .split("\n\n") on a .conllu file that contains # newdoc annotations
+        and has blank lines between successive records
+
+        Args:
+            sentence (str): string representation of a conllu parse for a 
+            single sentence. Comments will be ingored, except for "# newdoc"
+            which tells the function to return True for the newdoc value in
+            the return tuple.
+
+        Returns:
+            Tuple[Dict[str,str], bool]: a tuple of a dictionary representation
+            of the dependency parse information and a boolean which is True if
+            the given sentence is the start of a new document. This is useful
+            for parsing a whole corpus and separating documents properly.
+        """
 
         # split each parse into lines (one line per word)
         # split each line into fields (separated by tabs)

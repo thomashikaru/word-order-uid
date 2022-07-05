@@ -11,12 +11,10 @@
 
 import sys
 import random
-from collections import deque
 import argparse
 import os
 import pandas as pd
 import torch
-import torch.nn as nn
 import torch.nn.functional
 from torch.autograd import Variable
 from corpus_iterator_funchead import CorpusIteratorFuncHead
@@ -85,6 +83,19 @@ def orderChildrenRelative(sentence, remainingChildren, reverseSoftmax, distanceW
 
 
 def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
+    """Linearize a sentence under a given grammar, parametrized by the given
+    dependency-head directionality weights and distance weights
+
+    Args:
+        sentence (List[Dict[str->str]]): list of dicts mapping field names to values
+        model (str): name of grammar, e.g. RANDOM or REAL_REAL or ID number
+        dhWeights (Dict[str->float]): dictionary mapping UD deps to values
+        distanceWeights (Dict[str->float]): dict mapping UD deps to values
+        debug (bool, optional): whether to print verbose debug info. Defaults to False.
+
+    Returns:
+        List[Dict[str->str]]: _description_
+    """
     root = None
 
     # for factual ordering, some items will be eliminated (punctuation)
