@@ -34,6 +34,9 @@ models_ov=("1654461679" "9864186953" "4910096554" "7233494255" "1804798267")
 models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
 # models_vo=("6448967977")
 
+# approximation to real grammar for each language
+models_approx=("1935936" "1988915" "7520227" "6522123" "9269015")
+
 # random seeds for RANDOM models
 seeds=(1 2)
 
@@ -92,5 +95,15 @@ do
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
             -o logs_cf_data/cf_data_${lang}_$model.out \
             sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+        # Approx Orders
+        model=${models_approx[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
     done
 done

@@ -188,7 +188,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
     return linearized
 
 
-def get_model_specs(filename, model, language, base_dir):
+def get_model_specs(args):
     """Retrieve the model specifications from the grammar descriptions file,
     or generate random grammar specifications if model=='RANDOM'
 
@@ -212,66 +212,58 @@ def get_model_specs(filename, model, language, base_dir):
     # c) an optimized grammar from a grammar file
 
     # handle the grammar specification and populate the dhWeights and distanceWeights dicts
-    if model.startswith("RANDOM"):  # a random ordering
-        # depsVocab = initializeOrderTable(filename, language)
-        # itos_deps = sorted(depsVocab)
-        # for x in itos_deps:
-        #     dhWeights[x] = random.random() - 0.5
-        #     distanceWeights[x] = random.random() - 0.5
+    if args.model.startswith("RANDOM"):  # a random ordering
 
         # read the grammar file
-        grammar_file = os.path.join(base_dir, "auto-summary-lstm.tsv")
+        grammar_file = os.path.join(args.base_dir, "auto-summary-lstm.tsv")
         df = pd.read_csv(grammar_file, sep="\t")
-        df_subset = df[df["Language"] == language]
 
-        # if the given model is already in the grammar file, extract the DH and Distance weights
-        # if model in df["FileName"]:
-        #     df_subset = df_subset[df_subset["FileName"] == model]
-        #     dhWeights = dict(zip(df_subset["CoarseDependency"], df_subset["DH_Weight"]))
-        #     distanceWeights = dict(
-        #         zip(df_subset["CoarseDependency"], df_subset["DistanceWeights"])
-        #     )
-        #     return dhWeights, distanceWeights
-
-        # Otherwise, get the list of unique deps in the file and assign random weights in [-0.5, 0.5]
+        # Get the list of unique deps in the file and assign random weights in [-0.5, 0.5]
+        # It is crucial that the values and order of these are the same from run to run
+        # so that the train/test/valid splits of RANDOM grammars will share params
         deps = sorted(set(df["CoarseDependency"].astype(str)))
         for x in deps:
             dhWeights[x] = random.random() - 0.5
             distanceWeights[x] = random.random() - 0.5
         sys.stderr.write("dhWeights\n" + json.dumps(dhWeights) + "\n")
         sys.stderr.write("distanceWeights\n" + json.dumps(distanceWeights) + "\n")
-
-        # df_new = pd.DataFrame(
-        #     {"Language": language, "FileName": model, "CoarseDependency": deps}
-        # )
-        # df_new["DH_Weight"] = df_new["CoarseDependency"].replace(dhWeights)
-        # df_new["DistanceWeight"] = df_new["CoarseDependency"].replace(distanceWeights)
-        # df = pd.concat([df, df_new])
-        # df.to_csv(grammar_file, sep="\t", index=False)
-    elif model == "REAL_REAL":
+    elif args.model == "REAL_REAL":
         pass
     else:
-        grammar_file = os.path.join(base_dir, "auto-summary-lstm.tsv")
-        with open(grammar_file, "r") as inFile:
-            data = [x.split("\t") for x in inFile.read().strip().split("\n")]
-            header = data[0]
-            data = data[1:]
+        # if model is not REAL_REAL or RANDOM-[0-9]+, it should be numeric ID
+        if not args.model.isnumeric():
+            raise ValueError(
+                f"Model must be REAL_REAL, RANDOM*, or numeric, but got {args.model}"
+            )
 
-        if "CoarseDependency" not in header:
-            header[header.index("Dependency")] = "CoarseDependency"
-        if "DH_Weight" not in header:
-            header[header.index("DH_Mean_NoPunct")] = "DH_Weight"
-        if "DistanceWeight" not in header:
-            header[header.index("Distance_Mean_NoPunct")] = "DistanceWeight"
+        # load two sets of grammars - optimized, and approximations to real grammars
+        grammars_optim = os.path.join(args.base_dir, "auto-summary-lstm.tsv")
+        grammars_approx = os.path.join(args.base_dir_approx, "auto-summary-lstm.tsv")
 
-        for line in data:
-            if (
-                line[header.index("FileName")] == model
-                and line[header.index("Language")] == language
-            ):
-                key = line[header.index("CoarseDependency")]
-                dhWeights[key] = float(line[header.index("DH_Weight")])
-                distanceWeights[key] = float(line[header.index("DistanceWeight")])
+        # combine into a single dataframe (account for difference in naming)
+        grammars_optim = pd.read_csv(grammars_optim, sep="\t")
+        grammars_approx = pd.read_csv(grammars_approx, sep="\t")
+        grammars_approx.rename(
+            columns={
+                "DH_Mean_NoPunct": "DH_Weight",
+                "Distance_Mean_NoPunct": "DistanceWeight",
+                "Dependency": "CoarseDependency",
+            },
+            inplace=True,
+        )
+        df = pd.concat([grammars_optim, grammars_approx])
+
+        # filter for parameters for this specific language and model ID
+        df = df[(df["Language"] == args.language) & (df["FileName"] == int(args.model))]
+        if len(df) == 0:
+            l, m = args.language, args.model
+            raise ValueError(f"Language or grammar not found: {l}, {m}")
+
+        # get the weights
+        dhWeights = dict(zip(df["CoarseDependency"], map(float, df["DH_Weight"])))
+        distanceWeights = dict(
+            zip(df["CoarseDependency"], map(float, df["DistanceWeight"]))
+        )
 
     return dhWeights, distanceWeights
 
@@ -293,6 +285,11 @@ if __name__ == "__main__":
         default="../grammars/manual_output_funchead_two_coarse_lambda09_best_large",
     )
     parser.add_argument(
+        "--base_dir_approx",
+        help="base directory of grammar file for approximations to real grammars",
+        default="../grammars/manual_output_funchead_ground_coarse_final",
+    )
+    parser.add_argument(
         "--filename", help="filename of CONLLU data", default="en.tiny.conllu"
     )
     parser.add_argument(
@@ -301,9 +298,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     random.seed(args.seed)
-    dhWeights, distanceWeights = get_model_specs(
-        args.filename, args.model, args.language, args.base_dir
-    )
+    dhWeights, distanceWeights = get_model_specs(args)
 
     # load and iterate over a corpus
     corpus = CorpusIteratorFuncHead(
