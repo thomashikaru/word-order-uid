@@ -271,15 +271,29 @@ def get_model_specs(args):
 
 def get_dl(sentence):
     # print(json.dumps(list(sentence), indent=4, skipkeys=True))
+    # print("\n".join("\t".join(str(x) for x in word.values()) for word in sentence))
+
     dl = 0
     for i, word in enumerate(sentence):
         # print(f"{word.keys()}")
+        # print(f"{word.values()}")
         # print(f"{word['index']}, {word['posUni']}")
+        if word["head"] == 0:
+            continue
+        if word["dep"] == "root":
+            continue
         if "reordered_head" in word:
-            dl += abs(word["reordered_head"] - word["index"])
+            dl += abs(word["reordered_head"] - (i + 1))
         else:
-            dl += abs(word["head"] - word["index"])
+            dl += abs(word["head"] - (i + 1))
     return dl
+
+
+def convert_real(sentence):
+    mapping = dict((word["index"], i + 1) for i, word in enumerate(sentence))
+    for word in sentence:
+        if word["head"] != 0:
+            word["reordered_head"] = mapping[word["head"]]
 
 
 if __name__ == "__main__":
@@ -331,6 +345,8 @@ if __name__ == "__main__":
         ordered = list(orderSentence(sentence, args.model, dhWeights, distanceWeights))
 
         if args.output_dl_only:
+            if args.model == "REAL_REAL":
+                convert_real(ordered)
             dep_lens.append(get_dl(ordered))
             sent_lens.append(len(ordered))
         else:
