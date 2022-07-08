@@ -14,6 +14,7 @@ import random
 import argparse
 import os
 import pandas as pd
+import numpy as np
 import torch
 import torch.nn.functional
 from torch.autograd import Variable
@@ -268,6 +269,19 @@ def get_model_specs(args):
     return dhWeights, distanceWeights
 
 
+def get_dl(sentence):
+    # print(json.dumps(list(sentence), indent=4, skipkeys=True))
+    dl = 0
+    for i, word in enumerate(sentence):
+        # print(f"{word.keys()}")
+        # print(f"{word['index']}, {word['posUni']}")
+        if "reordered_head" in word:
+            dl += abs(word["reordered_head"] - word["index"])
+        else:
+            dl += abs(word["head"] - word["index"])
+    return dl
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -295,10 +309,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--seed", help="random seed for making RANDOM grammars", type=int, default=1
     )
+    parser.add_argument(
+        "--output_dl_only",
+        action="store_true",
+        help="if set, will only output avg dependency length for a dataset/grammar",
+    )
     args = parser.parse_args()
 
     random.seed(args.seed)
     dhWeights, distanceWeights = get_model_specs(args)
+
+    dep_lens = []
+    sent_lens = []
 
     # load and iterate over a corpus
     corpus = CorpusIteratorFuncHead(
@@ -306,13 +328,23 @@ if __name__ == "__main__":
     )
     corpusIterator = corpus.iterator()
     for i, (sentence, newdoc) in enumerate(corpusIterator):
-        ordered = orderSentence(sentence, args.model, dhWeights, distanceWeights)
-        output = " ".join(list(map(lambda x: x["word"], ordered)))
+        ordered = list(orderSentence(sentence, args.model, dhWeights, distanceWeights))
 
-        # Add a new line if the just-processed sentence starts a new document
-        if newdoc and i != 0:
-            sys.stdout.write("\n")
+        if args.output_dl_only:
+            dep_lens.append(get_dl(ordered))
+            sent_lens.append(len(ordered))
+        else:
+            output = " ".join(list(map(lambda x: x["word"], ordered)))
 
-        sys.stdout.write(output)
-        sys.stdout.write(" . ")  # add a period after every sentence
+            # Add a new line if the just-processed sentence starts a new document
+            if newdoc and i != 0:
+                sys.stdout.write("\n")
+
+            sys.stdout.write(output)
+            sys.stdout.write(" . ")  # add a period after every sentence
+
+    if args.output_dl_only:
+        sys.stdout.write(f"Language: {args.language}, Model: {args.model}\n")
+        sys.stdout.write(f"Avg Sentence Length: {np.mean(sent_lens)}\n")
+        sys.stdout.write(f"Avg Dependency Length: {np.mean(dep_lens)}\n")
 
