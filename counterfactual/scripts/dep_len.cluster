@@ -18,6 +18,8 @@ module load libspatialindex
 DATA_DIR="../../data/wiki40b-txt-parsed-v2"
 RESULTS_DIR="../../data/dep-len" 
 
+mkdir -p $RESULTS_DIR
+
 langlist=("ru" "vi" "en" "de" "fr")
 # langlist=("en")
 
@@ -61,7 +63,6 @@ do
         model="RANDOM"
         for seed in ${seeds[@]}
         do
-            mkdir -p $RESULTS_DIR/$lang/$model-$seed
             bsub -W $TIME \
                 -n $NUM_CPUS \
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
@@ -71,7 +72,6 @@ do
 
         # Real Orders
         model="REAL_REAL"
-        mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
@@ -80,7 +80,6 @@ do
 
         # VO orders
         model=${models_vo[$i]}
-        mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
@@ -89,7 +88,6 @@ do
 
         # OV Orders
         model=${models_ov[$i]}
-        mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
@@ -98,7 +96,6 @@ do
 
         # Approx Orders
         model=${models_approx[$i]}
-        mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
             -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
