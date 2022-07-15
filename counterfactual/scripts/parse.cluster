@@ -22,7 +22,8 @@ RESULTS_DIR="../../data/wiki40b-txt-parsed-v2"
 mkdir -p $RESULTS_DIR
 
 # langlist=("ru" "vi" "en" "de" "fr")
-langlist=("hi" "tr")
+# langlist=("hi" "tr")
+langlist=("hu" "id")
 
 for lang in "${langlist[@]}"
 do
