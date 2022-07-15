@@ -22,6 +22,8 @@ UDPIPE_MODEL_LOOKUP = {
     "de": "../udpipe_models/german-hdt-ud-2.5-191206.udpipe",
     "fr": "../udpipe_models/french-partut-ud-2.5-191206.udpipe",
     "vi": "../udpipe_models/vietnamese-vtb-ud-2.5-191206.udpipe",
+    "hi": "../udpipe_models/hindi-hdtb-ud-2.5-191206.udpipe",
+    "tr": "../udpipe_models/turkish-imst-ud-2.5-191206.udpipe",
 }
 
 

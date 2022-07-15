@@ -16,7 +16,7 @@ module load libspatialindex
 # RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
 DATA_DIR="../../data/wiki40b-txt-parsed-v2"
-RESULTS_DIR="../../data/wiki40b-txt-cf-v2" 
+RESULTS_DIR="../../data/wiki40b-txt-cf-v3" 
 
 langlist=("ru" "vi" "en" "de" "fr")
 # langlist=("en")
@@ -36,6 +36,105 @@ models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
 
 # approximation to real grammar for each language
 models_approx=("1935936" "1988915" "7520227" "6522123" "9269015")
+
+# random seeds for RANDOM models
+seeds=(1 2)
+
+mkdir -p logs_cf_data
+
+# for lang in "${langlist[@]}"
+for i in "${!langlist[@]}"
+do
+    for partition in "${partitions[@]}"
+    do
+        lang=${langlist[$i]}
+        language=${languages[$i]}
+
+        # command line arguments to cf_data.sh:
+        # 1) language
+        # 2) name of model, e.g. REAL_REAL or grammar ID
+        # 3) input data file (.conllu file)
+        # 4) output data file (.train/.valid/.test files)
+        # 5) random seed (integer)
+        
+        # Random Orders
+        # model="RANDOM"
+        # for seed in ${seeds[@]}
+        # do
+        #     mkdir -p $RESULTS_DIR/$lang/$model-$seed
+        #     bsub -W $TIME \
+        #         -n $NUM_CPUS \
+        #         -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #         -o logs_cf_data/cf_data_${lang}_$model-$seed.out \
+        #         sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model-$seed/$lang.$partition $seed
+        # done
+
+        # Real Orders
+        # model="REAL_REAL"
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+        # VO orders
+        # model=${models_vo[$i]}
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+        # OV Orders
+        # model=${models_ov[$i]}
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+        # Approx Orders
+        # model=${models_approx[$i]}
+        # mkdir -p $RESULTS_DIR/$lang/$model
+        # bsub -W $TIME \
+        #     -n $NUM_CPUS \
+        #     -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+        #     -o logs_cf_data/cf_data_${lang}_$model.out \
+        #     sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+        # Reverse Orders
+        model="REVERSE"
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+    done
+done
+
+
+# Adding Hindi, Turkish, Reverse Model
+
+
+langlist=("hi" "tr")
+
+partitions=("train" "test" "valid")
+
+languages=("Hindi" "Turkish")
+
+# best OV models for respective languages
+models_ov=("612057196" "1035393965")
+
+# best VO models for respective languages
+models_vo=("2868111645" "8151228474")
+
+# approximation to real grammar for each language
+models_approx=("1987011" "5754928")
 
 # random seeds for RANDOM models
 seeds=(1 2)
@@ -98,6 +197,15 @@ do
 
         # Approx Orders
         model=${models_approx[$i]}
+        mkdir -p $RESULTS_DIR/$lang/$model
+        bsub -W $TIME \
+            -n $NUM_CPUS \
+            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+            -o logs_cf_data/cf_data_${lang}_$model.out \
+            sh cf_data.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang/$model/$lang.$partition 1
+
+        # Reverse Orders
+        model="REVERSE"
         mkdir -p $RESULTS_DIR/$lang/$model
         bsub -W $TIME \
             -n $NUM_CPUS \
