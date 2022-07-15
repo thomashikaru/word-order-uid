@@ -33,7 +33,7 @@ do
     bsub -W $TIME \
                 -n $NUM_CPUS \
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-                -o logs_cf_data/train_bpe_${lang}.out \
-                $FASTBPE learnbpe $NUM_OPS $lang-agg.txt > $OUTPATH/$lang.codes
+                -o train_bpe_${lang}.out \
+                "$FASTBPE learnbpe $NUM_OPS $lang-agg.txt > $OUTPATH/$lang.codes"
     # rm $lang-agg.txt
 done
