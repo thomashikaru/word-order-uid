@@ -16,7 +16,7 @@ module load libspatialindex
 # RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
 DATA_DIR="../../data/wiki40b-txt-parsed-v2"
-RESULTS_DIR="../../data/dep-len" 
+RESULTS_DIR="../dep-len" 
 
 mkdir -p $RESULTS_DIR
 

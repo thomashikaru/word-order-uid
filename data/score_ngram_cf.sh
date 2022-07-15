@@ -13,7 +13,7 @@ do
     for M in $(find $data_dir/$lang -mindepth 1 -maxdepth 1 -type d)
     do
         model=$(basename $M)
-        echo "\t$model"
+        echo -e "\t$model"
         echo -e "language\t$lang\t$model" >> $out_file
         $model_dir/bin/lmplz -S 5G -o 5 < $data_dir/$lang/$model/$lang.train > tmp_cf.arpa && \
             $model_dir/bin/query -v summary tmp_cf.arpa < $data_dir/$lang/$model/$lang.test >> $out_file
