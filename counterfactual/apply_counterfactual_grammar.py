@@ -100,7 +100,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
     root = None
 
     # for factual ordering, some items will be eliminated (punctuation)
-    if model == "REAL_REAL":
+    if model == "REAL_REAL" or model == "REVERSE":
         eliminated = []
 
     # iterate over lines in the parse (i.e. over words in the sentence)
@@ -117,7 +117,7 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         # for factual ordering, add punctuation to list of items to be eliminated
         # assumes that punctuation does not have non-punctuation dependents!
         if line["coarse_dep"].startswith("punct"):
-            if model == "REAL_REAL":
+            if model == "REAL_REAL" or model == "REVERSE":
                 eliminated.append(line)
             continue
 
@@ -126,14 +126,18 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
         line["dependency_key"] = key
 
         # set the dependent-head directionality based on dhWeights
-        direction = "DH" if (model == "REAL_REAL" or dhWeights.get(key) > 0) else "HD"
+        direction = (
+            "DH"
+            if model == "REAL_REAL" or model == "REVERSE" or dhWeights.get(key) > 0
+            else "HD"
+        )
         headIndex = line["head"] - 1
         sentence[headIndex]["children_" + direction] = sentence[headIndex].get(
             "children_" + direction, []
         ) + [line["index"]]
 
     # for factual ordering, handle eliminations
-    if model == "REAL_REAL":
+    if model == "REAL_REAL" or model == "REVERSE":
         while len(eliminated) > 0:
             line = eliminated[0]
             del eliminated[0]
@@ -148,7 +152,11 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, debug=False):
                 eliminated = eliminated + [sentence[x - 1] for x in line["children_HD"]]
 
         # a sentence is a list of dicts; filter out dicts that were removed
-        linearized = filter(lambda x: "removed" not in x, sentence)
+        linearized = list(filter(lambda x: "removed" not in x, sentence))
+
+        # handle REVERSE
+        if model == "REVERSE":
+            linearized = linearized[::-1]
 
     # for other orderings, order children relatively
     else:
@@ -211,6 +219,7 @@ def get_model_specs(args):
     # a) RANDOM grammar
     # b) REAL_REAL, meaning the factual order
     # c) an optimized grammar from a grammar file
+    # d) REVERSE - mirror image version of REAL_REAL
 
     # handle the grammar specification and populate the dhWeights and distanceWeights dicts
     if args.model.startswith("RANDOM"):  # a random ordering
@@ -228,7 +237,7 @@ def get_model_specs(args):
             distanceWeights[x] = random.random() - 0.5
         sys.stderr.write("dhWeights\n" + json.dumps(dhWeights) + "\n")
         sys.stderr.write("distanceWeights\n" + json.dumps(distanceWeights) + "\n")
-    elif args.model == "REAL_REAL":
+    elif args.model == "REAL_REAL" or args.model == "REVERSE":
         pass
     else:
         # if model is not REAL_REAL or RANDOM-[0-9]+, it should be numeric ID
@@ -270,17 +279,10 @@ def get_model_specs(args):
 
 
 def get_dl(sentence):
-    # print(json.dumps(list(sentence), indent=4, skipkeys=True))
-    # print("\n".join("\t".join(str(x) for x in word.values()) for word in sentence))
-
     dl = 0
+    # print("\n".join("\t".join(str(x) for x in word.values()) for word in sentence))
     for i, word in enumerate(sentence):
-        # print(f"{word.keys()}")
-        # print(f"{word.values()}")
-        # print(f"{word['index']}, {word['posUni']}")
-        if word["head"] == 0:
-            continue
-        if word["dep"] == "root":
+        if word["head"] == 0 or word["dep"] == "root":
             continue
         if "reordered_head" in word:
             dl += abs(word["reordered_head"] - (i + 1))
@@ -290,6 +292,13 @@ def get_dl(sentence):
 
 
 def convert_real(sentence):
+    mapping = dict((word["index"], i + 1) for i, word in enumerate(sentence))
+    for word in sentence:
+        if word["head"] != 0:
+            word["reordered_head"] = mapping[word["head"]]
+
+
+def convert_reverse(sentence):
     mapping = dict((word["index"], i + 1) for i, word in enumerate(sentence))
     for word in sentence:
         if word["head"] != 0:
@@ -347,6 +356,8 @@ if __name__ == "__main__":
         if args.output_dl_only:
             if args.model == "REAL_REAL":
                 convert_real(ordered)
+            if args.model == "REVERSE":
+                convert_reverse(ordered)
             dep_lens.append(get_dl(ordered))
             sent_lens.append(len(ordered))
         else:
