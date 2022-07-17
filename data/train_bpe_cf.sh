@@ -4,7 +4,7 @@ NUM_OPS=30000
 # INPUT_DIR="wiki40b-txt-cf"
 # OUTPATH=bpe_codes_cf/30k  # path where processed files will be stored
 
-INPUT_DIR="wiki40b-txt-cf-v2"
+INPUT_DIR="wiki40b-txt-cf-v3"
 OUTPATH=bpe_codes_cf_v2/30k
 
 # Job details
@@ -23,7 +23,8 @@ module load libspatialindex
 mkdir -p $OUTPATH
 
 # langlist=("ar" "bg" "ca" "cs" "de" "el" "es" "et" "fa" "fi" "fr" "he" "hi" "hr" "id" "it" "ko" "lt" "lv" "ms" "nl" "no" "pl" "pt" "ro" "ru" "sk" "sl" "sr" "sv" "th" "tl" "tr" "uk" "vi" "zh-cn")
-langlist=("en" "de" "fr" "ru" "vi")
+# langlist=("en" "de" "fr" "ru" "vi")
+langlist=("hu" "tr" "id")
 
 for lang in "${langlist[@]}"
 do

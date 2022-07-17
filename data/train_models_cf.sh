@@ -7,9 +7,9 @@
 # ALL_CHECKPOINTS="checkpoints-cf-bpe"
 # datadir="data-bin-cf-bpe"
 
-LOG_DIR="logs-cf-v2"
-ALL_CHECKPOINTS="checkpoints-cf-bpe-v2"
-datadir="data-bin-cf-bpe-v2"
+LOG_DIR="logs-cf-v3"
+ALL_CHECKPOINTS="checkpoints-cf-bpe-v3"
+datadir="data-bin-cf-bpe-v3"
 
 module load gcc/6.3.0
 module load python_gpu/3.8.5 hdf5 eth_proxy

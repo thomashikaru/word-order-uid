@@ -6,7 +6,7 @@ NUM_CPUS=1  # Number of cores (default: 1)
 CPU_RAM=8000  # RAM for each core (default: 1024)
 
 # OUTFILE=preprocess_data_cf.out  # default: lsf.oJOBID
-OUTFILE=preprocess_data_cf_v2.out 
+OUTFILE=preprocess_data_cf_v3.out 
 
 # Load modules
 module load gcc/6.3.0
@@ -21,8 +21,8 @@ test_pref="test"
 # datadir="wiki40b-txt-cf-bpe"
 # destdir="data-bin-cf-bpe"
 
-datadir="wiki40b-txt-cf-bpe-v2"
-destdir="data-bin-cf-bpe-v2"
+datadir="wiki40b-txt-cf-bpe-v3"
+destdir="data-bin-cf-bpe-v3"
 
 for D in $(find $datadir -mindepth 1 -maxdepth 1 -type d)
 do
