@@ -243,7 +243,7 @@ def get_model_specs(args):
         # if model is not REAL_REAL or RANDOM-[0-9]+, it should be numeric ID
         if not args.model.isnumeric():
             raise ValueError(
-                f"Model must be REAL_REAL, RANDOM*, or numeric, but got {args.model}"
+                f"Model must be REAL_REAL, RANDOM*, REVERSE, or numeric, but got {args.model}"
             )
 
         # load two sets of grammars - optimized, and approximations to real grammars
@@ -279,6 +279,14 @@ def get_model_specs(args):
 
 
 def get_dl(sentence):
+    """Returns the summed dependency lengths for a sentence.
+
+    Args:
+        sentence (list[dict[str,any]]): sentence
+
+    Returns:
+        int: total dependency length of sentence
+    """
     dl = 0
     # print("\n".join("\t".join(str(x) for x in word.values()) for word in sentence))
     for i, word in enumerate(sentence):
@@ -292,6 +300,12 @@ def get_dl(sentence):
 
 
 def convert_real(sentence):
+    """Adds a new field 'reordered_head' to a sentence object that maps the
+    old head values to the 1-indexed indices of word positions in the sentence.
+
+    Args:
+        sentence (list[dict[str,any]]): sentence
+    """
     mapping = dict((word["index"], i + 1) for i, word in enumerate(sentence))
     for word in sentence:
         if word["head"] != 0:

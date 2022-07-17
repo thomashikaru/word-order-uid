@@ -121,20 +121,25 @@ done
 # Adding Hindi, Turkish, Reverse Model
 
 
-langlist=("hi" "tr" "hu" "id")
+# langlist=("hi" "tr" "hu" "id")
+langlist=("tr" "hu" "id")
 
 partitions=("train" "test" "valid")
 
-languages=("Hindi" "Turkish" "Hungarian" "Indonesian")
+# languages=("Hindi" "Turkish" "Hungarian" "Indonesian")
+languages=("Turkish" "Hungarian" "Indonesian")
 
 # best OV models for respective languages
-models_ov=("612057196" "1035393965" "5786187046" "3375856929")
+# models_ov=("612057196" "1035393965" "5786187046" "3375856929")
+models_ov=("1035393965" "5786187046" "3375856929")
 
 # best VO models for respective languages
-models_vo=("2868111645" "8151228474" "9615205925" "4418369424")
+# models_vo=("2868111645" "8151228474" "9615205925" "4418369424")
+models_vo=("8151228474" "9615205925" "4418369424")
 
 # approximation to real grammar for each language
-models_approx=("1987011" "5754928" "1920622" "3564332")
+# models_approx=("1987011" "5754928" "1920622" "3564332")
+models_approx=("5754928" "1920622" "3564332")
 
 # random seeds for RANDOM models
 seeds=(1 2)
