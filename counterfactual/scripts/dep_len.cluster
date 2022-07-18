@@ -15,92 +15,29 @@ module load libspatialindex
 # DATA_DIR="../../data/wiki40b-txt-parsed"
 # RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
-DATA_DIR="../../data/wiki40b-txt-parsed-v2"
+PARSE_DIR="../../data/wiki40b-txt-parsed-v2"
+DATA_DIR="../../data/wiki40b-txt-cf-v3"
 RESULTS_DIR="../dep-len" 
 
 mkdir -p $RESULTS_DIR
-
-langlist=("ru" "vi" "en" "de" "fr")
-# langlist=("en")
-
-partitions=("train" "test" "valid")
-
-languages=("Russian" "Vietnamese" "English" "German" "French")
-# languages=("English")
-
-# best OV models for respective languages
-models_ov=("1654461679" "9864186953" "4910096554" "7233494255" "1804798267")
-# models_ov=("4910096554")
-
-# best VO models for respective languages
-models_vo=("5457228368" "1171173532" "6448967977" "3150957569" "6912153951")
-# models_vo=("6448967977")
-
-# approximation to real grammar for each language
-models_approx=("1935936" "1988915" "7520227" "6522123" "9269015")
-
-# random seeds for RANDOM models
-seeds=(1 2)
-
 mkdir -p logs_cf_data
 
-# for lang in "${langlist[@]}"
-for i in "${!langlist[@]}"
+for D in $(find $DATA_DIR -mindepth 1 -maxdepth 1 -type d)
 do
-    for partition in "${partitions[@]}"
+    lang=$(basename $D)
+    echo $lang 
+    for M in $(find $DATA_DIR/$lang -mindepth 1 -maxdepth 1 -type d)
     do
-        lang=${langlist[$i]}
-        language=${languages[$i]}
-
-        # command line arguments to cf_data.sh:
-        # 1) language
-        # 2) name of model, e.g. REAL_REAL or grammar ID
-        # 3) input data file (.conllu file)
-        # 4) output data file (.train/.valid/.test files)
-        # 5) random seed (integer)
-        
-        # Random Orders
-        model="RANDOM"
-        for seed in ${seeds[@]}
+        model=$(basename $M)
+        echo $model
+        mkdir -p $ALL_CHECKPOINTS/$lang/$model
+        for partition in "${partitions[@]}"
         do
             bsub -W $TIME \
                 -n $NUM_CPUS \
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-                -o logs_cf_data/dep_len_${lang}_$model-$seed.out \
-                sh dep_len.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang-$model$seed-$partition.txt $seed
+                -o logs_cf_data/dep_len_${lang}_$model.out \
+                sh dep_len.sh $lang $model $PARSE_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang-$model-$partition.txt 1
         done
-
-        # Real Orders
-        model="REAL_REAL"
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/dep_len_${lang}_$model.out \
-            sh dep_len.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang-$model-$partition.txt 1
-
-        # VO orders
-        model=${models_vo[$i]}
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/dep_len_${lang}_$model.out \
-            sh dep_len.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang-$model-$partition.txt 1
-
-        # OV Orders
-        model=${models_ov[$i]}
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/dep_len_${lang}_$model.out \
-            sh dep_len.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang-$model-$partition.txt 1
-
-        # Approx Orders
-        model=${models_approx[$i]}
-        bsub -W $TIME \
-            -n $NUM_CPUS \
-            -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-            -o logs_cf_data/dep_len_${lang}_$model.out \
-            sh dep_len.sh $language $model $DATA_DIR/$lang.$partition.conllu $RESULTS_DIR/$lang-$model-$partition.txt 1
-
     done
 done
