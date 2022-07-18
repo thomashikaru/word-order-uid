@@ -20,6 +20,7 @@ import torch.nn.functional
 from torch.autograd import Variable
 from corpus_iterator_funchead import CorpusIteratorFuncHead
 import json
+from iso_639 import lang_codes
 
 recursionlimit = sys.getrecursionlimit()
 sys.setrecursionlimit(min(4000, 2 * recursionlimit))
@@ -352,6 +353,11 @@ if __name__ == "__main__":
         help="if set, will only output avg dependency length for a dataset/grammar",
     )
     args = parser.parse_args()
+
+    if not (args.language in lang_codes.keys() or args.language in lang_codes.values()):
+        raise ValueError(f"Specified language is invalid: {args.language}")
+    if args.language in lang_codes.keys():
+        args.language = lang_codes[args.language]
 
     random.seed(args.seed)
     dhWeights, distanceWeights = get_model_specs(args)
