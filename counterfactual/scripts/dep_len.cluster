@@ -30,7 +30,6 @@ do
     do
         model=$(basename $M)
         echo $model
-        mkdir -p $ALL_CHECKPOINTS/$lang/$model
         for partition in "${partitions[@]}"
         do
             bsub -W $TIME \
