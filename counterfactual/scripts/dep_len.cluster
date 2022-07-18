@@ -19,6 +19,8 @@ PARSE_DIR="../../data/wiki40b-txt-parsed-v2"
 DATA_DIR="../../data/wiki40b-txt-cf-v3"
 RESULTS_DIR="../dep-len" 
 
+partitions=("train" "test" "valid")
+
 mkdir -p $RESULTS_DIR
 mkdir -p logs_cf_data
 
