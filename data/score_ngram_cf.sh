@@ -6,5 +6,6 @@ out_file=$4
 
 model_dir="../kenlm/build"
 
-$model_dir/bin/lmplz -S 5G -o 5 < $data_dir/$lang/$model/$lang.train > tmp_cf.arpa && \
-            $model_dir/bin/query -v summary tmp_cf.arpa < $data_dir/$lang/$model/$lang.test >> $out_file
+$model_dir/bin/lmplz -S 5G -o 5 < $data_dir/$lang/$model/$lang.train > $lang.$model.arpa && \
+            $model_dir/bin/query -v summary $lang.$model.arpa < $data_dir/$lang/$model/$lang.test > $out_file
+rm $lang.$model.arpa

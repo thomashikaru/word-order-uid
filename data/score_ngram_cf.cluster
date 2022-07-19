@@ -29,7 +29,7 @@ do
      do
           model=$(basename $M)
           echo -e "\t$model"
-          echo -e "language\t$lang\t$model" >> $out_dir/$lang.$model.out
+          echo -e "language\t$lang\t$model" > $out_dir/$lang.$model.out
           bsub -W $TIME \
                -n $NUM_CPUS \
                -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
