@@ -4,7 +4,7 @@
 TIME=04:00  # HH:MM (default: 04:00, max: 240:00)
 NUM_GPUS=0  # GPUs per node
 NUM_CPUS=1  # Number of cores (default: 1)
-CPU_RAM=2048  # RAM for each core (default: 1024)
+CPU_RAM=4000  # RAM for each core (default: 1024)
  
 # Load modules
 module load gcc/6.3.0
@@ -16,15 +16,15 @@ module load libspatialindex
 # RESULTS_DIR="../../data/wiki40b-txt-cf" 
 
 PARSE_DIR="../../data/wiki40b-txt-parsed-v2"
-DATA_DIR="../../data/wiki40b-txt-cf-v3"
+DATA_DIR="../../data/wiki40b-txt-cf-v2"
 RESULTS_DIR="../coref" 
 
-partitions=("train")
+partitions=("test")
 
 mkdir -p $RESULTS_DIR
 mkdir -p logs_cf_data
 
-for D in $(find $DATA_DIR -mindepth 1 -maxdepth 1 -type d)
+for D in $(find $DATA_DIR/en -mindepth 0 -maxdepth 0 -type d)
 do
     lang=$(basename $D)
     echo $lang 
