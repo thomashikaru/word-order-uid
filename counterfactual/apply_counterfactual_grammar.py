@@ -352,14 +352,23 @@ def coref_analysis(corpusIterator, nlp, dhWeights, distanceWeights, args):
             # for each coreference cluster
             for cluster in clusters:
                 # print(cluster.main, cluster.main.start, cluster.main.end)
+                mentions = sorted(cluster.mentions, key=lambda x: x.start)
+                first_mention = mentions[0]
+
+                if len(mentions) < 2:
+                    continue
 
                 # for each mention in the cluster
-                for mention in cluster.mentions:
+                for mention in mentions[1:]:
 
                     # get positions of references in spacy document, convert to
                     # reordered indices, and get distance
-                    if mention.start in mapping and cluster.main.start in mapping:
-                        dist = abs(mapping[mention.start] - mapping[cluster.main.start])
+                    # if mention.start in mapping and cluster.main.start in mapping:
+                    if mention.start in mapping and first_mention.start in mapping:
+                        # dist = abs(mapping[mention.start] - mapping[cluster.main.start])
+                        dist = abs(
+                            mapping[mention.start] - mapping[first_mention.start]
+                        )
                         if dist > 0 and dist <= 50:
                             # print("\t", mention, mention.start, mention.end)
                             coref_dists.append(dist)
@@ -407,10 +416,19 @@ def coref_analysis(corpusIterator, nlp, dhWeights, distanceWeights, args):
 
         for cluster in clusters:
             # print(cluster.main, cluster.main.start, cluster.main.end)
-            for mention in cluster.mentions:
+            mentions = sorted(cluster.mentions, key=lambda x: x.start)
 
-                if mention.start in mapping and cluster.main.start in mapping:
-                    dist = abs(mapping[mention.start] - mapping[cluster.main.start])
+            if len(mentions) < 2:
+                continue
+
+            first_mention = mentions[0]
+
+            for mention in mentions[1:]:
+
+                # if mention.start in mapping and cluster.main.start in mapping:
+                if mention.start in mapping and first_mention.start in mapping:
+                    # dist = abs(mapping[mention.start] - mapping[cluster.main.start])
+                    dist = abs(mapping[mention.start] - mapping[first_mention.start])
                     if dist > 0 and dist <= 50:
                         # print("\t", mention, mention.start, mention.end)
                         coref_dists.append(dist)
@@ -418,7 +436,7 @@ def coref_analysis(corpusIterator, nlp, dhWeights, distanceWeights, args):
                     print("\t**", mention, mention.start, mention.end)
 
     # print(coref_dists)
-    print("mean coref dist:", np.mean(coref_dists))
+    print("mean coref dist:", np.mean(coref_dists), np.std(coref_dists))
 
 
 if __name__ == "__main__":
