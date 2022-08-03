@@ -38,7 +38,7 @@ do
                 -n $NUM_CPUS \
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
                 -o logs_cf_data/dep_len_${lang}_$model.out \
-                "python apply_counterfactual_grammar.py --coref_analysis --filename $PARSE_DIR/$lang.$partition.conllu --model $model > $RESULTS_DIR/$lang-$model-$partition.txt"
+                "python ../apply_counterfactual_grammar.py --coref_analysis --filename $PARSE_DIR/$lang.$partition.conllu --model $model > $RESULTS_DIR/$lang-$model-$partition.txt"
         done
     done
 done

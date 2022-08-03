@@ -476,7 +476,7 @@ if __name__ == "__main__":
     corpusIterator = corpus.iterator()
 
     if args.coref_analysis:
-        nlp = spacy.load("en")
+        nlp = spacy.load("en_core_web_sm")
 
         def custom_tokenizer(text):
             return Doc(nlp.vocab, text.split())
