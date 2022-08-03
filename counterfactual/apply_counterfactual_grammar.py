@@ -21,6 +21,8 @@ from torch.autograd import Variable
 from corpus_iterator_funchead import CorpusIteratorFuncHead
 import json
 from iso_639 import lang_codes
+import spacy, neuralcoref
+from spacy.tokens import Doc
 
 recursionlimit = sys.getrecursionlimit()
 sys.setrecursionlimit(min(4000, 2 * recursionlimit))
@@ -320,6 +322,105 @@ def convert_reverse(sentence):
             word["reordered_head"] = mapping[word["head"]]
 
 
+def coref_analysis(corpusIterator, nlp, dhWeights, distanceWeights, args):
+
+    current_doc = []
+    current_doc_positions = []
+    coref_dists = []
+
+    for i, (sentence, newdoc) in enumerate(corpusIterator):
+
+        # upon starting a new document
+        if newdoc and i > 0:
+
+            # concatenate words in current document
+            doc_str = " ".join(current_doc)
+            doc = nlp(doc_str)
+            clusters = doc._.coref_clusters
+
+            # print(doc_str)
+            # print(current_doc_positions)
+            # print(" ".join([current_doc[x] for x in current_doc_positions]))
+            # print(len(current_doc), len(current_doc_positions))
+
+            # word position in spacy document -> word position in reordered document
+            mapping = dict(
+                zip(current_doc_positions, range(len(current_doc_positions)))
+            )
+            # print(mapping)
+
+            # for each coreference cluster
+            for cluster in clusters:
+                # print(cluster.main, cluster.main.start, cluster.main.end)
+
+                # for each mention in the cluster
+                for mention in cluster.mentions:
+
+                    # get positions of references in spacy document, convert to
+                    # reordered indices, and get distance
+                    if mention.start in mapping and cluster.main.start in mapping:
+                        dist = abs(mapping[mention.start] - mapping[cluster.main.start])
+                        if dist > 0 and dist <= 50:
+                            # print("\t", mention, mention.start, mention.end)
+                            coref_dists.append(dist)
+                    else:
+                        print("\t**", mention, mention.start, mention.end)
+
+            # reset for next document
+            current_doc = []
+            current_doc_positions = []
+
+        # position in sentence + offset = position in document
+        offset = len(current_doc)
+
+        # this includes punctuation
+        words = [x["word"] for x in sentence]
+        current_doc.extend(words)
+
+        # reordered sentence, this excludes punctuation
+        ordered = list(orderSentence(sentence, args.model, dhWeights, distanceWeights))
+        # print(ordered[0].keys())
+        # print("\n".join("\t".join(str(x) for x in word.values()) for word in ordered))
+
+        current_doc_positions.extend([x["index"] - 1 + offset for x in ordered])
+
+    # handle final document in dataset (not followed by #newdoc)
+    if len(current_doc) > 0:
+        doc_str = " ".join(current_doc)
+        doc = nlp(doc_str)
+        clusters = doc._.coref_clusters
+
+        # print(doc_str)
+        # print(current_doc_positions)
+        # cf_doc = [current_doc[x] for x in current_doc_positions]
+        # print(" ".join([current_doc[x] for x in current_doc_positions]))
+        # print(len(current_doc), len(current_doc_positions))
+
+        mapping = dict(zip(current_doc_positions, range(len(current_doc_positions))))
+
+        # print(mapping)
+        # for k, v in mapping.items():
+        #     print(f"{k}, {v}, {current_doc[k]}, {cf_doc[v]}")
+
+        # for i, word in enumerate(doc):
+        #     print(f"{i} {word}")
+
+        for cluster in clusters:
+            # print(cluster.main, cluster.main.start, cluster.main.end)
+            for mention in cluster.mentions:
+
+                if mention.start in mapping and cluster.main.start in mapping:
+                    dist = abs(mapping[mention.start] - mapping[cluster.main.start])
+                    if dist > 0 and dist <= 50:
+                        # print("\t", mention, mention.start, mention.end)
+                        coref_dists.append(dist)
+                else:
+                    print("\t**", mention, mention.start, mention.end)
+
+    # print(coref_dists)
+    print("mean coref dist:", np.mean(coref_dists))
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -342,7 +443,9 @@ if __name__ == "__main__":
         default="../grammars/manual_output_funchead_ground_coarse_final",
     )
     parser.add_argument(
-        "--filename", help="filename of CONLLU data", default="en.tiny.conllu"
+        "--filename",
+        help="filename of CONLLU data",
+        default="../data/wiki40b-txt-parsed/en.tiny.conllu",
     )
     parser.add_argument(
         "--seed", help="random seed for making RANDOM grammars", type=int, default=1
@@ -352,6 +455,7 @@ if __name__ == "__main__":
         action="store_true",
         help="if set, will only output avg dependency length for a dataset/grammar",
     )
+    parser.add_argument("--coref_analysis", action="store_true")
     args = parser.parse_args()
 
     if not (args.language in lang_codes.keys() or args.language in lang_codes.values()):
@@ -370,6 +474,18 @@ if __name__ == "__main__":
         args.filename, args.language, "train", validate=False
     )
     corpusIterator = corpus.iterator()
+
+    if args.coref_analysis:
+        nlp = spacy.load("en")
+
+        def custom_tokenizer(text):
+            return Doc(nlp.vocab, text.split())
+
+        nlp.tokenizer = custom_tokenizer
+        neuralcoref.add_to_pipe(nlp, max_dist=50, max_dist_match=50)
+        coref_analysis(corpusIterator, nlp, dhWeights, distanceWeights, args)
+        quit()
+
     for i, (sentence, newdoc) in enumerate(corpusIterator):
         ordered = list(orderSentence(sentence, args.model, dhWeights, distanceWeights))
 
