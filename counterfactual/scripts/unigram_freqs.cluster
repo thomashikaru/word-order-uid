@@ -1,0 +1,26 @@
+#!/bin/bash
+ 
+# Job details
+TIME=12:00  # HH:MM (default: 04:00, max: 240:00)
+NUM_GPUS=0  # GPUs per node
+NUM_CPUS=1  # Number of cores (default: 1)
+CPU_RAM=4096  # RAM for each core (default: 1024)
+ 
+# Load modules
+module load gcc/6.3.0
+module load python_gpu/3.8.5 hdf5 eth_proxy
+module load geos
+module load libspatialindex
+
+DATA_DIR="../../data/raw_data/wiki40b-txt"
+SAVE_DIR="../freqs" 
+
+mkdir -p $SAVE_DIR
+mkdir -p logs_freqs
+
+bsub -W $TIME \
+    -n $NUM_CPUS \
+    -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+    -o logs_freqs/freqs_${lang}.out \
+    "python save_unigram_freqs.py --data_dir $DATA_DIR --save_dir $SAVE_DIR"
+
