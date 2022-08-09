@@ -37,5 +37,5 @@ if __name__ == "__main__":
 
     langs = args.langs.split(",")
     for lang in langs:
-        filename = os.path.join(args.data_dir, f"{lang}.tiny")
+        filename = os.path.join(args.data_dir, f"{lang}.train")
         save_freqs(filename, args.save_dir, lang)
