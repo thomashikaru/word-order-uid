@@ -2,7 +2,7 @@ import streamlit as st
 from spacy_streamlit import visualize_parser
 import corpus_iterator
 import corpus_iterator_funchead
-from apply_counterfactual_grammar import orderSentence
+from apply_counterfactual_grammar import orderSentence, reorder_heads, get_dl
 import random
 from math import ceil
 
@@ -142,6 +142,8 @@ except IndexError:
 # where to display parse tree (create it but populate it later, after sliders)
 treebox = st.container()
 
+dlbox = st.container()
+
 # sliders for dh weights
 st.header("Dependent-Head Weights")
 st.caption(
@@ -184,6 +186,9 @@ for i, distcol in enumerate(distcols):
                 )
         start += 1
 
+st.header("Grammar Type")
+grammar = st.selectbox("Select one of the following", ("RANDOM", "MIN_DL_PROJ"))
+
 st.header("About")
 st.caption(
     "This visualizer is built on top of code from the following GitHub repo: https://github.com/m-hahn/grammar-optim, which accompanies the paper 'Universals of word order reflect optimization of grammars for efficient communication' by Hahn et al. (2020)."
@@ -192,10 +197,12 @@ st.caption(
 # update the treebox
 with treebox:
     try:
-        sentence = orderSentence(sentence, "RANDOM", dh_weights, distance_weights)
+        sentence = orderSentence(sentence, grammar, dh_weights, distance_weights)
+        reorder_heads(sentence)
         for i, s in enumerate(sentence):
             s["index"] = i + 1
         data = convert_sentence(sentence)
+        dl = get_dl(sentence)
         visualize_parser(
             data,
             manual=True,
@@ -210,3 +217,8 @@ with treebox:
         st.error(
             "Something went wrong (probably a problem with the input formatting). Please try reloading the page."
         )
+
+with dlbox:
+    st.header("Total Dependency Length")
+    st.subheader(f"{dl}")
+
