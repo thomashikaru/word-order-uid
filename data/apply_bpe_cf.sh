@@ -10,9 +10,9 @@ FASTBPE=../fastBPE/fast  # path to the fastBPE tool
 # OUTFILE=apply_bpe_cf.out  # default: lsf.oJOBID
 # BPE_CODES=bpe_codes_cf/30k  # path where processed files will be stored
 
-INPUT_DIR="wiki40b-txt-cf-v3"
-OUT_DIR="wiki40b-txt-cf-bpe-v3"
-OUTFILE=apply_bpe_cf_v2.out  # default: lsf.oJOBID
+INPUT_DIR="wiki40b-txt-cf-v4"
+OUT_DIR="wiki40b-txt-cf-bpe-v4"
+OUTFILE=apply_bpe_cf_v4.out  # default: lsf.oJOBID
 BPE_CODES=bpe_codes_cf_v2/30k  # path where processed files will be stored
 
 # Load modules
@@ -26,7 +26,7 @@ mkdir -p $OUT_DIR
 
 # langlist=("ar" "bg" "ca" "cs" "de" "el" "es" "et" "fa" "fi" "fr" "he" "hi" "hr" "id" "it" "ko" "lt" "lv" "ms" "nl" "no" "pl" "pt" "ro" "ru" "sk" "sl" "sr" "sv" "th" "tl" "tr" "uk" "vi" "zh-cn")
 # langlist=("en" "de" "fr" "ru" "vi")
-langlist=("tr" "hu" "id")
+langlist=("en" "de" "fr" "ru" "vi" "tr" "hu" "id")
 extlist=("train" "test" "valid")
 
 for lang in "${langlist[@]}"
@@ -43,30 +43,30 @@ do
                 -n $NUM_CPUS \
                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
                 -o $OUTFILE \
-                $FASTBPE applybpe $OUT_DIR/$lang/$model/$lang.$ext $INPUT_DIR/$lang/$model/$lang.$ext  $BPE_CODES/$lang.codes
+                $FASTBPE applybpe $OUT_DIR/$lang/$model/$lang.$ext $INPUT_DIR/$lang/$model/$lang.$ext $BPE_CODES/$lang.codes
         done
     done
 done
 
 
 # REVERSE for original 5 langs
-langlist=("en" "de" "fr" "ru" "vi")
+# langlist=("en" "de" "fr" "ru" "vi")
 
-for lang in "${langlist[@]}"
-do
-    echo $lang
-    for ext in "${extlist[@]}"
-    do
-        for D in $(find $INPUT_DIR/$lang/REVERSE -mindepth 0 -maxdepth 0 -type d)
-        do
-            model=$(basename $D)
-            mkdir -p $OUT_DIR/$lang/$model
-            bsub -W $TIME \
-                -n $NUM_CPUS \
-                -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-                -o $OUTFILE \
-                $FASTBPE applybpe $OUT_DIR/$lang/$model/$lang.$ext $INPUT_DIR/$lang/$model/$lang.$ext  $BPE_CODES/$lang.codes
-        done
-    done
-done
+# for lang in "${langlist[@]}"
+# do
+#     echo $lang
+#     for ext in "${extlist[@]}"
+#     do
+#         for D in $(find $INPUT_DIR/$lang/REVERSE -mindepth 0 -maxdepth 0 -type d)
+#         do
+#             model=$(basename $D)
+#             mkdir -p $OUT_DIR/$lang/$model
+#             bsub -W $TIME \
+#                 -n $NUM_CPUS \
+#                 -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+#                 -o $OUTFILE \
+#                 $FASTBPE applybpe $OUT_DIR/$lang/$model/$lang.$ext $INPUT_DIR/$lang/$model/$lang.$ext  $BPE_CODES/$lang.codes
+#         done
+#     done
+# done
 
