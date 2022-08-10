@@ -4,12 +4,12 @@ import argparse
 from iso_639 import lang_codes
 from glob import glob
 import os
-from nltk.tokenize import word_tokenize
-
+# from nltk.tokenize import word_tokenize
+from mosestokenizer import MosesTokenizer, MosesPunctuationNormalizer
 
 def save_freqs(filename, save_dir, lang):
     d = defaultdict(int)
-    with open(filename) as f:
+    with open(filename) as f, MosesTokenizer(lang, no_escape=True) as word_tokenize, MosesPunctuationNormalizer(lang) as normalize:
         for line in f:
             for word in word_tokenize(line):
                 d[word] += 1

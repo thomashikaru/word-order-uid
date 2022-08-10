@@ -18,9 +18,14 @@ SAVE_DIR="../freqs"
 mkdir -p $SAVE_DIR
 mkdir -p logs_freqs
 
-bsub -W $TIME \
-    -n $NUM_CPUS \
-    -R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
-    -o logs_freqs/freqs_${lang}.out \
-    "python save_unigram_freqs.py --data_dir $DATA_DIR --save_dir $SAVE_DIR"
+langs=("en" "fr" "de" "ru" "vi" "id" "hu" "tr")
 
+for lang in "${langs[@]}"
+do
+    echo $lang
+    bsub -W $TIME \
+	-n $NUM_CPUS \
+	-R "rusage[mem=${CPU_RAM},ngpus_excl_p=${NUM_GPUS}]" \
+	-o logs_freqs/freqs_${lang}.out \
+	"python ../save_unigram_freqs.py --data_dir $DATA_DIR --save_dir $SAVE_DIR --langs $lang"
+done
