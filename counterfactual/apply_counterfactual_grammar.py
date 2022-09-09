@@ -634,7 +634,7 @@ if __name__ == "__main__":
                 head_word = idx2word[row["head"]]
                 head_freq = freqs.get(head_word, 0.0)
                 child_freq = freqs.get(row["word"], 0.0)
-                dep_name = row["dep"]
+                dep_name = makeCoarse(row["dep"])
                 rel_weights[dep_name].append(1 if head_freq < child_freq else -1)
 
         rel_weights_final = {k: np.mean(v) for k, v in rel_weights.items()}
