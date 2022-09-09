@@ -553,7 +553,7 @@ if __name__ == "__main__":
     parser.add_argument("--coref_analysis", action="store_true")
     parser.add_argument(
         "--freq_dir",
-        default="freqs",
+        default="../freqs",
         help="directory containing word frequency data for a language",
     )
     parser.add_argument("--debug_dl", action="store_true")
