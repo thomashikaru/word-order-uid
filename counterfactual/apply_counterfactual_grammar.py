@@ -548,7 +548,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--base_dir_freqopt",
         help="base directory for grammars optimized for high-frequency first",
-        default="grammars/freq_opt",
+        default="../grammars/freq_opt",
     )
     parser.add_argument(
         "--filename",

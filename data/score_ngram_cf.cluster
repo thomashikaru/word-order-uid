@@ -15,7 +15,7 @@ module load geos
 module load libspatialindex
 
 #!/bin/bash
-data_dir="wiki40b-txt-cf-bpe-v3"
+data_dir="wiki40b-txt-cf-bpe-v4"
 out_dir="ngram_results_cf_bpe"
 
 mkdir -p $out_dir
