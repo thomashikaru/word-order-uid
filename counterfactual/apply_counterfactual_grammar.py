@@ -9,6 +9,7 @@
 #   --base_dir manual_output_funchead_two_coarse_lambda09_best_large \
 #   --filename english_sample.conllu
 
+from collections import defaultdict
 import sys
 import random
 import argparse
@@ -342,7 +343,14 @@ def get_model_specs(args):
         sys.stderr.write("distanceWeights\n" + json.dumps(distanceWeights) + "\n")
         return dhWeights, distanceWeights
 
-    # if model is not in NON_PARAM_ORDERS, it should be numeric ID
+    if args.model == "FREQ_OPT":
+        grammar_file = os.path.join(args.base_dir_freqopt, f"{args.language}.tsv")
+        df = pd.read_csv(grammar_file, sep="\t")
+        dhWeights = dict(zip(df["Dependency"], map(float, df["DH_Weight"])))
+        distanceWeights = dict(zip(df["Dependency"], map(float, df["DistanceWeight"])))
+        return dhWeights, distanceWeights
+
+    # if model is not in NON_PARAM_ORDERS or FREQ_OPT, it should be numeric ID
     if not args.model.isnumeric():
         raise ValueError(
             f"Model must be numeric or one of {NON_PARAM_ORDERS} but got {args.model}"
@@ -520,7 +528,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         help="type of model, e.g. RANDOM, REAL_REAL, or numerical ID of grammar",
-        default="7580379440",
+        default="REAL_REAL",
     )
     parser.add_argument(
         "--base_dir",
@@ -538,6 +546,11 @@ if __name__ == "__main__":
         default="../grammars/manual_output_funchead_coarse_depl_balanced",
     )
     parser.add_argument(
+        "--base_dir_freqopt",
+        help="base directory for grammars optimized for high-frequency first",
+        default="grammars/freq_opt",
+    )
+    parser.add_argument(
         "--filename",
         help="filename of CONLLU data",
         default="../data/wiki40b-txt-parsed/en.tiny.conllu",
@@ -550,6 +563,7 @@ if __name__ == "__main__":
         action="store_true",
         help="if set, will only output avg dependency length for a dataset/grammar",
     )
+    parser.add_argument("--freq_opt", action="store_true")
     parser.add_argument("--coref_analysis", action="store_true")
     parser.add_argument(
         "--freq_dir",
@@ -566,13 +580,15 @@ if __name__ == "__main__":
         args.language = lang_codes[args.language]
     lang_codes_inv = {v: k for k, v in lang_codes.items()}
 
+    if args.freq_opt:
+        assert args.model == "REAL_REAL"
+
     # load frequencies
     freqs = {}
-    if args.model == "SORT_FREQ":
+    if args.model == "SORT_FREQ" or args.freq_opt:
         freq_path = os.path.join(args.freq_dir, f"{lang_codes_inv[args.language]}.csv")
         freqs = pd.read_csv(freq_path)
         freqs = freqs.groupby("word").sum().reset_index()
-        print(freqs.head())
         freqs = dict(zip(freqs.word, freqs.freq))
 
     # get model specs from file if applicable
@@ -597,6 +613,41 @@ if __name__ == "__main__":
         print("\n".join("\t".join(str(x) for x in word.values()) for word in sentence))
         reorder_heads(sentence)
         print(get_dl(sentence))
+        quit()
+
+    # generate a grammar that is optimized for putting high-frequency words early in sent
+    if args.freq_opt:
+
+        rel_weights = defaultdict(list)
+
+        for i, (sentence, newdoc) in enumerate(corpusIterator):
+            ordered = list(
+                orderSentence(sentence, args.model, dhWeights, distanceWeights, freqs)
+            )
+            idx2word = dict(
+                zip([w["index"] for w in ordered], [w["word"] for w in ordered])
+            )
+
+            for j, row in enumerate(ordered):
+                if row["head"] == 0:
+                    continue
+                head_word = idx2word[row["head"]]
+                head_freq = freqs.get(head_word, 0.0)
+                child_freq = freqs.get(row["word"], 0.0)
+                dep_name = row["dep"]
+                rel_weights[dep_name].append(1 if head_freq < child_freq else -1)
+
+        rel_weights_final = {k: np.mean(v) for k, v in rel_weights.items()}
+
+        df = pd.DataFrame(
+            {
+                "Language": args.language,
+                "Dependency": rel_weights_final.keys(),
+                "DH_Weight": rel_weights_final.values(),
+                "DistanceWeight": rel_weights_final.values(),
+            }
+        )
+        df.to_csv(f"{args.base_dir_freqopt}/{args.language}.tsv", index=False, sep="\t")
         quit()
 
     # For coreference analysis - currently disabled

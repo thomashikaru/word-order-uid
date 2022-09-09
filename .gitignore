@@ -168,3 +168,6 @@ data/oldlogs/
 data/perps/
 
 .vscode
+
+counterfactual/dep-len
+counterfactual/freqs
