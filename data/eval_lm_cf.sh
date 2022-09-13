@@ -10,11 +10,11 @@
 # OUT_DIR="perps-cf"
 # DATA_DIR="wiki40b-txt-cf-bpe"
 
-DATA_BIN="data-bin-cf-bpe-v4"
-CHECKPOINTS="checkpoints-cf-bpe-v4"
-LOG_DIR="logs-cf-eval-v4"
-OUT_DIR="perps-cf-v4"
-DATA_DIR="wiki40b-txt-cf-bpe-v4"
+DATA_BIN="data-bin-cf-bpe-v5"
+CHECKPOINTS="checkpoints-cf-bpe-v5"
+LOG_DIR="logs-cf-eval-v5"
+OUT_DIR="perps-cf-v5"
+DATA_DIR="wiki40b-txt-cf-bpe-v5"
 
 module load gcc/6.3.0
 module load python_gpu/3.8.5 hdf5 eth_proxy
