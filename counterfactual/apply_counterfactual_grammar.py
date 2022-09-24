@@ -30,7 +30,7 @@ from iso_639 import lang_codes
 recursionlimit = sys.getrecursionlimit()
 sys.setrecursionlimit(min(4000, 2 * recursionlimit))
 
-NON_PARAM_ORDERS = ["REAL_REAL", "REVERSE", "SORT_FREQ", "MIN_DL_PROJ"]
+NON_PARAM_ORDERS = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ"]
 
 
 def makeCoarse(x):
@@ -253,6 +253,12 @@ def orderSentence(sentence, model, dhWeights, distanceWeights, freqs=None, debug
                 linearized, key=lambda x: freqs.get(x["word"], 0.0), reverse=True
             )
 
+        # handle SORT_FREQ_REV (lowest to highest word frequency)
+        if model == "SORT_FREQ_REV":
+            linearized = sorted(
+                linearized, key=lambda x: freqs.get(x["word"], 0.0), reverse=False
+            )
+
         # handle MIN_DL_PROJ (minimum dependency length with projectivity constraint)
         if model == "MIN_DL_PROJ":
             linearized = linearize_mindl(linearized)
@@ -316,12 +322,13 @@ def get_model_specs(args):
     # Grammar can be one of the following:
     # a) RANDOM grammar - dhWeights and distanceWeights randomly initialized
     # b) REAL_REAL - factual order
-    # c) an optimized grammar from a grammar file
+    # c) an optimized grammar from a grammar file (denoted by a numeric ID)
     #    i) optimized for efficiency (joint predictability and parseability)
     #   ii) optimized for DLM (while still being a consistent grammar)
     # d) REVERSE - mirror image version of REAL_REAL
     # e) SORT_FREQ - tokens sorted by word frequency, high to low
-    # f) MIN_DL_PROJ - tokens linearized to minimize total DL for each sentence
+    # f) SORT_FREQ_REV - tokens sorted by word frequency, low to high
+    # g) MIN_DL_PROJ - tokens linearized to minimize total DL for each sentence
 
     # handle the grammar specification and populate the dhWeights and distanceWeights dicts
     if args.model in NON_PARAM_ORDERS:
@@ -585,7 +592,7 @@ if __name__ == "__main__":
 
     # load frequencies
     freqs = {}
-    if args.model == "SORT_FREQ" or args.freq_opt:
+    if args.model in ["SORT_FREQ", "SORT_FREQ_REV"] or args.freq_opt:
         freq_path = os.path.join(args.freq_dir, f"{lang_codes_inv[args.language]}.csv")
         freqs = pd.read_csv(freq_path)
         freqs = freqs.groupby("word").sum().reset_index()

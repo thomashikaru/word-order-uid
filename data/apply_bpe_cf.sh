@@ -10,8 +10,8 @@ FASTBPE=../fastBPE/fast  # path to the fastBPE tool
 # OUTFILE=apply_bpe_cf.out  # default: lsf.oJOBID
 # BPE_CODES=bpe_codes_cf/30k  # path where processed files will be stored
 
-INPUT_DIR="wiki40b-txt-cf-v5"
-OUT_DIR="wiki40b-txt-cf-bpe-v5"
+INPUT_DIR="wiki40b-txt-cf-v6"
+OUT_DIR="wiki40b-txt-cf-bpe-v6"
 OUTFILE=apply_bpe_cf_v4.out  # default: lsf.oJOBID
 BPE_CODES=bpe_codes_cf_v2/30k  # path where processed files will be stored
 

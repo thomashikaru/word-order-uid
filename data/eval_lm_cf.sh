@@ -1,20 +1,14 @@
 # This script evaluates trained language models for a variety of languages and real/counterfactual grammars.
 # It outputs token lists and per-word logprobs
-# There are currently 5 languages (en, ru, fr, de, vi) and 4 grammars (real, random, optimized VO, optimized OV)
+# There are currently 8 languages (en, ru, fr, de, vi, tr, id, hu) and 10 grammars/variants.
 # Evaluation logs for English-RANDOM would be in logs-cf-eval/en-RANDOM.out
 # Tokens and Logprobs for English-RANDOM would be in perps-cf/en-RANDOM.pt
 
-# DATA_BIN="data-bin-cf-bpe"
-# CHECKPOINTS="checkpoints-cf-bpe"
-# LOG_DIR="logs-cf-eval"
-# OUT_DIR="perps-cf"
-# DATA_DIR="wiki40b-txt-cf-bpe"
-
-DATA_BIN="data-bin-cf-bpe-v5"
-CHECKPOINTS="checkpoints-cf-bpe-v5"
-LOG_DIR="logs-cf-eval-v5"
-OUT_DIR="perps-cf-v5"
-DATA_DIR="wiki40b-txt-cf-bpe-v5"
+DATA_BIN="data-bin-cf-bpe-v6"
+CHECKPOINTS="checkpoints-cf-bpe-v6"
+LOG_DIR="logs-cf-eval-v6"
+OUT_DIR="perps-cf-v6"
+DATA_DIR="wiki40b-txt-cf-bpe-v6"
 
 module load gcc/6.3.0
 module load python_gpu/3.8.5 hdf5 eth_proxy

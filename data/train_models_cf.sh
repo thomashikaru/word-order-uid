@@ -1,15 +1,12 @@
 # This script trains language models for a variety of languages and real/counterfactual grammars.
-# There are currently 5 languages (en, ru, fr, de, vi) and 4 grammars (real, random, optimized VO, optimized OV)
+# There are currently 8 languages (en, ru, fr, de, vi, id, tr, hu) and 10 grammars
 # Training logs for English-RANDOM would be in logs-cf/en-RANDOM.out
 # Checkpoints for English-RANDOM would be in checkpoints-cf-bpe/en/RANDOM/
+# different versions (e.g. v5, v6) correspond to incremental runs where we add languages or variants
 
-# LOG_DIR="logs-cf"
-# ALL_CHECKPOINTS="checkpoints-cf-bpe"
-# datadir="data-bin-cf-bpe"
-
-LOG_DIR="logs-cf-v5"
-ALL_CHECKPOINTS="checkpoints-cf-bpe-v5"
-datadir="data-bin-cf-bpe-v5"
+LOG_DIR="logs-cf-v6"
+ALL_CHECKPOINTS="checkpoints-cf-bpe-v6"
+datadir="data-bin-cf-bpe-v6"
 
 module load gcc/6.3.0
 module load python_gpu/3.8.5 hdf5 eth_proxy
