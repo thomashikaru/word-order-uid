@@ -63,7 +63,7 @@ rule do_dependency_parsing:
         cd counterfactual
         bsub -W 24:00 -n 1 -R "rusage[mem=2048,ngpus_excl_p=0]" \
           -o logs_parse/{{wildcards.language}}.out \
-          python dep_parse.py --lang {{wildcards.language}} --data_dir {SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'
+          "python dep_parse.py --lang {{wildcards.language}} --data_dir {SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'"
         """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # make counterfactual datsets for each language
@@ -85,13 +85,13 @@ rule make_cf_data:
         cd counterfactual
         bsub -W 02:00 -n 1 -R 'rusage[mem=4096,ngpus_excl_p=0]' \
             -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_train.out \
-            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.train.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train
+            "python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.train.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train"
         bsub -W 01:00 -n 1 -R 'rusage[mem=2048,ngpus_excl_p=0]' \
             -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_valid.out \
-            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid
+            "python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid"
         bsub -W 01:00 -n 1 -R 'rusage[mem=2048,ngpus_excl_p=0]' \
             -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_test.out \
-            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
+            "python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test"
         """.format(CF_DATA_DIR=CF_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # train bpe on each dataset
