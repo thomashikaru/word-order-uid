@@ -10,6 +10,7 @@
 #   --filename english_sample.conllu
 
 from collections import defaultdict
+import re
 import sys
 import random
 import argparse
@@ -540,17 +541,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--base_dir",
         help="base directory of grammar file",
-        default="../grammars/manual_output_funchead_two_coarse_lambda09_best_large",
+        default="grammars/manual_output_funchead_two_coarse_lambda09_best_large",
     )
     parser.add_argument(
         "--base_dir_approx",
         help="base directory of grammar file for approximations to real grammars",
-        default="../grammars/manual_output_funchead_ground_coarse_final",
+        default="grammars/manual_output_funchead_ground_coarse_final",
     )
     parser.add_argument(
         "--base_dir_mindl",
         help="base directory of file for grammars optimized for DLM",
-        default="../grammars/manual_output_funchead_coarse_depl_balanced",
+        default="grammars/manual_output_funchead_coarse_depl_balanced",
     )
     parser.add_argument(
         "--base_dir_freqopt",
@@ -597,6 +598,11 @@ if __name__ == "__main__":
         freqs = pd.read_csv(freq_path)
         freqs = freqs.groupby("word").sum().reset_index()
         freqs = dict(zip(freqs.word, freqs.freq))
+
+    # handle RANDOM-XX
+    if args.model.startswith("RANDOM"):
+        assert re.match("^RANDOM-\d+$"), f"Invalid model: {args.model}"
+        args.seed = int(args.model.split("-")[-1])
 
     # get model specs from file if applicable
     random.seed(args.seed)
