@@ -58,7 +58,7 @@ rule do_dependency_parsing:
         time="24:00",
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
-        logfile="logs_parse/log.out"
+        logfile="data/logs/log_parse.out"
     shell:
         """
         module load gcc/6.3.0
@@ -80,10 +80,10 @@ rule make_cf_data:
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.valid",
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.test",
     resources:
-        time="4:00",
+        time="04:00",
         num_cpus=1,
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
-        logfile="logs_cf/log.out"
+        logfile="data/logs/log_cf_{wildcards.language}_{wildcards.variant}.out"
     shell:
         """
         module load gcc/6.3.0
@@ -102,16 +102,18 @@ rule train_bpe:
         "data/wiki40b-txt-cf/{language}/REAL_REAL/{language}.train"
     output:
         "data/bpe_codes/30k/{language}.codes"
+    resources:
+        time="01:00",
+        num_cpus=1,
+        rusage="rusage[mem=2048,ngpus_excl_p=0]",
+        logfile="data/logs/log_train_bpe.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
-        cd data
         cat {CF_DATA_DIR}/{{wildcards.language}}/*/{{wildcards.language}}.train | shuf > data/{{wildcards.language}}-agg.txt
-        bsub -W 01:00 -n 1 -R "rusage[mem=2048,ngpus_excl_p=0]" \
-            -o data/train_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} data/{{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes"
+        {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} data/{{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes"
         """.format(CF_DATA_DIR=CF_DATA_DIR, FASTBPE_NUM_OPS=FASTBPE_NUM_OPS, FASTBPE_PATH=FASTBPE_PATH, FASTBPE_OUTPATH=FASTBPE_OUTPATH)
 
 # apply the bpe to each dataset
@@ -125,21 +127,20 @@ rule apply_bpe:
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.train",
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.valid",
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.test",
+    resources:
+        time="01:00",
+        num_cpus=1,
+        rusage="rusage[mem=4000,ngpus_excl_p=0]",
+        logfile="data/logs/log_apply_bpe.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
-        bsub -W 01:00 -n 1 -R "rusage[mem=4000,ngpus_excl_p=0]" \
-            -o data/apply_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
-        bsub -W 01:00 -n 1 -R "rusage[mem=4000,ngpus_excl_p=0]" \
-            -o data/apply_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
-        bsub -W 01:00 -n 1 -R "rusage[mem=4000,ngpus_excl_p=0]" \
-            -o data/apply_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
         """.format(CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, FASTBPE_OUTPATH=FASTBPE_OUTPATH, FASTBPE_PATH=FASTBPE_PATH, CF_DATA_DIR=CF_DATA_DIR)
 
 # binarize for fairseq training
@@ -152,22 +153,25 @@ rule prepare_fairseq_data:
         "data/data-bin-cf-bpe/{language}/{variant}/{language}.train",
         "data/data-bin-cf-bpe/{language}/{variant}/{language}.valid",
         "data/data-bin-cf-bpe/{language}/{variant}/{language}.test"
+    resources:
+        time="04:00",
+        num_cpus=1,
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+        logfile="data/logs/log_preprocess.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
-        bsub -W 04:00 -n 1 -R "rusage[mem=8000,ngpus_excl_p=0]" \
-            -o preprocess_data_cf.out \
-            fairseq-preprocess \
-                --only-source \
-                --trainpref {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train \
-                --validpref {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid \
-                --testpref {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-                --destdir {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-                --bpe fastbpe \
-                --workers 20 
+        fairseq-preprocess \
+            --only-source \
+            --trainpref {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train \
+            --validpref {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid \
+            --testpref {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
+            --destdir {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
+            --bpe fastbpe \
+            --workers 20 
         """.format(CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR)
 
 # train the models
@@ -177,16 +181,18 @@ rule train_language_models:
         "data/data-bin-cf-bpe/{language}/{variant}/{language}.valid"
     output:
         "data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt"
+    resources:
+        time="24:00",
+        select="select[gpu_mtotal0>=10000]",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+        logfile="data/logs/log_train_{wildcards.language}_{wildcards.variant}.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
-        bsub -W 24:00 -o logs-cf/{{wildcards.language}}-{{wildcards.variant}}.out \
-            -R "select[gpu_mtotal0>=10000]"  \
-            -R "rusage[mem=30000,ngpus_excl_p=1]" \
-            bash train_model_transformer.sh {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
+        bash train_model_transformer.sh {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         """.format(PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CHECKPOINT_DIR=CHECKPOINT_DIR)
 
 # evaluate the language models
