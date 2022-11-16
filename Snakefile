@@ -54,6 +54,11 @@ rule do_dependency_parsing:
         "data/wiki40b-txt-parsed/{language}.train.conllu",
         "data/wiki40b-txt-parsed/{language}.valid.conllu",
         "data/wiki40b-txt-parsed/{language}.test.conllu",
+    resources:
+        time="24:00",
+        num_cpus=1,
+        rusage="rusage[mem=2048,ngpus_excl_p=0]",
+        logfile="logs_parse/log.out"
     shell:
         """
         module load gcc/6.3.0
@@ -61,9 +66,7 @@ rule do_dependency_parsing:
         module load geos libspatialindex
         mkdir -p {PARSE_DIR}
         cd counterfactual
-        bsub -W 24:00 -n 1 -R "rusage[mem=2048,ngpus_excl_p=0]" \
-          -o logs_parse/{{wildcards.language}}.out \
-          "python dep_parse.py --lang {{wildcards.language}} --data_dir {SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'"
+        python dep_parse.py --lang {{wildcards.language}} --data_dir {SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'
         """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # make counterfactual datsets for each language
@@ -76,6 +79,11 @@ rule make_cf_data:
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.train",
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.valid",
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.test",
+    resources:
+        time="4:00",
+        num_cpus=1,
+        rusage="rusage[mem=4096,ngpus_excl_p=0]",
+        logfile="logs_cf/log.out"
     shell:
         """
         module load gcc/6.3.0
@@ -83,15 +91,9 @@ rule make_cf_data:
         module load geos libspatialindex
         mkdir -p {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         cd counterfactual
-        bsub -W 02:00 -n 1 -R 'rusage[mem=4096,ngpus_excl_p=0]' \
-            -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_train.out \
-            "python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.train.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train"
-        bsub -W 01:00 -n 1 -R 'rusage[mem=2048,ngpus_excl_p=0]' \
-            -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_valid.out \
-            "python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid"
-        bsub -W 01:00 -n 1 -R 'rusage[mem=2048,ngpus_excl_p=0]' \
-            -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_test.out \
-            "python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test"
+        python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.train.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train
+        python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid
+        python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
         """.format(CF_DATA_DIR=CF_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # train bpe on each dataset
