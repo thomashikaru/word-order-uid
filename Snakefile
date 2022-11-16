@@ -58,7 +58,7 @@ rule do_dependency_parsing:
         time="24:00",
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
-        logfile="data/logs/log_parse.out"
+        logfile="data/logs_thc/log_parse.out"
     shell:
         """
         module load gcc/6.3.0
@@ -83,7 +83,8 @@ rule make_cf_data:
         time="04:00",
         num_cpus=1,
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
-        logfile="data/logs/log_cf_{wildcards.language}_{wildcards.variant}.out"
+    params:
+        logfile="data/logs_thc/log_cf.out"
     shell:
         """
         module load gcc/6.3.0
@@ -106,7 +107,7 @@ rule train_bpe:
         time="01:00",
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
-        logfile="data/logs/log_train_bpe.out"
+        logfile="data/logs_thc/log_train_bpe.out"
     shell:
         """
         module load gcc/6.3.0
@@ -131,7 +132,7 @@ rule apply_bpe:
         time="01:00",
         num_cpus=1,
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
-        logfile="data/logs/log_apply_bpe.out"
+        logfile="data/logs_thc/log_apply_bpe.out"
     shell:
         """
         module load gcc/6.3.0
@@ -157,7 +158,7 @@ rule prepare_fairseq_data:
         time="04:00",
         num_cpus=1,
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
-        logfile="data/logs/log_preprocess.out"
+        logfile="data/logs_thc/log_preprocess.out"
     shell:
         """
         module load gcc/6.3.0
@@ -184,8 +185,8 @@ rule train_language_models:
     resources:
         time="24:00",
         select="select[gpu_mtotal0>=10000]",
-        rusage="rusage[mem=8000,ngpus_excl_p=0]",
-        logfile="data/logs/log_train_{wildcards.language}_{wildcards.variant}.out"
+        rusage="rusage[mem=30000,ngpus_excl_p=1]",
+        logfile="data/logs_thc/log_train.out"
     shell:
         """
         module load gcc/6.3.0
@@ -202,15 +203,17 @@ rule eval_language_models:
         "data/data-bin-cf-bpe/{language}/{variant}/{language}.test"
     output:
         "data/perps-cf/{language}-{variant}.pt"
+    resources:
+        time="4:00",
+        select="select[gpu_mtotal0>=10000]",
+        rusage="rusage[mem=30000,ngpus_excl_p=1]",
+        logfile="data/logs_thc/log_eval.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
-        bsub -W 4:00 -o logs-cf-eval/{{wildcards.language}}-{{wildcards.variant}}.out \
-            -R "select[gpu_mtotal0>=10000]"  \
-            -R "rusage[mem=60000,ngpus_excl_p=1]" \
-            python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
 rule postprocess_eval_output:
