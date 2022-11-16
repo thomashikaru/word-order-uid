@@ -601,7 +601,7 @@ if __name__ == "__main__":
 
     # handle RANDOM-XX
     if args.model.startswith("RANDOM"):
-        assert re.match("^RANDOM-\d+$"), f"Invalid model: {args.model}"
+        assert re.match("^RANDOM-\d+$", args.model), f"Invalid model: {args.model}"
         args.seed = int(args.model.split("-")[-1])
 
     # get model specs from file if applicable
