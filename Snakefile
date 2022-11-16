@@ -1,6 +1,6 @@
 
 languages = ["en", "tr", "hu", "fr", "de", "ru", "vi", "id"]
-variants = ["REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_LOC", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "APPROX"]
+variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_LOC", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "APPROX"]
 parts = ["train", "test", "valid"]
 
 RAW_DATA_DIR = "data/raw_data/wiki40b-txt"
@@ -97,7 +97,7 @@ rule make_cf_data:
 # train bpe on each dataset
 rule train_bpe:
     input:
-        "data/wiki40b-txt-cf/{language}/REAL/{language}.train"
+        "data/wiki40b-txt-cf/{language}/REAL_REAL/{language}.train"
     output:
         "data/bpe_codes/30k/{language}.codes"
     shell:
