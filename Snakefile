@@ -11,9 +11,9 @@ CF_BPE_DATA_DIR = "data/wiki40b-txt-cf-bpe"
 PREPROCESSED_DATA_DIR = "data/data-bin-cf-bpe"
 CHECKPOINT_DIR = "data/checkpoint-cf-bpe"
 EVAL_RESULTS_DIR = "data/perps-cf"
-FASTBPE_PATH = "../fastBPE/fast"
+FASTBPE_PATH = "fastBPE/fast"
 FASTBPE_NUM_OPS = 30000
-FASTBPE_OUTPATH = "bpe_codes_cf_v2/30k"
+FASTBPE_OUTPATH = "data/bpe_codes_cf/30k"
 
 rule all:
     input:
@@ -85,13 +85,13 @@ rule make_cf_data:
         cd counterfactual
         bsub -W 02:00 -n 1 -R 'rusage[mem=4096,ngpus_excl_p=0]' \
             -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_train.out \
-            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename {PARSE_DIR}/{{wildcards.language}}.train.conllu > {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train
+            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.train.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train
         bsub -W 01:00 -n 1 -R 'rusage[mem=2048,ngpus_excl_p=0]' \
             -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_valid.out \
-            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename {PARSE_DIR}/{{wildcards.language}}.valid.conllu > {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid
+            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid
         bsub -W 01:00 -n 1 -R 'rusage[mem=2048,ngpus_excl_p=0]' \
             -o logs_cf/{{wildcards.language}}_{{wildcards.variant}}_test.out \
-            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename {PARSE_DIR}/{{wildcards.language}}.test.conllu > {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
+            python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
         """.format(CF_DATA_DIR=CF_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # train bpe on each dataset
@@ -106,10 +106,10 @@ rule train_bpe:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         cd data
-        cat {CF_DATA_DIR}/{{wildcards.language}}/*/{{wildcards.language}}.train | shuf > {{wildcards.language}}-agg.txt
+        cat {CF_DATA_DIR}/{{wildcards.language}}/*/{{wildcards.language}}.train | shuf > data/{{wildcards.language}}-agg.txt
         bsub -W 01:00 -n 1 -R "rusage[mem=2048,ngpus_excl_p=0]" \
-            -o train_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} {{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes"
+            -o data/train_bpe_{{wildcards.language}}.out \
+            {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} data/{{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes"
         """.format(CF_DATA_DIR=CF_DATA_DIR, FASTBPE_NUM_OPS=FASTBPE_NUM_OPS, FASTBPE_PATH=FASTBPE_PATH, FASTBPE_OUTPATH=FASTBPE_OUTPATH)
 
 # apply the bpe to each dataset
@@ -118,7 +118,7 @@ rule apply_bpe:
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.train",
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.valid",
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.test",
-        "data/bpe_codes/30k/{language}.codes"
+        "data/bpe_codes_cf/30k/{language}.codes"
     output:
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.train",
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.valid",
@@ -130,15 +130,15 @@ rule apply_bpe:
         module load geos libspatialindex
         mkdir -p {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         bsub -W 01:00 -n 1 -R "rusage[mem=4000,ngpus_excl_p=0]" \
-            -o apply_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train $INPUT_DIR/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+            -o data/apply_bpe_{{wildcards.language}}.out \
+            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
         bsub -W 01:00 -n 1 -R "rusage[mem=4000,ngpus_excl_p=0]" \
-            -o apply_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid $INPUT_DIR/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+            -o data/apply_bpe_{{wildcards.language}}.out \
+            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
         bsub -W 01:00 -n 1 -R "rusage[mem=4000,ngpus_excl_p=0]" \
-            -o apply_bpe_{{wildcards.language}}.out \
-            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test $INPUT_DIR/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
-        """.format(CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, FASTBPE_OUTPATH=FASTBPE_OUTPATH, FASTBPE_PATH=FASTBPE_PATH)
+            -o data/apply_bpe_{{wildcards.language}}.out \
+            {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        """.format(CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, FASTBPE_OUTPATH=FASTBPE_OUTPATH, FASTBPE_PATH=FASTBPE_PATH, CF_DATA_DIR=CF_DATA_DIR)
 
 # binarize for fairseq training
 rule prepare_fairseq_data:
