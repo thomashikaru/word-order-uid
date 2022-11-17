@@ -109,6 +109,8 @@ rule train_bpe:
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
         logfile="data/logs_thc/log_train_bpe.out"
+    log: 
+        "data/logs_thc/log_train_bpe_{language}.out"
     shell:
         """
         module load gcc/6.3.0
@@ -134,6 +136,8 @@ rule apply_bpe:
         num_cpus=1,
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
         logfile="data/logs_thc/log_apply_bpe.out"
+    log:
+        "data/logs_thc/log_apply_bpe_{language}_{variant}.out"
     shell:
         """
         module load gcc/6.3.0
@@ -160,6 +164,8 @@ rule prepare_fairseq_data:
         num_cpus=1,
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
         logfile="data/logs_thc/log_preprocess.out"
+    log:
+        "data/logs_thc/log_preprocess_{language}_{variant}.out"
     shell:
         """
         module load gcc/6.3.0
@@ -188,6 +194,8 @@ rule train_language_models:
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
         logfile="data/logs_thc/log_train.out"
+    log:
+        "data/logs_thc/log_train_{language}_{variant}.out"
     shell:
         """
         module load gcc/6.3.0
@@ -209,6 +217,8 @@ rule eval_language_models:
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
         logfile="data/logs_thc/log_eval.out"
+    log:
+        "data/logs_thc/log_eval_{language}_{variant}.out"
     shell:
         """
         module load gcc/6.3.0
