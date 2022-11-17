@@ -58,7 +58,8 @@ rule do_dependency_parsing:
         time="24:00",
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
-        logfile="data/logs_thc/log_parse.out"
+    log:
+        "data/logs_thc/log_parse_{language}_{wildcard}.out"
     shell:
         """
         module load gcc/6.3.0
@@ -83,8 +84,8 @@ rule make_cf_data:
         time="04:00",
         num_cpus=1,
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
-    params:
-        logfile="data/logs_thc/log_cf.out"
+    log:
+        "data/logs_thc/log_cf_{language}_{variant}.out"
     shell:
         """
         module load gcc/6.3.0
