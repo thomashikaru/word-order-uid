@@ -155,9 +155,9 @@ rule prepare_fairseq_data:
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.valid",
         "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.test",
     output:
-        "data/data-bin-cf-bpe/{language}/{variant}/{language}.train",
-        "data/data-bin-cf-bpe/{language}/{variant}/{language}.valid",
-        "data/data-bin-cf-bpe/{language}/{variant}/{language}.test"
+        "data/data-bin-cf-bpe/{language}/{variant}/train.bin",
+        "data/data-bin-cf-bpe/{language}/{variant}/valid.bin",
+        "data/data-bin-cf-bpe/{language}/{variant}/test.bin"
     resources:
         time="04:00",
         num_cpus=1,
@@ -183,8 +183,8 @@ rule prepare_fairseq_data:
 # train the models
 rule train_language_models:
     input:
-        "data/data-bin-cf-bpe/{language}/{variant}/{language}.train",
-        "data/data-bin-cf-bpe/{language}/{variant}/{language}.valid"
+        "data/data-bin-cf-bpe/{language}/{variant}/train.bin",
+        "data/data-bin-cf-bpe/{language}/{variant}/valid.bin",
     output:
         "data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt"
     resources:
@@ -206,7 +206,7 @@ rule train_language_models:
 rule eval_language_models:
     input:
         "data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt",
-        "data/data-bin-cf-bpe/{language}/{variant}/{language}.test"
+        "data/data-bin-cf-bpe/{language}/{variant}/test.bin"
     output:
         "data/perps-cf/{language}-{variant}.pt"
     resources:
