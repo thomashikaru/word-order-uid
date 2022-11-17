@@ -116,8 +116,8 @@ rule train_bpe:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p data/bpe_codes_cf/30k
-        cat {CF_DATA_DIR}/{{wildcards.language}}/*/{{wildcards.language}}.train | shuf > data/{{wildcards.language}}-agg.txt
-        {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} data/{{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes"
+        cat {CF_DATA_DIR}/{{wildcards.language}}/REAL_REAL/{{wildcards.language}}.train | shuf > data/{{wildcards.language}}-agg.txt
+        {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} data/{{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
         """.format(CF_DATA_DIR=CF_DATA_DIR, FASTBPE_NUM_OPS=FASTBPE_NUM_OPS, FASTBPE_PATH=FASTBPE_PATH, FASTBPE_OUTPATH=FASTBPE_OUTPATH)
 
 # apply the bpe to each dataset
