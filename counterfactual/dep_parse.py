@@ -17,15 +17,15 @@ from mosestokenizer import (
 
 # mapping from language code to preferred UDPipe model
 UDPIPE_MODEL_LOOKUP = {
-    "en": "../udpipe_models/english-lines-ud-2.5-191206.udpipe",
-    "ru": "../udpipe_models/russian-syntagrus-ud-2.5-191206.udpipe",
-    "de": "../udpipe_models/german-hdt-ud-2.5-191206.udpipe",
-    "fr": "../udpipe_models/french-partut-ud-2.5-191206.udpipe",
-    "vi": "../udpipe_models/vietnamese-vtb-ud-2.5-191206.udpipe",
-    "hi": "../udpipe_models/hindi-hdtb-ud-2.5-191206.udpipe",
-    "tr": "../udpipe_models/turkish-imst-ud-2.5-191206.udpipe",
-    "hu": "../udpipe_models/hungarian-szeged-ud-2.5-191206.udpipe",
-    "id": "../udpipe_models/indonesian-gsd-ud-2.5-191206.udpipe",
+    "en": "udpipe_models/english-lines-ud-2.5-191206.udpipe",
+    "ru": "udpipe_models/russian-syntagrus-ud-2.5-191206.udpipe",
+    "de": "udpipe_models/german-hdt-ud-2.5-191206.udpipe",
+    "fr": "udpipe_models/french-partut-ud-2.5-191206.udpipe",
+    "vi": "udpipe_models/vietnamese-vtb-ud-2.5-191206.udpipe",
+    "hi": "udpipe_models/hindi-hdtb-ud-2.5-191206.udpipe",
+    "tr": "udpipe_models/turkish-imst-ud-2.5-191206.udpipe",
+    "hu": "udpipe_models/hungarian-szeged-ud-2.5-191206.udpipe",
+    "id": "udpipe_models/indonesian-gsd-ud-2.5-191206.udpipe",
 }
 
 

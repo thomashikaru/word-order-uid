@@ -1,6 +1,6 @@
 
 languages = ["en", "tr", "hu", "fr", "de", "ru", "vi", "id"]
-variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_LOC", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "APPROX"]
+variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "APPROX", "EFFICIENT_VO", "EFFICIENT_OV"]
 parts = ["train", "test", "valid"]
 
 RAW_DATA_DIR = "data/raw_data/wiki40b-txt"
@@ -231,7 +231,8 @@ rule postprocess_eval_output:
         "data/eval_results_cf.feather"
     shell:
         """
-    
+        echo 'Not Implemented'
+        touch data/eval_results_cf.feather
         """
 
 rule make_plots:
@@ -241,5 +242,6 @@ rule make_plots:
         "data/plot1.png"
     shell:
         """
-    
+        echo 'Not Implemented'
+        touch data/plot1.png
         """

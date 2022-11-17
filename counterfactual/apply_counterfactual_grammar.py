@@ -24,6 +24,7 @@ from torch.autograd import Variable
 from corpus_iterator_funchead import CorpusIteratorFuncHead
 import json
 from iso_639 import lang_codes
+from variant_name2id import name2id
 
 # import spacy, neuralcoref
 # from spacy.tokens import Doc
@@ -575,7 +576,7 @@ if __name__ == "__main__":
     parser.add_argument("--coref_analysis", action="store_true")
     parser.add_argument(
         "--freq_dir",
-        default="../freqs",
+        default="freqs",
         help="directory containing word frequency data for a language",
     )
     parser.add_argument("--debug_dl", action="store_true")
@@ -590,6 +591,13 @@ if __name__ == "__main__":
 
     if args.freq_opt:
         assert args.model == "REAL_REAL"
+
+    # convert convenience name to numeric ID, if applicable
+    lang_code = lang_codes_inv[args.language]
+    if lang_code not in name2id.keys():
+        raise ValueError(f"Specified language is invalid: {args.language}")
+    if args.model in name2id[lang_code].keys():
+        args.model = name2id[lang_code][args.model]
 
     # load frequencies
     freqs = {}
