@@ -103,12 +103,11 @@ rule train_bpe:
     input:
         "data/wiki40b-txt-cf/{language}/REAL_REAL/{language}.train"
     output:
-        "data/bpe_codes/30k/{language}.codes"
+        "data/bpe_codes_cf/30k/{language}.codes"
     resources:
         time="01:00",
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
-        logfile="data/logs_thc/log_train_bpe.out"
     log: 
         "data/logs_thc/log_train_bpe_{language}.out"
     shell:
@@ -116,6 +115,7 @@ rule train_bpe:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
+        mkdir -p data/bpe_codes_cf/30k
         cat {CF_DATA_DIR}/{{wildcards.language}}/*/{{wildcards.language}}.train | shuf > data/{{wildcards.language}}-agg.txt
         {FASTBPE_PATH} learnbpe {FASTBPE_NUM_OPS} data/{{wildcards.language}}-agg.txt > {FASTBPE_OUTPATH}/{{wildcards.language}}.codes"
         """.format(CF_DATA_DIR=CF_DATA_DIR, FASTBPE_NUM_OPS=FASTBPE_NUM_OPS, FASTBPE_PATH=FASTBPE_PATH, FASTBPE_OUTPATH=FASTBPE_OUTPATH)
@@ -135,7 +135,6 @@ rule apply_bpe:
         time="01:00",
         num_cpus=1,
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
-        logfile="data/logs_thc/log_apply_bpe.out"
     log:
         "data/logs_thc/log_apply_bpe_{language}_{variant}.out"
     shell:
@@ -163,7 +162,6 @@ rule prepare_fairseq_data:
         time="04:00",
         num_cpus=1,
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
-        logfile="data/logs_thc/log_preprocess.out"
     log:
         "data/logs_thc/log_preprocess_{language}_{variant}.out"
     shell:
@@ -193,7 +191,6 @@ rule train_language_models:
         time="24:00",
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
-        logfile="data/logs_thc/log_train.out"
     log:
         "data/logs_thc/log_train_{language}_{variant}.out"
     shell:
@@ -216,7 +213,6 @@ rule eval_language_models:
         time="4:00",
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
-        logfile="data/logs_thc/log_eval.out"
     log:
         "data/logs_thc/log_eval_{language}_{variant}.out"
     shell:
@@ -224,6 +220,7 @@ rule eval_language_models:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
+        mkdir -p data/perps-cf
         python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
