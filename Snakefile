@@ -59,7 +59,7 @@ rule do_dependency_parsing:
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
-        "data/logs_thc/log_parse_{language}_{wildcard}.out"
+        "data/logs_thc/log_parse_{language}.out"
     shell:
         """
         module load gcc/6.3.0
