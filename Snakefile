@@ -26,7 +26,12 @@ rule get_wiki40b_data:
         expand("data/raw_data/wiki40b-txt/{language}.{part}", language=languages, part=parts)
     shell: 
         """
-    
+        perlbrew use 5.30.0-threads
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        cd data
+        python wiki_40b.py --lang_code_list {{wildcards.language}} --data_dir "tfdata" --output_prefix "raw_data/wiki40b-txt/"
         """
 
 # sample and normalize wiki datasets
@@ -40,8 +45,8 @@ rule sample_wiki40b_data:
         "data/raw_data/wiki40b-txt-sampled/{language}.valid",
         "data/raw_data/wiki40b-txt-sampled/{language}.test",
     shell: 
-        """
-    
+        f"""
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR}
         """
 
 # convert sampled datasets into CONLLU dependency parses
@@ -98,6 +103,10 @@ rule make_cf_data:
         python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid
         python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
         """.format(CF_DATA_DIR=CF_DATA_DIR, PARSE_DIR=PARSE_DIR)
+
+rule all_cf_data:
+    input:
+        expand("data/wiki40b-txt-cf/{language}/{variant}/{language}.{part}", language=languages, variant=variants, part=parts)
 
 # train bpe on each dataset
 rule train_bpe:
@@ -181,6 +190,10 @@ rule prepare_fairseq_data:
             --workers 20 
         """.format(CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR)
 
+rule all_dataset_prep:
+    input:
+        expand("data/data-bin-cf-bpe/{language}/{variant}/{part}.bin", language=languages, variant=variants, part=parts)
+
 # train the models
 rule train_language_models:
     input:
@@ -202,6 +215,10 @@ rule train_language_models:
         mkdir -p {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         bash train_model_transformer.sh {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         """.format(PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CHECKPOINT_DIR=CHECKPOINT_DIR)
+
+rule all_models_train:
+    input: 
+        expand("data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=languages, variant=variants)
 
 # evaluate the language models
 rule eval_language_models:
