@@ -63,7 +63,6 @@ rule do_dependency_parsing:
     shell:
         """
         perlbrew use 5.30.0-threads
-        perl -MConfig -E 'say "Threads supported" if $Config{{useithreads}}'
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
