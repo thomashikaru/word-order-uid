@@ -1,5 +1,5 @@
 
-languages = ["en", "tr", "hu", "fr", "de", "ru", "vi", "id"]
+languages = ["en", "tr", "hu", "fr", "de", "ru", "vi", "id", "hi", "fa"]
 variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "APPROX", "EFFICIENT_VO", "EFFICIENT_OV"]
 parts = ["train", "test", "valid"]
 
