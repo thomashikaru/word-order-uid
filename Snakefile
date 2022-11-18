@@ -65,6 +65,7 @@ rule do_dependency_parsing:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
+        perlbrew use 5.30.0-threads
         mkdir -p {PARSE_DIR}
         cd counterfactual
         python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'
