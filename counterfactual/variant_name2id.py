@@ -49,9 +49,14 @@ name2id = {
     },
     "hi": {
         "APPROX": "1987011",
-        "MIN_DL_OPT": "",
+        "MIN_DL_OPT": "1987011",
         "EFFICIENT_VO": "2868111645",
         "EFFICIENT_OV": "612057196",
     },
-    "fa": {"APPROX": "", "MIN_DL_OPT": "", "EFFICIENT_VO": "", "EFFICIENT_OV": "",},
+    "fa": {
+        "APPROX": "1219040",
+        "MIN_DL_OPT": "77914",
+        "EFFICIENT_VO": "1681609021",
+        "EFFICIENT_OV": "5136961867",
+    },
 }

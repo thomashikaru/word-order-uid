@@ -26,6 +26,7 @@ UDPIPE_MODEL_LOOKUP = {
     "tr": "udpipe_models/turkish-imst-ud-2.5-191206.udpipe",
     "hu": "udpipe_models/hungarian-szeged-ud-2.5-191206.udpipe",
     "id": "udpipe_models/indonesian-gsd-ud-2.5-191206.udpipe",
+    "fa": "udpipe_models/persian-seraji-ud-2.5-191206.udpipe",
 }
 
 
