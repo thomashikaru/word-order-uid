@@ -91,7 +91,14 @@ if __name__ == "__main__":
     # iterate over partitions
     for partition in args.partitions.split(","):
         input_path = os.path.join(args.data_dir, f"{args.lang}.{partition}")
-        output_path = os.path.join(args.parse_dir, f"{args.lang}.{partition}.conllu")
+        if args.test_run:
+            output_path = os.path.join(
+                args.parse_dir, f"{args.lang}.{partition}.tiny.conllu"
+            )
+        else:
+            output_path = os.path.join(
+                args.parse_dir, f"{args.lang}.{partition}.conllu"
+            )
 
         with open(input_path) as f_in, open(output_path, "w") as f_out:
 
