@@ -14,8 +14,10 @@ from mosestokenizer import (
     MosesTokenizer,
     MosesSentenceSplitter,
 )
-import indicnlp.tokenize
-import hazm
+from indicnlp.tokenize.sentence_tokenize import sentence_split as indic_sent_tokenize
+from indicnlp.tokenize.indic_tokenize import trivial_tokenize as indic_word_tokenize
+from hazm import sent_tokenize as persian_sent_tokenize
+from hazm import word_tokenize as persian_word_tokenize
 
 # mapping from language code to preferred UDPipe model
 UDPIPE_MODEL_LOOKUP = {
@@ -101,18 +103,13 @@ if __name__ == "__main__":
                     continue
 
                 if args.lang == "fa":
-                    sentences = hazm.sent_tokenize(document)
-                    sentences_tokenized = [hazm.word_tokenize(s) for s in sentences]
+                    sentences = persian_sent_tokenize(document)
+                    sentences_tokenized = [persian_word_tokenize(s) for s in sentences]
                 if args.lang == "hi":
                     # split sentences
-                    sentences = indicnlp.tokenize.sentence_tokenize.sentence_split(
-                        document, lang="hi"
-                    )
+                    sentences = indic_sent_tokenize(document, lang="hi")
                     # sentences_tokenized = [word_tokenize(normalize(s)) for s in sentences]
-                    sentences_tokenized = [
-                        indicnlp.tokenize.indic_tokenize.trivial_tokenize(s)
-                        for s in sentences
-                    ]
+                    sentences_tokenized = [indic_word_tokenize(s) for s in sentences]
                 else:
                     # split sentences
                     sentences = sent_tokenize([document])
