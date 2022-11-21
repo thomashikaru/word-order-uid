@@ -58,6 +58,7 @@ if __name__ == "__main__":
         default="train,test,valid",
         help="comma-seprated list of partitions",
     )
+    parser.add_argument("--test_run", action="store_true")
     args = parser.parse_args()
 
     # create output directory if it doesn't yet exist
@@ -94,6 +95,8 @@ if __name__ == "__main__":
 
         with open(input_path) as f_in, open(output_path, "w") as f_out:
 
+            doc_counter = 0
+
             # use iterator over lines in f_in to save memory
             for document in f_in:
 
@@ -129,3 +132,8 @@ if __name__ == "__main__":
                     sys.exit(1)
 
                 f_out.write(processed)
+
+                doc_counter += 1
+
+                if args.test_run and doc_counter >= 5:
+                    exit()

@@ -76,6 +76,33 @@ rule do_dependency_parsing:
         python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'
         """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
+# convert sampled datasets into CONLLU dependency parses
+rule do_dependency_parsing_test_run:
+    input:
+        "data/raw_data/wiki40b-txt-sampled/{language}.train",
+        "data/raw_data/wiki40b-txt-sampled/{language}.valid",
+        "data/raw_data/wiki40b-txt-sampled/{language}.test",
+    output:
+        "data/wiki40b-txt-parsed/{language}.train.tiny.conllu",
+        "data/wiki40b-txt-parsed/{language}.valid.tiny.conllu",
+        "data/wiki40b-txt-parsed/{language}.test.tiny.conllu",
+    resources:
+        time="24:00",
+        num_cpus=1,
+        rusage="rusage[mem=2048,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_parse_{language}_test_run.out"
+    shell:
+        """
+        perlbrew use 5.30.0-threads
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p {PARSE_DIR}
+        cd counterfactual
+        python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid' --test_run
+        """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
+
 # make counterfactual datsets for each language
 rule make_cf_data:
     input:
