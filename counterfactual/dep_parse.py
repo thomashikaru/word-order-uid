@@ -14,6 +14,8 @@ from mosestokenizer import (
     MosesTokenizer,
     MosesSentenceSplitter,
 )
+import indicnlp.tokenize
+import hazm
 
 # mapping from language code to preferred UDPipe model
 UDPIPE_MODEL_LOOKUP = {
@@ -98,9 +100,26 @@ if __name__ == "__main__":
                     sys.stderr.write("There was a blank line in the input file\n")
                     continue
 
-                # split sentences
-                sentences = sent_tokenize([document])
-                sentences_tokenized = [word_tokenize(normalize(s)) for s in sentences]
+                if args.lang == "fa":
+                    sentences = hazm.sent_tokenize(document)
+                    sentences_tokenized = [hazm.word_tokenize(s) for s in sentences]
+                if args.lang == "hi":
+                    # split sentences
+                    sentences = indicnlp.tokenize.sentence_tokenize.sentence_split(
+                        document, lang="hi"
+                    )
+                    # sentences_tokenized = [word_tokenize(normalize(s)) for s in sentences]
+                    sentences_tokenized = [
+                        indicnlp.tokenize.indic_tokenize.trivial_tokenize(s)
+                        for s in sentences
+                    ]
+                else:
+                    # split sentences
+                    sentences = sent_tokenize([document])
+                    sentences_tokenized = [
+                        word_tokenize(normalize(s)) for s in sentences
+                    ]
+
                 sentences = [" ".join(s) for s in sentences_tokenized]
                 sentences = "\n".join(sentences)
 
