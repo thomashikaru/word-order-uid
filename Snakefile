@@ -73,7 +73,7 @@ rule do_dependency_parsing:
         module load geos libspatialindex
         mkdir -p {PARSE_DIR}
         cd counterfactual
-        python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid'
+        python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid'
         """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # convert sampled datasets into CONLLU dependency parses
@@ -100,7 +100,7 @@ rule do_dependency_parsing_test_run:
         module load geos libspatialindex
         mkdir -p {PARSE_DIR}
         cd counterfactual
-        python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir {PARSE_DIR} --partitions 'train,test,valid' --test_run
+        python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid' --test_run
         """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
 # make counterfactual datsets for each language
