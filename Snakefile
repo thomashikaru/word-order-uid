@@ -103,6 +103,28 @@ rule do_dependency_parsing_test_run:
         python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid' --test_run
         """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR, PARSE_DIR=PARSE_DIR)
 
+# convert sampled datasets into CONLLU dependency parses
+rule get_unigram_freqs:
+    input:
+        "data/raw_data/wiki40b-txt-sampled/{language}.train",
+    output:
+        "counterfactual/freqs/{language}.train"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        rusage="rusage[mem=2048,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_unigram_freqs_{language}.out"
+    shell:
+        """
+        perlbrew use 5.30.0-threads
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        cd counterfactual
+        python save_unigram_freqs.py --langs {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR}
+        """.format(SAMPLED_DATA_DIR=SAMPLED_DATA_DIR)
+
 # make counterfactual datsets for each language
 rule make_cf_data:
     input:

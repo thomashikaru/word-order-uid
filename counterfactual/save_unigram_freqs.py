@@ -4,15 +4,28 @@ import argparse
 from iso_639 import lang_codes
 from glob import glob
 import os
+
 # from nltk.tokenize import word_tokenize
 from mosestokenizer import MosesTokenizer, MosesPunctuationNormalizer
+from indicnlp.tokenize.indic_tokenize import trivial_tokenize as indic_word_tokenize
+from hazm import word_tokenize as persian_word_tokenize
+
 
 def save_freqs(filename, save_dir, lang):
     d = defaultdict(int)
-    with open(filename) as f, MosesTokenizer(lang, no_escape=True) as word_tokenize, MosesPunctuationNormalizer(lang) as normalize:
+
+    if lang == "fa":
+        word_tokenize = persian_word_tokenize
+    if lang == "hi":
+        word_tokenize = indic_word_tokenize
+    else:
+        word_tokenize = MosesTokenizer(lang, no_escape=True)
+
+    with open(filename) as f:
         for line in f:
             for word in word_tokenize(line):
                 d[word] += 1
+
     df = pd.DataFrame.from_records(iter(d.items()), columns=["word", "count"])
     count_sum = df["count"].sum()
     df["freq"] = (df["count"] / count_sum).astype("float32")
@@ -28,7 +41,9 @@ if __name__ == "__main__":
         default="en,ru,fr,de,vi,id,hu,tr",
     )
     parser.add_argument(
-        "--data_dir", help="directory with language data", default="../raw_data/wiki40b"
+        "--data_dir",
+        help="directory with language data",
+        default="../data/raw_data/wiki40b-txt-sampled",
     )
     parser.add_argument(
         "--save_dir", help="directory to save freq counts", default="freqs"
