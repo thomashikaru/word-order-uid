@@ -108,7 +108,7 @@ rule get_unigram_freqs:
     input:
         "data/raw_data/wiki40b-txt-sampled/{language}.train",
     output:
-        "counterfactual/freqs/{language}.train"
+        "counterfactual/freqs/{language}.csv"
     resources:
         time="4:00",
         num_cpus=1,
