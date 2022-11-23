@@ -26,7 +26,6 @@ rule get_wiki40b_data:
         expand("data/raw_data/wiki40b-txt/{language}.{part}", language=languages, part=parts)
     shell: 
         """
-        perlbrew use 5.30.0-threads
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
@@ -60,14 +59,13 @@ rule do_dependency_parsing:
         "data/wiki40b-txt-parsed/{language}.valid.conllu",
         "data/wiki40b-txt-parsed/{language}.test.conllu",
     resources:
-        time="24:00",
+        time="36:00",
         num_cpus=1,
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_parse_{language}.out"
     shell:
         """
-        perlbrew use 5.30.0-threads
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
@@ -94,7 +92,6 @@ rule do_dependency_parsing_test_run:
         "data/logs_thc/log_parse_{language}_test_run.out"
     shell:
         """
-        perlbrew use 5.30.0-threads
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
@@ -117,7 +114,6 @@ rule get_unigram_freqs:
         "data/logs_thc/log_unigram_freqs_{language}.out"
     shell:
         """
-        perlbrew use 5.30.0-threads
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
