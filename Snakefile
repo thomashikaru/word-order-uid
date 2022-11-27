@@ -132,7 +132,7 @@ rule make_cf_data:
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.valid",
         "data/wiki40b-txt-cf/{language}/{variant}/{language}.test",
     resources:
-        time="04:00",
+        time="08:00",
         num_cpus=1,
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
     log:
