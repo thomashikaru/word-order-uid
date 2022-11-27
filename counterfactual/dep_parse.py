@@ -18,6 +18,7 @@ from indicnlp.tokenize.sentence_tokenize import sentence_split as indic_sent_tok
 from indicnlp.tokenize.indic_tokenize import trivial_tokenize as indic_word_tokenize
 from hazm import sent_tokenize as persian_sent_tokenize
 from hazm import word_tokenize as persian_word_tokenize
+from hazm import Normalizer as PersianNormalizer
 
 # mapping from language code to preferred UDPipe model
 UDPIPE_MODEL_LOOKUP = {
@@ -84,9 +85,14 @@ if __name__ == "__main__":
     err = ProcessingError()
 
     # Make sentence tokenizer
-    sent_tokenize = MosesSentenceSplitter(args.lang)
-    word_tokenize = MosesTokenizer(args.lang, no_escape=True)
-    normalize = MosesPunctuationNormalizer(args.lang)
+    if args.lang == "hi":
+        pass
+    elif args.lang == "fa":
+        persian_normalizer = PersianNormalizer()
+    else:
+        sent_tokenize = MosesSentenceSplitter(args.lang)
+        word_tokenize = MosesTokenizer(args.lang, no_escape=True)
+        normalize = MosesPunctuationNormalizer(args.lang)
 
     # iterate over partitions
     for partition in args.partitions.split(","):
@@ -113,9 +119,10 @@ if __name__ == "__main__":
                     continue
 
                 if args.lang == "fa":
+                    document = persian_normalizer.normalize(document)
                     sentences = persian_sent_tokenize(document)
                     sentences_tokenized = [persian_word_tokenize(s) for s in sentences]
-                if args.lang == "hi":
+                elif args.lang == "hi":
                     # split sentences
                     sentences = indic_sent_tokenize(document, lang="hi")
                     # sentences_tokenized = [word_tokenize(normalize(s)) for s in sentences]
