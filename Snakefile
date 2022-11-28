@@ -162,7 +162,7 @@ rule train_bpe:
     resources:
         time="01:00",
         num_cpus=1,
-        rusage="rusage[mem=4000,ngpus_excl_p=0]",
+        rusage="rusage[mem=16000,ngpus_excl_p=0]",
     log: 
         "data/logs_thc/log_train_bpe_{language}.out"
     shell:
