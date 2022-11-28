@@ -254,20 +254,14 @@ def remove_trailing(df):
     return df
 
 
-def make_csv():
+def make_csv(args):
     """Read in the evaluation data and make a giant dataframe from all of it. Save to file.
 
     Returns:
         pd.DataFrame: dataframe
     """
     dfs = []
-    files = (
-        glob.glob("eval_results_cf_v2/perps-cf-v2/*.pt")
-        + glob.glob("eval_results_cf_v3/perps-cf-v3/*.pt")
-        + glob.glob("eval_results_cf_v4/perps-cf-v4/*.pt")
-        + glob.glob("eval_results_cf_v5/perps-cf-v5/*.pt")
-        + glob.glob("eval_results_cf_v6/perps-cf-v6/*.pt")
-    )
+    files = glob.glob(args.perps_file_pattern)
 
     # read each file, get surprisal and token lists, and feed to make_df()
     for file in files:
@@ -303,7 +297,7 @@ def make_csv():
     df["variant"] = df["variant"].apply(lambda x: mapping.get(x, x))
     df.variant = df.variant.astype("category")
     df.language = df.language.astype("category")
-    df.to_feather("eval_results_cf_v6/cf_eval_data_8langs.feather")
+    df.to_feather(args.out_file)
     return df
 
 
@@ -415,6 +409,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--make_csv", action="store_true")
     parser.add_argument("--plot_dl_vs_surp", action="store_true")
+    parser.add_argument("--perps_file_pattern")
+    parser.add_argument("--out_file")
     args = parser.parse_args()
 
     if args.make_csv:

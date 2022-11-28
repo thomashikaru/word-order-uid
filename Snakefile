@@ -10,7 +10,7 @@ CF_DATA_DIR = "data/wiki40b-txt-cf"
 CF_BPE_DATA_DIR = "data/wiki40b-txt-cf-bpe"
 PREPROCESSED_DATA_DIR = "data/data-bin-cf-bpe"
 CHECKPOINT_DIR = "data/checkpoint-cf-bpe"
-EVAL_RESULTS_DIR = "data/perps-cf"
+EVAL_RESULTS_DIR = "evaluation/perps-cf"
 FASTBPE_PATH = "fastBPE/fast"
 FASTBPE_NUM_OPS = 30000
 FASTBPE_OUTPATH = "data/bpe_codes_cf/30k"
@@ -271,7 +271,7 @@ rule eval_language_models:
         "data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt",
         "data/data-bin-cf-bpe/{language}/{variant}/test.bin"
     output:
-        "data/perps-cf/{language}-{variant}.pt"
+        "evaluation/perps-cf/{language}-{variant}.pt"
     resources:
         time="4:00",
         select="select[gpu_mtotal0>=10000]",
@@ -283,19 +283,25 @@ rule eval_language_models:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
-        mkdir -p data/perps-cf
-        python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        mkdir -p {EVAL_RESULTS_DIR}
+        python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
+            {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
+            {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
+            {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
 rule postprocess_eval_output:
     input:
-        expand("data/perps-cf/{language}-{variant}.pt", language=languages, variant=variants)
+        expand("evaluation/perps-cf/{language}-{variant}.pt", language=languages, variant=variants)
     output:
-        "data/eval_results_cf.feather"
+        "eval_results_cf.feather"
     shell:
         """
-        echo 'Not Implemented'
-        touch data/eval_results_cf.feather
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        cd evaluation
+        python evaluation.py --make_csv --perps_file_pattern 'perps-cf/*.pt' --out_file 'eval_results_cf.feather'
         """
 
 rule make_plots:
