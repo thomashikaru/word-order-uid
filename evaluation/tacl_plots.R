@@ -31,12 +31,12 @@ colors_sub = c("#999999",
                "#0072B2")
 
 BASE_SIZE = 22
-DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation/eval_results_cf_v6"
+DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation"
 
 # make a point plot with facets for language, grammar variant on x-axis, and 
 # a specified variable on the y-axis (e.g. mean surprisal)
 make_point_plot <- function(csv_file, title, imgname, value, error, ncol) {
-  data <- read.csv(paste(DATA_DIR, csv_file, sep="/"))
+  data <- read.csv(paste(DATA_DIR, "plot_csv", csv_file, sep="/"))
   data[["min_ci"]] = data[[value]] - 1.96 * data[[error]]
   data[["max_ci"]] = data[[value]] + 1.96 * data[[error]]
   # data[["min_ci"]] = data[[value]] - data[[error]]
@@ -68,10 +68,10 @@ make_point_plot <- function(csv_file, title, imgname, value, error, ncol) {
     scale_color_manual(values = colors, name="Variant") +
     labs(x="", y="")
   ggsave(filename = paste(imgname, "_point.png", sep = ""), 
-         path = DATA_DIR,
+         path = paste(DATA_DIR, "plots", sep="/"),
          width=12.75, height=7.5)
   ggsave(filename = paste(imgname, "_point.svg", sep = ""), 
-         path = DATA_DIR,
+         path = paste(DATA_DIR, "plots", sep="/"),
          width=12.75, height=7.5)
   
   return(plot)
@@ -80,7 +80,7 @@ make_point_plot <- function(csv_file, title, imgname, value, error, ncol) {
 # make a bar plot with facets for language, grammar variant on x-axis, and 
 # a specified variable on the y-axis (e.g. mean surprisal)
 make_bar_plot <- function(csv_file, title, imgname, value, error) {
-  data <- read.csv(paste(DATA_DIR, csv_file, sep="/"))
+  data <- read.csv(paste(DATA_DIR, "plot_csv", csv_file, sep="/"))
   data[["min_ci"]] = data[[value]] - 1.96 * data[[error]]
   data[["max_ci"]] = data[[value]] + 1.96 * data[[error]]
   plot <- data %>%
@@ -105,10 +105,10 @@ make_bar_plot <- function(csv_file, title, imgname, value, error) {
     scale_linetype_manual(values=c("solid", "dotted")) +
     labs(x="", y="", linetype="Grammar")
   ggsave(filename = paste(imgname, "_bar.png", sep = ""),
-         path = DATA_DIR,
+         path = paste(DATA_DIR, "plots", sep="/"),
          width=12.75, height=8.5)
   ggsave(filename = paste(imgname, "_bar.svg", sep = ""),
-         path = DATA_DIR,
+         path = paste(DATA_DIR, "plots", sep="/"),
          width=12.75, height=8.5)
   
   return(plot)
@@ -126,10 +126,10 @@ ggarrange(surprisal, variance,
           legend="right", align="hv")
 
 ggsave(filename = paste("joint_surprisal_and_variance", ".png", sep = ""),
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 ggsave(filename = paste("joint_surprisal_and_variance", ".svg", sep = ""),
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 
 # joint plot for surprisal variance (dataset mean surprisal) and UID_power metric
@@ -142,10 +142,10 @@ ggarrange(mean_regress, uid_power,
           legend="right", align="hv")
 
 ggsave(filename = paste("joint_mean_regress_and_uid_power", ".png", sep = ""),
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 ggsave(filename = paste("joint_mean_regress_and_uid_power", ".svg", sep = ""),
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 
 
@@ -159,10 +159,10 @@ ggarrange(doc_initial, uid_loc,
           legend="right", align="hv")
 
 ggsave(filename = paste("joint_doc_initial_and_uid_loc", ".png", sep = ""),
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 ggsave(filename = paste("joint_doc_initial_and_uid_loc", ".svg", sep = ""),
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 
 
@@ -213,10 +213,10 @@ data %>%
   scale_color_manual(values = colors_sub) +
   labs(x="token position in sentence", y="mean surprisal")
 ggsave(filename = paste("surprisal_by_token_position.svg", sep = ""), 
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 ggsave(filename = paste("surprisal_by_token_position.png", sep = ""), 
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
 
 # TOKEN-plot: Average change in surprisal
@@ -237,9 +237,9 @@ data %>%
   theme_light(base_size = BASE_SIZE) + 
   scale_color_manual(values = colors_sub)
 ggsave(filename = paste("delta_surprisal_by_token_position.svg", sep = ""), 
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=8.5)
 ggsave(filename = paste("delta_surprisal_by_token_position.png", sep = ""), 
-       path = DATA_DIR,
+       path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=8.5)
 
