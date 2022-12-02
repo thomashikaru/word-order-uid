@@ -2,7 +2,7 @@
 languages = ["en", "tr", "hu", "fr", "de", "ru", "vi", "id", "hi", "fa"]
 languages_100m = ["en"]
 languages_cc100 = ["en"]
-variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "APPROX", "EFFICIENT_VO", "EFFICIENT_OV"]
+variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "RANDOM_4", "RANDOM_5", "APPROX", "EFFICIENT_VO", "EFFICIENT_OV"]
 parts = ["train", "test", "valid"]
 
 RAW_DATA_DIR = "data/raw_data/wiki40b-txt"
