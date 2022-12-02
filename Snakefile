@@ -554,6 +554,10 @@ rule all_models_train_wiki40b:
     input: 
         expand("data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=languages, variant=variants)
 
+rule all_models_train_wiki40b_hi_fa:
+    input: 
+        expand("data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=["hi", "fa"], variant=variants)
+
 # evaluate the language models
 rule eval_language_models:
     input:
