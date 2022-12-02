@@ -474,6 +474,10 @@ rule all_dataset_prep:
         expand("data/data-bin-cf-bpe-100m/{language}/{variant}/{part}.bin", language=languages_100m, variant=variants, part=parts),
         expand("data/data-bin-cf-bpe-cc100/{language}/{variant}/{part}.bin", language=languages_cc100, variant=variants, part=parts)
 
+rule all_dataset_prep_wiki40b:
+    input:
+        expand("data/data-bin-cf-bpe/{language}/{variant}/{part}.bin", language=languages, variant=variants, part=parts)
+
 # train the models
 rule train_language_models:
     input:
@@ -545,6 +549,10 @@ rule all_models_train:
         expand("data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=languages, variant=variants),
         expand("data/checkpoint-cf-bpe-100m/{language}/{variant}/checkpoint_best.pt", language=languages_100m, variant=variants),
         expand("data/checkpoint-cf-bpe-cc100/{language}/{variant}/checkpoint_best.pt", language=languages_cc100, variant=variants),
+
+rule all_models_train_wiki40b:
+    input: 
+        expand("data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=languages, variant=variants)
 
 # evaluate the language models
 rule eval_language_models:
