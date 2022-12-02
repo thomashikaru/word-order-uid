@@ -497,7 +497,8 @@ rule train_language_models:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
-        bash train_model_transformer.sh {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
+        cd data
+        bash train_model_transformer.sh ../{PREPROCESSED_DATA_DIR}/{{wildcards.variant}} ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         """.format(PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CHECKPOINT_DIR=CHECKPOINT_DIR)
 
 # train the models
@@ -519,7 +520,8 @@ rule train_language_models_100m:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
-        bash train_model_transformer.sh {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
+        cd data
+        bash train_model_transformer.sh ../{PREPROCESSED_DATA_DIR}/{{wildcards.variant}} ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         """.format(PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_100m, CHECKPOINT_DIR=CHECKPOINT_DIR_100m)
 
 # train the models
@@ -541,7 +543,8 @@ rule train_language_models_cc100:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
-        bash train_model_transformer.sh {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
+        cd data
+        bash train_model_transformer.sh ../{PREPROCESSED_DATA_DIR}/{{wildcards.variant}} ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         """.format(PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_cc100, CHECKPOINT_DIR=CHECKPOINT_DIR_cc100)
 
 rule all_models_train:
@@ -577,10 +580,11 @@ rule eval_language_models:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
-        python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
-            {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-            {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        cd data
+        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
+            ../{PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
+            ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
+            ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
 # evaluate the language models
@@ -602,10 +606,11 @@ rule eval_language_models_100m:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
-        python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
-            {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-            {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        cd data
+        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
+            ../{PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
+            ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
+            ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_100m, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_100m, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_100m, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_100m)
 
 # evaluate the language models
@@ -627,10 +632,11 @@ rule eval_language_models_cc100:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
-        python per_example_perp.py {CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            {PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
-            {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-            {EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        cd data
+        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
+            ../{PREPROCESSED_DATA_DIR}/{{wildcards.variant}} \
+            ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
+            ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_cc100, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_cc100, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_cc100, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_cc100)
 
 
