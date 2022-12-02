@@ -471,7 +471,7 @@ rule prepare_fairseq_data_cc100:
 rule all_dataset_prep:
     input:
         expand("data/data-bin-cf-bpe/{language}/{variant}/{part}.bin", language=languages, variant=variants, part=parts),
-        expand("data/data-bin-cf-bpe-100m/{language}/{variant}/{part}.bin", language=languages_100m, variant=variants, part=parts)
+        expand("data/data-bin-cf-bpe-100m/{language}/{variant}/{part}.bin", language=languages_100m, variant=variants, part=parts),
         expand("data/data-bin-cf-bpe-cc100/{language}/{variant}/{part}.bin", language=languages_cc100, variant=variants, part=parts)
 
 # train the models
