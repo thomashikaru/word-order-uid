@@ -590,6 +590,14 @@ rule eval_language_models:
             ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
+rule eval_language_models_all:
+    input:
+        expand("evaluation/perps-cf/{language}-{variant}.pt", language=languages, variant=variants)
+
+rule eval_language_models_hi_fa:
+    input:
+        expand("evaluation/perps-cf/{language}-{variant}.pt", language=["hi", "fa"], variant=variants)
+
 # evaluate the language models
 rule eval_language_models_100m:
     input:
@@ -615,6 +623,10 @@ rule eval_language_models_100m:
             ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
             ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_100m, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_100m, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_100m, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_100m)
+
+rule eval_language_models_100m_all:
+    input:
+        expand("evaluation/perps-cf-100m/{language}-{variant}.pt", language=languages_100m, variant=variants)
 
 # evaluate the language models
 rule eval_language_models_cc100:
@@ -642,6 +654,9 @@ rule eval_language_models_cc100:
             ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_cc100, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_cc100, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_cc100, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_cc100)
 
+rule eval_language_models_cc100_all:
+    input:
+        expand("evaluation/perps-cf-cc100/{language}-{variant}.pt", language=languages_cc100, variant=variants)
 
 rule postprocess_eval_output:
     input:
