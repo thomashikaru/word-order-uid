@@ -391,7 +391,7 @@ rule apply_bpe_cc100:
 
 rule apply_all_bpe_wiki40b:
     input:
-        expand("data/wiki40b-txt-cf-bpe/{{language}}/{{variant}}/{{language}}.{part}", language=languages, variant=variants, part=parts)
+        expand("data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.{part}", language=languages, variant=variants, part=parts)
 
 # binarize for fairseq training
 rule prepare_fairseq_data:
