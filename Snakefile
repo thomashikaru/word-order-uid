@@ -5,6 +5,7 @@ languages_cc100 = ["en"]
 variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "RANDOM_4", "RANDOM_5", "APPROX", "EFFICIENT_VO", "EFFICIENT_OV"]
 parts = ["train", "test", "valid"]
 
+BASE_PATH = "'/cluster/work/cotterell/tclark/word-order-uid"
 RAW_DATA_DIR = "data/raw_data/wiki40b-txt"
 RAW_DATA_DIR_cc100 = "data/raw_data/cc100-txt"
 SAMPLED_DATA_DIR = "data/raw_data/wiki40b-txt-sampled"
@@ -584,8 +585,8 @@ rule eval_language_models:
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
         cd data
-        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
-        """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
+        python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        """.format(BASE_DIR=BASE_DIR, CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
 rule eval_language_models_all:
     input:
@@ -615,8 +616,8 @@ rule eval_language_models_100m:
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
         cd data
-        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
-        """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_100m, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_100m, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_100m, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_100m)
+        python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        """.format(BASE_DIR=BASE_DIR, CHECKPOINT_DIR=CHECKPOINT_DIR_100m, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_100m, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_100m, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_100m)
 
 rule eval_language_models_100m_all:
     input:
@@ -642,8 +643,8 @@ rule eval_language_models_cc100:
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
         cd data
-        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
-        """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_cc100, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_cc100, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_cc100, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_cc100)
+        python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        """.format(BASE_DIR=BASE_DIR, CHECKPOINT_DIR=CHECKPOINT_DIR_cc100, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_cc100, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_cc100, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_cc100)
 
 rule eval_language_models_cc100_all:
     input:
