@@ -584,10 +584,7 @@ rule eval_language_models:
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
         cd data
-        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-            ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR)
 
 rule eval_language_models_all:
@@ -618,10 +615,7 @@ rule eval_language_models_100m:
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
         cd data
-        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-            ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_100m, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_100m, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_100m, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_100m)
 
 rule eval_language_models_100m_all:
@@ -648,10 +642,7 @@ rule eval_language_models_cc100:
         module load geos libspatialindex
         mkdir -p {EVAL_RESULTS_DIR}
         cd data
-        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
-            ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        python per_example_perp.py ../{CHECKPOINT_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}} ../{CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test ../{EVAL_RESULTS_DIR}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(CHECKPOINT_DIR=CHECKPOINT_DIR_cc100, PREPROCESSED_DATA_DIR=PREPROCESSED_DATA_DIR_cc100, CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_cc100, EVAL_RESULTS_DIR=EVAL_RESULTS_DIR_cc100)
 
 rule eval_language_models_cc100_all:
