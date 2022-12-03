@@ -389,6 +389,10 @@ rule apply_bpe_cc100:
         {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
         """.format(CF_BPE_DATA_DIR=CF_BPE_DATA_DIR_cc100, FASTBPE_OUTPATH=FASTBPE_OUTPATH, FASTBPE_PATH=FASTBPE_PATH, CF_DATA_DIR=CF_DATA_DIR_cc100)
 
+rule apply_all_bpe_wiki40b:
+    input:
+        expand("data/wiki40b-txt-cf-bpe/{{language}}/{{variant}}/{{language}}.{part}", language=languages, variant=variants, part=parts)
+
 # binarize for fairseq training
 rule prepare_fairseq_data:
     input:
