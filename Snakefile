@@ -287,6 +287,10 @@ rule make_cf_data_cc100:
         python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
         """.format(CF_DATA_DIR=CF_DATA_DIR_cc100, PARSE_DIR=PARSE_DIR_cc100)
 
+rule all_cf_data_wiki40b_20m:
+    input:
+        expand("data/wiki40b-txt-cf/{language}/{variant}/{language}.{part}", language=languages, variant=variants, part=parts),
+
 rule all_cf_data:
     input:
         expand("data/wiki40b-txt-cf/{language}/{variant}/{language}.{part}", language=languages, variant=variants, part=parts),
@@ -569,6 +573,7 @@ rule all_models_train_wiki40b_hi_fa:
 rule eval_language_models:
     input:
         "data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt",
+        "data/wiki40b-txt-cf-bpe/{language}/{variant}/{language}.test",
         "data/data-bin-cf-bpe/{language}/{variant}/test.bin"
     output:
         "evaluation/perps-cf/{language}-{variant}.pt"
@@ -600,6 +605,7 @@ rule eval_language_models_hi_fa:
 rule eval_language_models_100m:
     input:
         "data/checkpoint-cf-bpe-100m/{language}/{variant}/checkpoint_best.pt",
+        "data/wiki40b-txt-cf-bpe-100m/{language}/{variant}/{language}.test",
         "data/data-bin-cf-bpe-100m/{language}/{variant}/test.bin"
     output:
         "evaluation/perps-cf-100m/{language}-{variant}.pt"
@@ -627,6 +633,7 @@ rule eval_language_models_100m_all:
 rule eval_language_models_cc100:
     input:
         "data/checkpoint-cf-bpe-cc100/{language}/{variant}/checkpoint_best.pt",
+        "data/cc100-txt-cf-bpe/{language}/{variant}/{language}.test",
         "data/data-bin-cf-bpe-cc100/{language}/{variant}/test.bin"
     output:
         "evaluation/perps-cf-cc100/{language}-{variant}.pt"
