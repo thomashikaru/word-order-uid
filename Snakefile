@@ -5,7 +5,7 @@ languages_cc100 = ["en"]
 variants = ["REAL_REAL", "REVERSE", "SORT_FREQ", "SORT_FREQ_REV", "MIN_DL_PROJ", "MIN_DL_OPT", "RANDOM_1", "RANDOM_2", "RANDOM_3", "RANDOM_4", "RANDOM_5", "APPROX", "EFFICIENT_VO", "EFFICIENT_OV"]
 parts = ["train", "test", "valid"]
 
-BASE_PATH = "'/cluster/work/cotterell/tclark/word-order-uid"
+BASE_DIR = "/cluster/work/cotterell/tclark/word-order-uid"
 RAW_DATA_DIR = "data/raw_data/wiki40b-txt"
 RAW_DATA_DIR_cc100 = "data/raw_data/cc100-txt"
 SAMPLED_DATA_DIR = "data/raw_data/wiki40b-txt-sampled"
