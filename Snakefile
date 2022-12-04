@@ -426,6 +426,7 @@ rule prepare_fairseq_data:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
+        rm -r {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         mkdir -p {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         fairseq-preprocess \
             --only-source \
@@ -455,6 +456,7 @@ rule prepare_fairseq_data_100m:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
+        rm -r {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         mkdir -p {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         fairseq-preprocess \
             --only-source \
@@ -484,6 +486,7 @@ rule prepare_fairseq_data_cc100:
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
+        rm -r {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         mkdir -p {PREPROCESSED_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
         fairseq-preprocess \
             --only-source \
