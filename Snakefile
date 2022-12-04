@@ -61,6 +61,7 @@ rule sample_wiki40b_data:
     resources:
         time="12:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_sample_{language}_100m.out"
@@ -78,6 +79,7 @@ rule sample_wiki40b_data_100m:
     resources:
         time="12:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_sample_{language}_100m.out"
@@ -95,6 +97,7 @@ rule sample_cc100:
     resources:
         time="12:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_sample_{language}_cc100.out"
@@ -112,6 +115,7 @@ rule do_dependency_parsing:
     resources:
         time="36:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_parse_{language}.out"
@@ -134,6 +138,7 @@ rule do_dependency_parsing_100m:
     resources:
         time="36:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_parse_{language}_100m.out"
@@ -156,6 +161,7 @@ rule do_dependency_parsing_cc100:
     resources:
         time="36:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_parse_{language}_cc100.out"
@@ -178,6 +184,7 @@ rule do_dependency_parsing_test_run:
     resources:
         time="24:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_parse_{language}_test_run.out"
@@ -200,6 +207,7 @@ rule get_unigram_freqs:
     resources:
         time="4:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_unigram_freqs_{language}.out"
@@ -222,6 +230,7 @@ rule make_cf_data:
     resources:
         time="08:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_cf_{language}_{variant}.out"
@@ -247,6 +256,7 @@ rule make_cf_data_100m:
     resources:
         time="24:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_cf_{language}_{variant}_100m.out"
@@ -272,6 +282,7 @@ rule make_cf_data_cc100:
     resources:
         time="24:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_cf_{language}_{variant}_cc100.out"
@@ -306,6 +317,7 @@ rule train_bpe:
     resources:
         time="01:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=16000,ngpus_excl_p=0]",
     log: 
         "data/logs_thc/log_train_bpe_{language}.out"
@@ -329,6 +341,7 @@ rule apply_bpe:
     resources:
         time="01:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_apply_bpe_{language}_{variant}.out"
@@ -352,6 +365,7 @@ rule apply_bpe_100m:
     resources:
         time="04:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_apply_bpe_{language}_{variant}_100m.out"
@@ -375,6 +389,7 @@ rule apply_bpe_cc100:
     resources:
         time="04:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_apply_bpe_{language}_{variant}_cc100.out"
@@ -402,6 +417,7 @@ rule prepare_fairseq_data:
     resources:
         time="04:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_preprocess_{language}_{variant}.out"
@@ -430,6 +446,7 @@ rule prepare_fairseq_data_100m:
     resources:
         time="12:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_preprocess_{language}_{variant}_100m.out"
@@ -458,6 +475,7 @@ rule prepare_fairseq_data_cc100:
     resources:
         time="12:00",
         num_cpus=1,
+        select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_preprocess_{language}_{variant}_cc100.out"
@@ -496,6 +514,7 @@ rule train_language_models:
         "data/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt"
     resources:
         time="24:00",
+        num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
@@ -520,6 +539,7 @@ rule train_language_models_100m:
         "data/checkpoint-cf-bpe-100m/{language}/{variant}/checkpoint_best.pt"
     resources:
         time="96:00",
+        num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
@@ -544,6 +564,7 @@ rule train_language_models_cc100:
         "data/checkpoint-cf-bpe-cc100/{language}/{variant}/checkpoint_best.pt"
     resources:
         time="96:00",
+        num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
@@ -583,6 +604,7 @@ rule eval_language_models:
         "evaluation/perps-cf/{language}-{variant}.pt"
     resources:
         time="4:00",
+        num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
@@ -615,6 +637,7 @@ rule eval_language_models_100m:
         "evaluation/perps-cf-100m/{language}-{variant}.pt"
     resources:
         time="4:00",
+        num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
@@ -643,6 +666,7 @@ rule eval_language_models_cc100:
         "evaluation/perps-cf-cc100/{language}-{variant}.pt"
     resources:
         time="4:00",
+        num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
@@ -666,6 +690,11 @@ rule postprocess_eval_output:
         expand("evaluation/perps-cf/{language}-{variant}.pt", language=languages, variant=variants)
     output:
         "evaluation/eval_results_cf.feather"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
     shell:
         """
         module load gcc/6.3.0
@@ -680,6 +709,11 @@ rule postprocess_eval_output_100m:
         expand("evaluation/perps-cf-100m/{language}-{variant}.pt", language=languages_100m, variant=variants)
     output:
         "evaluation/eval_results_cf_100m.feather"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
     shell:
         """
         module load gcc/6.3.0
@@ -694,6 +728,11 @@ rule postprocess_eval_output_cc100:
         expand("evaluation/perps-cf-cc100/{language}-{variant}.pt", language=languages_cc100, variant=variants)
     output:
         "evaluation/eval_results_cf_cc100.feather"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
     shell:
         """
         module load gcc/6.3.0
@@ -717,12 +756,30 @@ rule make_plotting_inputs:
         "evaluation/plot_csv/avg_surps_plot_vals.csv",
         "evaluation/plot_csv/delta_surps_by_tok.csv",
         "evaluation/plot_csv/max_surps_plot_vals.csv",
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
     shell:
         """
         cd evaluation
         mkdir -p plot_csv
         python make_plotting_input.py --inputfile eval_results_cf.feather --data_dir plot_csv
         """
+
+rule wiki40b_make_plotting_inputs:
+    input:
+        "evaluation/plot_csv/surprisal_plot_vals.csv",
+        "evaluation/plot_csv/surprisal_variance_plot_vals.csv",
+        "evaluation/plot_csv/doc_initial_var.csv",
+        "evaluation/plot_csv/surprisal_deviations_plot_vals.csv",
+        "evaluation/plot_csv/delta_surps_plot_vals.csv",
+        "evaluation/plot_csv/infs_1.1_plot_vals.csv",
+        "evaluation/plot_csv/infs_plot_vals.csv",
+        "evaluation/plot_csv/avg_surps_plot_vals.csv",
+        "evaluation/plot_csv/delta_surps_by_tok.csv",
+        "evaluation/plot_csv/max_surps_plot_vals.csv",
 
 rule make_plotting_inputs_100m:
     input:
@@ -738,6 +795,11 @@ rule make_plotting_inputs_100m:
         "evaluation/plot_csv_100m/avg_surps_plot_vals.csv",
         "evaluation/plot_csv_100m/delta_surps_by_tok.csv",
         "evaluation/plot_csv_100m/max_surps_plot_vals.csv",
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
     shell:
         """
         cd evaluation
@@ -759,6 +821,11 @@ rule make_plotting_inputs_cc100:
         "evaluation/plot_csv_cc100/avg_surps_plot_vals.csv",
         "evaluation/plot_csv_cc100/delta_surps_by_tok.csv",
         "evaluation/plot_csv_cc100/max_surps_plot_vals.csv",
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
     shell:
         """
         cd evaluation
