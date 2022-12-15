@@ -8,7 +8,8 @@
 
 import pandas as pd
 import numpy as np
-import plotly.express as px
+
+# import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
 import itertools
@@ -18,50 +19,80 @@ import torch
 import re
 from scipy.stats import zscore
 import argparse
+from variant_name2id import name2id
 
 # mapping from numerical grammar IDs (see grammars in counterfactual/grammars)
 # to human-readable descriptors
-mapping = {
-    "1654461679": "Efficient-OV",
-    "9864186953": "Efficient-OV",
-    "4910096554": "Efficient-OV",
-    "7233494255": "Efficient-OV",
-    "1804798267": "Efficient-OV",
-    "1035393965": "Efficient-OV",
-    "5786187046": "Efficient-OV",
-    "3375856929": "Efficient-OV",
-    "5457228368": "Efficient-VO",
-    "1171173532": "Efficient-VO",
-    "6448967977": "Efficient-VO",
-    "3150957569": "Efficient-VO",
-    "6912153951": "Efficient-VO",
-    "8151228474": "Efficient-VO",
-    "9615205925": "Efficient-VO",
-    "4418369424": "Efficient-VO",
-    "1935936": "Approx",
-    "1988915": "Approx",
-    "7520227": "Approx",
-    "6522123": "Approx",
-    "9269015": "Approx",
-    "5754928": "Approx",
-    "1920622": "Approx",
-    "3564332": "Approx",
-    "8850185": "Min-DL-Opt",
-    "514370": "Min-DL-Opt",
-    "5940573": "Min-DL-Opt",
-    "2103598": "Min-DL-Opt",
-    "2684503": "Min-DL-Opt",
-    "1355012": "Min-DL-Opt",
-    "5333556": "Min-DL-Opt",
-    "6786312": "Min-DL-Opt",
-    "REAL_REAL": "Real",
-    "RANDOM-1": "Random-1",
-    "RANDOM-2": "Random-2",
-    "SORT_FREQ": "Sort-Freq",
-    "SORT_FREQ_REV": "Sort-Freq-Rev",
-    "REVERSE": "Reverse",
-    "MIN_DL_PROJ": "Min-DL-Loc",
+# mapping = {
+#     "1654461679": "Efficient-OV",
+#     "9864186953": "Efficient-OV",
+#     "4910096554": "Efficient-OV",
+#     "7233494255": "Efficient-OV",
+#     "1804798267": "Efficient-OV",
+#     "1035393965": "Efficient-OV",
+#     "5786187046": "Efficient-OV",
+#     "3375856929": "Efficient-OV",
+#     "5457228368": "Efficient-VO",
+#     "1171173532": "Efficient-VO",
+#     "6448967977": "Efficient-VO",
+#     "3150957569": "Efficient-VO",
+#     "6912153951": "Efficient-VO",
+#     "8151228474": "Efficient-VO",
+#     "9615205925": "Efficient-VO",
+#     "4418369424": "Efficient-VO",
+#     "1935936": "Approx",
+#     "1988915": "Approx",
+#     "7520227": "Approx",
+#     "6522123": "Approx",
+#     "9269015": "Approx",
+#     "5754928": "Approx",
+#     "1920622": "Approx",
+#     "3564332": "Approx",
+#     "8850185": "Min-DL-Opt",
+#     "514370": "Min-DL-Opt",
+#     "5940573": "Min-DL-Opt",
+#     "2103598": "Min-DL-Opt",
+#     "2684503": "Min-DL-Opt",
+#     "1355012": "Min-DL-Opt",
+#     "5333556": "Min-DL-Opt",
+#     "6786312": "Min-DL-Opt",
+#     "REAL_REAL": "Real",
+#     "RANDOM-1": "Random-1",
+#     "RANDOM-2": "Random-2",
+#     "SORT_FREQ": "Sort-Freq",
+#     "SORT_FREQ_REV": "Sort-Freq-Rev",
+#     "REVERSE": "Reverse",
+#     "MIN_DL_PROJ": "Min-DL-Loc",
+# }
+
+conversion = {
+    "APPROX": "Approx",
+    "MIN_DL_OPT": "Min-DL-Opt",
+    "EFFICIENT_VO": "Efficient-VO",
+    "EFFICIENT_OV": "Efficient-OV",
 }
+
+mapping = {}
+
+for lang, dic in name2id.items():
+    for variant, id in dic.items():
+        assert variant in conversion
+        mapping[id] = conversion[variant]
+
+mapping = mapping.update(
+    {
+        "REAL_REAL": "Real",
+        "RANDOM-1": "Random-1",
+        "RANDOM-2": "Random-2",
+        "RANDOM-3": "Random-3",
+        "RANDOM-4": "Random-4",
+        "RANDOM-5": "Random-5",
+        "SORT_FREQ": "Sort-Freq",
+        "SORT_FREQ_REV": "Sort-Freq-Rev",
+        "REVERSE": "Reverse",
+        "MIN_DL_PROJ": "Min-DL-Loc",
+    }
+)
 
 
 def aggregate_bpe(a, b):
@@ -301,107 +332,107 @@ def make_csv(args):
     return df
 
 
-def plot_dl_vs_surp():
-    """This is part of a secondary analysis that was not included in the paper.
-    Briefly, it looks at the relationship between average dependency length and
-    surprisal, but only does this for some languages currently. 
-    """
-    files = glob.glob("../counterfactual/dep-len/*-test.txt")
-    d = []
-    for file in files:
+# def plot_dl_vs_surp():
+#     """This is part of a secondary analysis that was not included in the paper.
+#     Briefly, it looks at the relationship between average dependency length and
+#     surprisal, but only does this for some languages currently.
+#     """
+#     files = glob.glob("../counterfactual/dep-len/*-test.txt")
+#     d = []
+#     for file in files:
 
-        basename = file.split("/")[-1].split(".")[0]
-        pieces = basename.split("-")
-        lang = pieces[0]
-        model = "-".join(pieces[1:-1])
-        part = pieces[-1]
+#         basename = file.split("/")[-1].split(".")[0]
+#         pieces = basename.split("-")
+#         lang = pieces[0]
+#         model = "-".join(pieces[1:-1])
+#         part = pieces[-1]
 
-        with open(file) as f:
-            data = f.readlines()[-1]
-            dl = float(data.split(": ")[-1])
+#         with open(file) as f:
+#             data = f.readlines()[-1]
+#             dl = float(data.split(": ")[-1])
 
-            d.append({"lang": lang, "model": model, "part": part, "dl": dl})
+#             d.append({"lang": lang, "model": model, "part": part, "dl": dl})
 
-    df = pd.DataFrame(d)
+#     df = pd.DataFrame(d)
 
-    df = df[df.part == "test"]
+#     df = df[df.part == "test"]
 
-    df["model"] = df["model"].replace(mapping)
-    df["dataset"] = df["lang"] + "-" + df["model"]
+#     df["model"] = df["model"].replace(mapping)
+#     df["dataset"] = df["lang"] + "-" + df["model"]
 
-    df.to_csv("dep-len-by-dataset.csv", index=False)
+#     df.to_csv("dep-len-by-dataset.csv", index=False)
 
-    order = [
-        "RANDOM-1",
-        "RANDOM-2",
-        "OV",
-        "VO",
-        "REVERSE",
-        "Approx",
-        "REAL",
-        "MIN_DL_PROJ",
-        "MIN_DL_OPT",
-        "SORT_FREQ",
-    ]
+#     order = [
+#         "RANDOM-1",
+#         "RANDOM-2",
+#         "OV",
+#         "VO",
+#         "REVERSE",
+#         "Approx",
+#         "REAL",
+#         "MIN_DL_PROJ",
+#         "MIN_DL_OPT",
+#         "SORT_FREQ",
+#     ]
 
-    colors = [
-        "khaki",
-        "gold",
-        "greenyellow",
-        "lightgreen",
-        "red",
-        "deepskyblue",
-        "royalblue",
-        "darkorchid",
-        "mediumorchid",
-        "plum",
-    ]
+#     colors = [
+#         "khaki",
+#         "gold",
+#         "greenyellow",
+#         "lightgreen",
+#         "red",
+#         "deepskyblue",
+#         "royalblue",
+#         "darkorchid",
+#         "mediumorchid",
+#         "plum",
+#     ]
 
-    pal = dict(zip(order, colors))
+#     pal = dict(zip(order, colors))
 
-    g = sns.catplot(
-        data=df,
-        x="model",
-        y="dl",
-        hue="model",
-        col="lang",
-        col_wrap=4,
-        kind="bar",
-        order=order,
-        hue_order=order,
-        palette=pal,
-        dodge=False,
-    )
-    g.set_xticklabels(rotation=90)
-    g.add_legend(fontsize=16, loc="upper right")
-    plt.savefig("dep-lens-by-dataset", dpi=150, bbox_inches="tight")
+#     g = sns.catplot(
+#         data=df,
+#         x="model",
+#         y="dl",
+#         hue="model",
+#         col="lang",
+#         col_wrap=4,
+#         kind="bar",
+#         order=order,
+#         hue_order=order,
+#         palette=pal,
+#         dodge=False,
+#     )
+#     g.set_xticklabels(rotation=90)
+#     g.add_legend(fontsize=16, loc="upper right")
+#     plt.savefig("dep-lens-by-dataset", dpi=150, bbox_inches="tight")
 
-    surps = pd.read_csv("eval_results_cf_v4/cf_eval_data_8langs.csv")
-    surps = (
-        surps.groupby(["language", "variant"]).agg({"surprisal": np.mean}).reset_index()
-    )
-    surps["dataset"] = surps["language"] + "-" + surps["variant"]
-    surps["dl"] = surps["dataset"].replace(dict(zip(df.dataset, df.dl)))
-    surps["surp_z"] = surps["surprisal"].groupby(surps["language"]).transform(zscore)
-    surps["dl_z"] = surps["dl"].groupby(surps["language"]).transform(zscore)
+#     surps = pd.read_csv("eval_results_cf_v4/cf_eval_data_8langs.csv")
+#     surps = (
+#         surps.groupby(["language", "variant"]).agg({"surprisal": np.mean}).reset_index()
+#     )
+#     surps["dataset"] = surps["language"] + "-" + surps["variant"]
+#     surps["dl"] = surps["dataset"].replace(dict(zip(df.dataset, df.dl)))
+#     surps["surp_z"] = surps["surprisal"].groupby(surps["language"]).transform(zscore)
+#     surps["dl_z"] = surps["dl"].groupby(surps["language"]).transform(zscore)
 
-    surps.to_csv("dl_v_surp_v4.csv", index=False)
+#     surps.to_csv("dl_v_surp_v4.csv", index=False)
 
-    fig, axes = plt.subplots(figsize=(16, 8))
-    sns.regplot(data=surps, x="dl_z", y="surp_z")
-    plt.savefig("surpz-vs-dlz-reg", dpi=150, bbox_inches="tight")
+#     fig, axes = plt.subplots(figsize=(16, 8))
+#     sns.regplot(data=surps, x="dl_z", y="surp_z")
+#     plt.savefig("surpz-vs-dlz-reg", dpi=150, bbox_inches="tight")
 
-    px.defaults.width = 800
-    px.defaults.height = 600
-    p = px.scatter(
-        surps,
-        x="dl_z",
-        y="surp_z",
-        hover_data=["dataset"],
-        color="language",
-        trendline="ols",
-    )
-    p.write_image("surpz-vs-dlz.png")
+#     px.defaults.width = 800
+#     px.defaults.height = 600
+#     p = px.scatter(
+#         surps,
+#         x="dl_z",
+#         y="surp_z",
+#         hover_data=["dataset"],
+#         color="language",
+#         trendline="ols",
+#     )
+#     p.write_image("surpz-vs-dlz.png")
 
 
 if __name__ == "__main__":
@@ -417,7 +448,8 @@ if __name__ == "__main__":
         df = make_csv()
 
     if args.plot_dl_vs_surp:
-        sns.set_style("dark")
-        sns.set(font_scale=2)
-        plot_dl_vs_surp()
+        print("this option has been deprecated")
+    #     sns.set_style("dark")
+    #     sns.set(font_scale=2)
+    #     plot_dl_vs_surp()
 
