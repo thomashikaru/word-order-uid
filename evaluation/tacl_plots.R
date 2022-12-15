@@ -10,7 +10,7 @@ pseudo_grams = c("Real", "Reverse", "Sort-Freq", "Sort-Freq-Rev", "Min-DL-Loc")
 
 # order for showing variants and their corresponding colors
 positions <- c("Real", "Reverse", "Sort-Freq", "Sort-Freq-Rev", "Approx", "Min-DL-Loc", 
-               "Min-DL-Opt", "Efficient-OV", "Efficient-VO", "Random-1", "Random-2")
+               "Min-DL-Opt", "Efficient-OV", "Efficient-VO", "Random-1", "Random-2", "Random-3", "Random-4", "Random-5")
 colors = c("#999999",
            "#D55E00",
            "#56B4E9", 
@@ -20,7 +20,10 @@ colors = c("#999999",
            "#66CC99",
            "#CC79A7", 
            "#9999CC",
-           "#F0E442",
+           "gold",
+           "gold",
+           "gold", 
+           "gold", 
            "gold")
 
 # subset of positions and corresponding colors

@@ -773,7 +773,7 @@ rule make_plotting_inputs:
         """
         cd evaluation
         mkdir -p plot_csv
-        python make_plotting_input.py --inputfile eval_results_cf.feather --data_dir plot_csv
+        python make_plotting_inputs.py --inputfile eval_results_cf.feather --data_dir plot_csv
         """
 
 rule wiki40b_make_plotting_inputs:
