@@ -897,7 +897,7 @@ rule measure_dl:
         mkdir -p data/wiki40b-txt-cf-deplens/{{wildcards.language}}/{{wildcards.variant}}
         cd counterfactual
         python apply_counterfactual_grammar.py --output_dl_only --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../data/wiki40b-txt-cf-deplens/{{wildcards.language}}/{{wildcards.variant}}/testset_deplens.txt
-        """
+        """.format(PARSE_DIR=PARSE_DIR)
 
 rule measure_dl_wiki40b:
     input:
