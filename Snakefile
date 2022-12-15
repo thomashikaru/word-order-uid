@@ -898,3 +898,7 @@ rule measure_dl:
         cd counterfactual
         python apply_counterfactual_grammar.py --output_dl_only --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../data/wiki40b-txt-cf-deplens/{{wildcards.language}}/{{wildcards.variant}}/testset_deplens.txt
         """
+
+rule measure_dl_wiki40b:
+    input:
+        expand("data/wiki40b-txt-cf-deplens/{language}/{variant}/testset_deplens.txt", language=languages, variant=variants)
