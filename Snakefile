@@ -871,3 +871,29 @@ rule make_plots:
         mkdir -p plots
         Rscript tacl_plots.R
         """
+
+
+
+### Measuring Dependency Length
+
+rule measure_dl:
+    input:
+        expand("data/wiki40b-txt-parsed/{{language}}.test.conllu"),
+        "counterfactual/freqs/{language}.csv"
+    output:
+        expand("data/wiki40b-txt-cf-deplens/{{language}}/{{variant}}/testset_deplens.txt")
+    resources:
+        time="04:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=4096,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_measure_dl_{language}_{variant}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p data/wiki40b-txt-cf-deplens/{{wildcards.language}}/{{wildcards.variant}}
+        cd counterfactual
+        python apply_counterfactual_grammar.py --output_dl_only --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu > ../data/wiki40b-txt-cf-deplens/{{wildcards.language}}/{{wildcards.variant}}/testset_deplens.txt

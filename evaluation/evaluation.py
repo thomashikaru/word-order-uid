@@ -445,7 +445,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.make_csv:
-        df = make_csv()
+        df = make_csv(args)
 
     if args.plot_dl_vs_surp:
         print("this option has been deprecated")
