@@ -698,6 +698,8 @@ rule postprocess_eval_output:
         num_cpus=1,
         select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_postprocess_eval_output.out"
     shell:
         """
         module load gcc/6.3.0
@@ -745,6 +747,7 @@ rule postprocess_eval_output_cc100:
         python evaluation.py --make_csv --perps_file_pattern 'perps-cf-cc100/*.pt' --out_file 'eval_results_cf_cc100.feather'
         """
 
+
 rule make_plotting_inputs:
     input:
         "evaluation/eval_results_cf.feather"
@@ -764,6 +767,8 @@ rule make_plotting_inputs:
         num_cpus=1,
         select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_make_plotting_inputs.out"
     shell:
         """
         cd evaluation
