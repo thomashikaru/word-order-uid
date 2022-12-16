@@ -79,7 +79,7 @@ for lang, dic in name2id.items():
         assert variant in conversion
         mapping[id] = conversion[variant]
 
-mapping = mapping.update(
+mapping.update(
     {
         "REAL_REAL": "Real",
         "RANDOM-1": "Random-1",
