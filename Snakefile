@@ -766,7 +766,7 @@ rule make_plotting_inputs:
         time="4:00",
         num_cpus=1,
         select="",
-        rusage="rusage[mem=32000,ngpus_excl_p=0]",
+        rusage="rusage[mem=16000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_make_plotting_inputs.out"
     shell:
@@ -902,3 +902,197 @@ rule measure_dl:
 rule measure_dl_wiki40b:
     input:
         expand("data/wiki40b-txt-cf-deplens/{language}/{variant}/testset_deplens.txt", language=languages, variant=variants)
+
+
+
+### making datasets of different sizes
+
+# sample wiki40b datasets
+rule sample_wiki40b_data_diff_sizes:
+    input:
+        expand("data/raw_data/wiki40b-txt/{{language}}.{part}", part=parts)
+    output:
+        expand("data/raw_data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
+    resources:
+        time="12:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=4000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_sample_{language}_{num_toks}.out"
+    shell: 
+        f"""
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR_100m} --num_train_tokens {{wildcards.num_toks}}
+        """
+
+rule do_dependency_parsing_diff_sizes:
+    input:
+        expand("data/raw_data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
+    output:
+        expand("data/wiki40b-txt-parsed-diff-sizes/{{num_toks}}/{{language}}.{part}.conllu", part=parts)
+    resources:
+        time="24:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=2048,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_parse_{language}_{num_toks}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p {PARSE_DIR}
+        cd counterfactual
+        python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid'
+        """.format(SAMPLED_DATA_DIR="raw_data/wiki40b-txt-sampled-diff-sizes", PARSE_DIR="wiki40b-txt-parsed-diff-sizes")
+
+# make counterfactual datsets for each language
+rule make_cf_data_diff_sizes:
+    input:
+        expand("data/wiki40b-txt-parsed-diff-sizes/{{num_toks}}/{{language}}.{part}.conllu", part=parts),
+        "counterfactual/freqs/{language}.csv"
+    output:
+        expand("data/wiki40b-txt-cf-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{{language}}.{part}", part=parts)
+    resources:
+        time="08:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=4096,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_cf_{language}_{variant}_{num_toks}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p {CF_DATA_DIR}/{{wildcards.language}}/{{wildcards.variant}}
+        cd counterfactual
+        python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}.train.conllu > ../{CF_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train
+        python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}.valid.conllu > ../{CF_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid
+        python apply_counterfactual_grammar.py --language {{wildcards.language}} --model {{wildcards.variant}} --filename ../{PARSE_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}.test.conllu > ../{CF_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test
+        """.format(CF_DATA_DIR="data/wiki40b-txt-cf-diff-sizes", PARSE_DIR="data/wiki40b-txt-parsed-diff-sizes")
+
+rule apply_bpe_diff_sizes:
+    input:
+        expand("data/wiki40b-txt-cf-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{{language}}.{part}", part=parts),
+        "data/bpe_codes_cf/30k/{language}.codes"
+    output:
+        expand("data/wiki40b-txt-cf-bpe-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{{language}}.{part}", part=parts),
+    resources:
+        time="01:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=4000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_apply_bpe_{language}_{variant}_{num_toks}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+        {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {CF_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {CF_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        {FASTBPE_PATH} applybpe {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {CF_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {FASTBPE_OUTPATH}/{{wildcards.language}}.codes
+        """.format(CF_BPE_DATA_DIR="data/wiki40b-txt-cf-bpe-diff-sizes", FASTBPE_OUTPATH=FASTBPE_OUTPATH, FASTBPE_PATH=FASTBPE_PATH, CF_DATA_DIR="data/wiki40b-txt-cf-diff-sizes")
+
+# binarize for fairseq training
+rule prepare_fairseq_data_diff_sizes:
+    input:
+        expand("data/wiki40b-txt-cf-bpe-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{{language}}.{part}", part=parts),
+    output:
+        expand("data/data-bin-cf-bpe-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{part}.bin", part=parts),
+    resources:
+        time="04:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_preprocess_{language}_{variant}_{num_toks}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        rm -r {PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+        mkdir -p {PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+        fairseq-preprocess \
+            --only-source \
+            --trainpref {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.train \
+            --validpref {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.valid \
+            --testpref {CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test \
+            --destdir {PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} \
+            --bpe fastbpe \
+            --workers 20 
+        """.format(CF_BPE_DATA_DIR="data/wiki40b-txt-cf-bpe-diff-sizes", PREPROCESSED_DATA_DIR="data/data-bin-cf-bpe-diff-sizes")
+
+# train the models
+rule train_language_models_diff_sizes:
+    input:
+        "data/data-bin-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/train.bin",
+        "data/data-bin-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/valid.bin",
+    output:
+        "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/checkpoint_best.pt"
+    resources:
+        time="24:00",
+        num_cpus=1,
+        select="select[gpu_mtotal0>=10000]",
+        rusage="rusage[mem=30000,ngpus_excl_p=1]",
+    log:
+        "data/logs_thc/log_train_{language}_{variant}_{num_toks}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p {CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+        cd data
+        bash train_model_transformer.sh ../{PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} \
+            ../{CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+        """.format(PREPROCESSED_DATA_DIR="data/data-bin-cf-bpe-diff-sizes", CHECKPOINT_DIR="data/checkpoint-cf-bpe-diff-sizes")
+
+rule eval_language_models_diff_sizes:
+    input:
+        "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/checkpoint_best.pt",
+        "data/wiki40b-txt-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/{language}.test",
+        "data/data-bin-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/test.bin"
+    output:
+        "evaluation/perps-cf-diff-sizes/{num_toks}/{language}-{variant}.pt"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="select[gpu_mtotal0>=10000]",
+        rusage="rusage[mem=30000,ngpus_excl_p=1]",
+    log:
+        "data/logs_thc/log_eval_{language}_{variant}_{num_toks}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p {EVAL_RESULTS_DIR}/{{wildcards.num_toks}}
+        cd data
+        python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        """.format(BASE_DIR=BASE_DIR, CHECKPOINT_DIR="data/checkpoint-cf-bpe-diff-sizes", PREPROCESSED_DATA_DIR="data/data-bin-cf-bpe-diff-sizes", CF_BPE_DATA_DIR="data/wiki40b-txt-cf-bpe-diff-sizes", EVAL_RESULTS_DIR="evaluation/perps-cf-diff-sizes")
+
+rule postprocess_eval_output_diff_sizes:
+    input:
+        expand("evaluation/perps-cf-diff-sizes/{num_toks}/{language}-{variant}.pt", language=["en", "ru", "hu", "tr", "hi"], variant=variants, num_toks=[2222222, 6666666])
+    output:
+        "evaluation/eval_results_cf_diff_sizes.feather"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=32000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_postprocess_eval_output_diff_sizes.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        cd evaluation
+        python evaluation.py --make_csv --perps_file_pattern 'perps-cf-diff-sizes/*/*.pt' --out_file 'eval_results_cf_diff_sizes.feather'
+        """

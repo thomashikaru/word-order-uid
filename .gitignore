@@ -148,7 +148,9 @@ data/eval_results*
 data/logs*
 counterfactual/scripts/logs*
 data/raw_data
-evaluation
+evaluation/eval_results*
+evaluation/__pycache__
+evaluation/*.ipynb
 examples/translation
 counterfactual/udpipe_models
 
