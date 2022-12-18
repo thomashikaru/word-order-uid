@@ -1041,52 +1041,52 @@ rule train_language_models_diff_sizes:
         "data/data-bin-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/train.bin",
         "data/data-bin-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/valid.bin",
     output:
-        "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/checkpoint_best.pt"
+        "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{model_seed}/{language}/{variant}/checkpoint_best.pt"
     resources:
         time="24:00",
         num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
-        "data/logs_thc/log_train_{language}_{variant}_{num_toks}.out"
+        "data/logs_thc/log_train_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
-        mkdir -p {CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+        mkdir -p {CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.model_seed}}/{{wildcards.language}}/{{wildcards.variant}}
         cd data
         bash train_model_transformer.sh ../{PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} \
-            ../{CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}
+            ../{CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.model_seed}}/{{wildcards.language}}/{{wildcards.variant}}
         """.format(PREPROCESSED_DATA_DIR="data/data-bin-cf-bpe-diff-sizes", CHECKPOINT_DIR="data/checkpoint-cf-bpe-diff-sizes")
 
 rule eval_language_models_diff_sizes:
     input:
-        "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/checkpoint_best.pt",
+        "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{model_seed}/{language}/{variant}/checkpoint_best.pt",
         "data/wiki40b-txt-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/{language}.test",
         "data/data-bin-cf-bpe-diff-sizes/{num_toks}/{language}/{variant}/test.bin"
     output:
-        "evaluation/perps-cf-diff-sizes/{num_toks}/{language}-{variant}.pt"
+        "evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.pt"
     resources:
         time="4:00",
         num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
     log:
-        "data/logs_thc/log_eval_{language}_{variant}_{num_toks}.out"
+        "data/logs_thc/log_eval_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
         """
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
-        mkdir -p {EVAL_RESULTS_DIR}/{{wildcards.num_toks}}
+        mkdir -p {EVAL_RESULTS_DIR}/{{wildcards.num_toks}}/{{wildcards.model_seed}}
         cd data
-        python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}-{{wildcards.variant}}.pt
+        python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR}/{{wildcards.num_toks}}/{{wildcards.model_seed}}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR}/{{wildcards.num_toks}}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR}/{{wildcards.num_toks}}/{{wildcards.model_seed}}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """.format(BASE_DIR=BASE_DIR, CHECKPOINT_DIR="data/checkpoint-cf-bpe-diff-sizes", PREPROCESSED_DATA_DIR="data/data-bin-cf-bpe-diff-sizes", CF_BPE_DATA_DIR="data/wiki40b-txt-cf-bpe-diff-sizes", EVAL_RESULTS_DIR="evaluation/perps-cf-diff-sizes")
 
 rule postprocess_eval_output_diff_sizes:
     input:
-        expand("evaluation/perps-cf-diff-sizes/{num_toks}/{language}-{variant}.pt", language=["en", "ru", "hu", "tr", "hi"], variant=variants, num_toks=[2222222, 6666666])
+        expand("evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.pt", language=["en", "ru", "hu", "tr", "hi"], variant=variants, num_toks=[2222222, 6666666], model_seed=[1,2])
     output:
         "evaluation/eval_results_cf_diff_sizes.feather"
     resources:
@@ -1102,5 +1102,5 @@ rule postprocess_eval_output_diff_sizes:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         cd evaluation
-        python evaluation.py --make_csv --perps_file_pattern 'perps-cf-diff-sizes/*/*.pt' --out_file 'eval_results_cf_diff_sizes.feather'
+        python evaluation.py --make_csv --perps_file_pattern 'perps-cf-diff-sizes/*/*/*.pt' --out_file 'eval_results_cf_diff_sizes.feather'
         """

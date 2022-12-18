@@ -164,7 +164,7 @@ def main(args):
         ) + avg_surps.columns.get_level_values(1)
         avg_surps.to_csv(f"{args.data_dir}/avg_surps.csv", index=False)
 
-    if args.metric_name == "delta_surp":
+    if args.metric_name == "delta_surps_by_tok":
 
         # Delta surprisal by token pos
         df["delta_surp"] = abs(df.surprisal - df.surprisal.shift(1))
