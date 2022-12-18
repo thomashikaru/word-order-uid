@@ -757,7 +757,7 @@ rule make_plotting_inputs:
         time="12:00",
         num_cpus=1,
         select="",
-        rusage="rusage[mem=16000,ngpus_excl_p=0]",
+        rusage="rusage[mem=24000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_make_plotting_inputs_{uid_metric}.out"
     shell:
