@@ -769,6 +769,7 @@ rule make_plotting_inputs:
 
 
 uid_metrics = [
+    "surprisal",
     "surprisal_variance",
     "doc_initial_var",
     "surprisal_deviations",
