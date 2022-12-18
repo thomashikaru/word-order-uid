@@ -120,8 +120,8 @@ make_bar_plot <- function(csv_file, title, imgname, value, error) {
 # FIGURES from paper
 
 # joint plot for surprisal and surprisal variance
-surprisal <- make_point_plot("surprisal_plot_vals.csv", "Mean Test Surprisal", "surprisal", "surprisalmean", "surprisalsem", 2)
-variance <- make_point_plot("surprisal_variance_plot_vals.csv", "Mean Surprisal Variance", "surprisal_variance", "surprisalmean", "surprisalsem", 2)
+surprisal <- make_point_plot("surprisal.csv", "Mean Test Surprisal", "surprisal", "surprisalmean", "surprisalsem", 2)
+variance <- make_point_plot("surprisal_variance.csv", "Mean Surprisal Variance", "surprisal_variance", "surprisalmean", "surprisalsem", 2)
 
 ggarrange(surprisal, variance,
           labels = c("A", "B"),
@@ -136,8 +136,8 @@ ggsave(filename = paste("joint_surprisal_and_variance", ".svg", sep = ""),
        width=12.75, height=7)
 
 # joint plot for surprisal variance (dataset mean surprisal) and UID_power metric
-mean_regress <- make_point_plot("surprisal_deviations_plot_vals.csv", "Surprisal Deviation \nfrom Dataset Mean", "surprisal_variance_dataset_mean", "surp_diff_squaredmean", "surp_diff_squaredsem", 2)
-uid_power <- make_point_plot("infs_1.1_plot_vals.csv", "UID_power \n(k=1.1)", "uid_power_1.1", "surprisalmean", "surprisalsem", 2)
+mean_regress <- make_point_plot("surprisal_deviations.csv", "Surprisal Deviation \nfrom Dataset Mean", "surprisal_variance_dataset_mean", "surp_diff_squaredmean", "surp_diff_squaredsem", 2)
+uid_power <- make_point_plot("infs_1.1.csv", "UID_power \n(k=1.1)", "uid_power_1.1", "surprisalmean", "surprisalsem", 2)
 
 ggarrange(mean_regress, uid_power,
           labels = c("A", "B"),
@@ -154,7 +154,7 @@ ggsave(filename = paste("joint_mean_regress_and_uid_power", ".svg", sep = ""),
 
 # joint plot for doc-initial surprisal variance and UID_loc metric
 doc_initial <- make_point_plot("doc_initial_var.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem", 2)
-uid_loc <- make_point_plot("delta_surps_plot_vals.csv", "Mean token-to-token \n\u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem", 2)
+uid_loc <- make_point_plot("delta_surps.csv", "Mean token-to-token \n\u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem", 2)
 
 ggarrange(doc_initial, uid_loc,
           labels = c("A", "B"),
@@ -172,36 +172,36 @@ ggsave(filename = paste("joint_doc_initial_and_uid_loc", ".svg", sep = ""),
 # SURPRISAL VARIANCE by language+variant (Doc Initial)
 # first get surprisal variance for each sentence, then average across all sentences in dataset
 make_point_plot("doc_initial_var.csv", "Surprisal Deviation from \nDataset Mean", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem")
-make_bar_plot("doc_initial_var.csv", "Surprisal Deviation from \nDataset Mean", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem")
+# make_bar_plot("doc_initial_var.csv", "Surprisal Deviation from \nDataset Mean", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem")
 
 # SURPRISAL Deviation from dataset mean by language+variant
 # mean deviation is computed for each sentence, then mean and std over all sentences in dataset
-make_point_plot("surprisal_deviations_plot_vals.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surp_diff_squaredmean", "surp_diff_squaredsem")
-make_bar_plot("surprisal_deviations_plot_vals.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surp_diff_squaredmean", "surp_diff_squaredsem")
+make_point_plot("surprisal_deviationss.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surp_diff_squaredmean", "surp_diff_squaredsem")
+# make_bar_plot("surprisal_deviations.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surp_diff_squaredmean", "surp_diff_squaredsem")
 
 # Average token-to-token delta surprisal
 # mean delta_surprisal is computed for each sentence, then mean and std over all sentences in dataset
 # note: the delta_surprisal is undefined for the first token in each document (since there is no previous token)
-make_point_plot("delta_surps_plot_vals.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
-make_bar_plot("delta_surps_plot_vals.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
+make_point_plot("delta_surps.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
+# make_bar_plot("delta_surps.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
 
 # MAX surprisal
-make_point_plot("max_surps_plot_vals.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
-make_bar_plot("max_surps_plot_vals.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
+make_point_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
+# make_bar_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
 
 # UID_power surprisal
-make_point_plot("infs_plot_vals.csv", "UID_power (k=1.25)", "uid_power_1.25", "surprisalmean", "surprisalsem")
-make_bar_plot("infs_plot_vals.csv", "UID_power (k=1.25)l", "uid_power_1.25", "surprisalmean", "surprisalsem")
+make_point_plot("infs_1.25.csv", "UID_power (k=1.25)", "uid_power_1.25", "surprisalmean", "surprisalsem")
+# make_bar_plot("infs_1.25.csv", "UID_power (k=1.25)l", "uid_power_1.25", "surprisalmean", "surprisalsem")
 
-make_point_plot("infs_1.1_plot_vals.csv", "UID_power (k=1.1)", "uid_power_1.1", "surprisalmean", "surprisalsem")
-make_bar_plot("infs_1.1_plot_vals.csv", "UID_power (k=1.1)l", "uid_power_1.1", "surprisalmean", "surprisalsem")
+make_point_plot("infs_1.1.csv", "UID_power (k=1.1)", "uid_power_1.1", "surprisalmean", "surprisalsem")
+# make_bar_plot("infs_1.1.csv", "UID_power (k=1.1)l", "uid_power_1.1", "surprisalmean", "surprisalsem")
 
 
 # TOKEN-plot: Average surprisal
 # the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
 # containing a mean and std over all surprisals fitting those criteria
 # we could loop over different values of sentence_len
-data <- read.csv(paste(DATA_DIR, "avg_surps_plot_vals.csv", sep="/"))
+data <- read.csv(paste(DATA_DIR, "avg_surps.csv", sep="/"))
 data %>% 
   filter(variant %in% positions_sub & sentence_len == 20) %>%
   mutate(variant = factor(variant, levels=positions_sub)) %>%

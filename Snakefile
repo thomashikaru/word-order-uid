@@ -752,29 +752,37 @@ rule make_plotting_inputs:
     input:
         "evaluation/eval_results_cf.feather"
     output:
-        "evaluation/plot_csv/surprisal_plot_vals.csv",
-        "evaluation/plot_csv/surprisal_variance_plot_vals.csv",
-        "evaluation/plot_csv/doc_initial_var.csv",
-        "evaluation/plot_csv/surprisal_deviations_plot_vals.csv",
-        "evaluation/plot_csv/delta_surps_plot_vals.csv",
-        "evaluation/plot_csv/infs_1.1_plot_vals.csv",
-        "evaluation/plot_csv/infs_plot_vals.csv",
-        "evaluation/plot_csv/avg_surps_plot_vals.csv",
-        "evaluation/plot_csv/delta_surps_by_tok.csv",
-        "evaluation/plot_csv/max_surps_plot_vals.csv",
+        "evaluation/plot_csv/{uid_metric}.csv",
     resources:
-        time="4:00",
+        time="12:00",
         num_cpus=1,
         select="",
         rusage="rusage[mem=16000,ngpus_excl_p=0]",
     log:
-        "data/logs_thc/log_make_plotting_inputs.out"
+        "data/logs_thc/log_make_plotting_inputs_{uid_metric}.out"
     shell:
         """
         cd evaluation
         mkdir -p plot_csv
-        python make_plotting_inputs.py --inputfile eval_results_cf.feather --data_dir plot_csv
+        python make_plotting_inputs.py --inputfile eval_results_cf.feather --data_dir plot_csv --metric {wildcards.uid_metric}
         """
+
+
+uid_metrics = [
+    "surprisal_variance",
+    "doc_initial_var",
+    "surprisal_deviations",
+    "delta_surps",
+    "infs_1.1",
+    "infs_1.25",
+    "avg_surps",
+    "delta_surps_by_tok",
+    "max_surps"]
+
+rule make_plotting_inputs_wiki40b:
+    input:
+        expand("evaluation/plot_csv/{uid_metric}.csv", uid_metric=uid_metrics)
+
 
 rule wiki40b_make_plotting_inputs:
     input:
