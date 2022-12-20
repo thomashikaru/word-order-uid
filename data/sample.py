@@ -1,6 +1,8 @@
 import itertools
 import argparse
 import random
+import sys
+
 
 def sample_data(input_file, output_file, num_tokens, seed):
     """Sample lines from input_file until the number of tokens
@@ -29,18 +31,21 @@ def sample_data(input_file, output_file, num_tokens, seed):
                 break
 
 
-if __name__ == "__main__":
+def cc100(args):
+    lang_code_list = args.lang_code_list.split(",")
+    ext_list = args.ext_list.split(",")
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input_prefix", default="wiki40b-txt")
-    parser.add_argument("--output_prefix", default="wiki40b-txt-sampled")
-    parser.add_argument("--num_train_tokens", type=int, default=20_000_000)
-    parser.add_argument("--num_test_tokens", type=int, default=1_000_000)
-    parser.add_argument("--lang_code_list")
-    parser.add_argument("--ext_list", default="train,test,valid")
-    parser.add_argument("--seed", type=int, default=1)
-    args = parser.parse_args()
+    for lang_code, ext in itertools.product(lang_code_list, ext_list):
+        input_file = f"{args.input_prefix}/{lang_code}.txt"
+        output_file = f"{args.output_prefix}/{lang_code}.{ext}"
 
+        if ext == "train":
+            sample_data(input_file, output_file, args.num_train_tokens, args.seed)
+        else:
+            sample_data(input_file, output_file, args.num_test_tokens, args.seed)
+
+
+def wiki40b(args):
     lang_code_list = args.lang_code_list.split(",")
     ext_list = args.ext_list.split(",")
 
@@ -53,4 +58,23 @@ if __name__ == "__main__":
         else:
             sample_data(input_file, output_file, args.num_test_tokens, args.seed)
 
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input_prefix")
+    parser.add_argument("--output_prefix")
+    parser.add_argument("--num_train_tokens", type=int, default=20_000_000)
+    parser.add_argument("--num_test_tokens", type=int, default=1_000_000)
+    parser.add_argument("--lang_code_list")
+    parser.add_argument("--ext_list", default="train,test,valid")
+    parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--cc100", action="store_true")
+    args = parser.parse_args()
+
+    if args.cc100:
+        cc100(args)
+
+    if args.wiki40b:
+        wiki40b(args)
 

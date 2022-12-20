@@ -26,12 +26,21 @@ colors = c("#999999",
            "gold", 
            "gold")
 
-# subset of positions and corresponding colors
-positions_sub <- c("Real", "Reverse", "Sort-Freq", "Sort-Freq-Rev")
-colors_sub = c("#999999",
-               "#D55E00",
-               "#56B4E9", 
-               "#0072B2")
+positions <- c("Real", "Reverse", "Approx", "Min-DL-Loc", 
+               "Min-DL-Opt", "Efficient-OV", "Efficient-VO", "Random-1", "Random-2", "Random-3", "Random-4", "Random-5")
+colors = c("#999999",
+           "#D55E00",
+           "#E69F00",
+           "#009E73",
+           "#66CC99",
+           "#CC79A7", 
+           "#9999CC",
+           "gold",
+           "gold",
+           "gold", 
+           "gold", 
+           "gold")
+
 
 BASE_SIZE = 22
 DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation"
@@ -53,7 +62,7 @@ make_point_plot <- function(csv_file, title, imgname, value, error, ncol) {
                             color="variant", 
                             ymin="min_ci", 
                             ymax="max_ci")) +
-    geom_point(stat="identity", size=3) +
+    geom_point(stat="identity", size=2) +
     geom_errorbar(stat="identity") + 
     facet_wrap(~language, scales="fixed", ncol=ncol) +
     ggtitle(title) +
@@ -65,7 +74,7 @@ make_point_plot <- function(csv_file, title, imgname, value, error, ncol) {
           axis.ticks.x = element_blank(), 
           strip.text = element_text(color="black", 
                                    margin = margin(1,0,1,0, "pt")),
-          aspect.ratio = 0.5) +
+          aspect.ratio = 0.4) +
     scale_x_discrete(limits = positions) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 3)) +
     scale_color_manual(values = colors, name="Variant") +
@@ -186,7 +195,7 @@ make_point_plot("delta_surps.csv", "Mean token-to-token \u0394surprisal", "delta
 # make_bar_plot("delta_surps.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
 
 # MAX surprisal
-make_point_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
+make_point_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem", 2)
 # make_bar_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
 
 # UID_power surprisal
@@ -201,7 +210,7 @@ make_point_plot("infs_1.1.csv", "UID_power (k=1.1)", "uid_power_1.1", "surprisal
 # the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
 # containing a mean and std over all surprisals fitting those criteria
 # we could loop over different values of sentence_len
-data <- read.csv(paste(DATA_DIR, "avg_surps.csv", sep="/"))
+data <- read.csv(paste(DATA_DIR, "plot_csv", "avg_surps.csv", sep="/"))
 data %>% 
   filter(variant %in% positions_sub & sentence_len == 20) %>%
   mutate(variant = factor(variant, levels=positions_sub)) %>%
@@ -227,7 +236,7 @@ ggsave(filename = paste("surprisal_by_token_position.png", sep = ""),
 # containing a mean and std over all delta_surprisals fitting those criteria
 # note: the delta_surprisal is undefined for the first token in each document (since there is no previous token)
 # we could loop over different values of sentence_len
-data <- read.csv(paste(DATA_DIR, "delta_surps_by_tok.csv", sep="/"))
+data <- read.csv(paste(DATA_DIR, "plot_csv", "delta_surps_by_tok.csv", sep="/"))
 data %>% 
   filter(variant %in% positions_sub & sentence_len == 15) %>%
   mutate(variant = factor(variant, levels=positions_sub)) %>%
