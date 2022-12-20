@@ -65,6 +65,7 @@ rule get_cc100_data:
         "data/logs_thc/log_get_data_{language}_cc100.out"
     shell:
         """
+        module load python_gpu/3.8.5 hdf5 eth_proxy
         mkdir -p data/cc100/txt
         cd data/cc100/txt
         wget https://data.statmt.org/cc-100/{wildcards.language}.txt.xz
