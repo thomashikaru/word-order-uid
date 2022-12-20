@@ -21,50 +21,6 @@ from scipy.stats import zscore
 import argparse
 from variant_name2id import name2id
 
-# mapping from numerical grammar IDs (see grammars in counterfactual/grammars)
-# to human-readable descriptors
-# mapping = {
-#     "1654461679": "Efficient-OV",
-#     "9864186953": "Efficient-OV",
-#     "4910096554": "Efficient-OV",
-#     "7233494255": "Efficient-OV",
-#     "1804798267": "Efficient-OV",
-#     "1035393965": "Efficient-OV",
-#     "5786187046": "Efficient-OV",
-#     "3375856929": "Efficient-OV",
-#     "5457228368": "Efficient-VO",
-#     "1171173532": "Efficient-VO",
-#     "6448967977": "Efficient-VO",
-#     "3150957569": "Efficient-VO",
-#     "6912153951": "Efficient-VO",
-#     "8151228474": "Efficient-VO",
-#     "9615205925": "Efficient-VO",
-#     "4418369424": "Efficient-VO",
-#     "1935936": "Approx",
-#     "1988915": "Approx",
-#     "7520227": "Approx",
-#     "6522123": "Approx",
-#     "9269015": "Approx",
-#     "5754928": "Approx",
-#     "1920622": "Approx",
-#     "3564332": "Approx",
-#     "8850185": "Min-DL-Opt",
-#     "514370": "Min-DL-Opt",
-#     "5940573": "Min-DL-Opt",
-#     "2103598": "Min-DL-Opt",
-#     "2684503": "Min-DL-Opt",
-#     "1355012": "Min-DL-Opt",
-#     "5333556": "Min-DL-Opt",
-#     "6786312": "Min-DL-Opt",
-#     "REAL_REAL": "Real",
-#     "RANDOM-1": "Random-1",
-#     "RANDOM-2": "Random-2",
-#     "SORT_FREQ": "Sort-Freq",
-#     "SORT_FREQ_REV": "Sort-Freq-Rev",
-#     "REVERSE": "Reverse",
-#     "MIN_DL_PROJ": "Min-DL-Loc",
-# }
-
 conversion = {
     "APPROX": "Approx",
     "MIN_DL_OPT": "Min-DL-Opt",
@@ -82,11 +38,11 @@ for lang, dic in name2id.items():
 mapping.update(
     {
         "REAL_REAL": "Real",
-        "RANDOM-1": "Random-1",
-        "RANDOM-2": "Random-2",
-        "RANDOM-3": "Random-3",
-        "RANDOM-4": "Random-4",
-        "RANDOM-5": "Random-5",
+        "RANDOM_1": "Random-1",
+        "RANDOM_2": "Random-2",
+        "RANDOM_3": "Random-3",
+        "RANDOM_4": "Random-4",
+        "RANDOM_5": "Random-5",
         "SORT_FREQ": "Sort-Freq",
         "SORT_FREQ_REV": "Sort-Freq-Rev",
         "REVERSE": "Reverse",
@@ -204,7 +160,14 @@ def doc_stats(df):
 
 
 def make_df(
-    surprisals_list, tokens_list, lang, variant, agg_bpe=True, agg_sentencepiece=False
+    surprisals_list,
+    tokens_list,
+    lang,
+    variant,
+    num_toks,
+    model_seed,
+    agg_bpe=True,
+    agg_sentencepiece=False,
 ):
     """Make a dataframe from a list of surprisals and a list of tokens
 
@@ -257,6 +220,12 @@ def make_df(
     df["variant"] = variant
     df.variant = df.variant.astype("category")
 
+    if num_toks is not None and model_seed is not None:
+        df["num_toks"] = num_toks
+        df.num_toks = df.num_toks.astype("category")
+        df["model_seed"] = model_seed
+        df.model_seed = df.model_seed.astype("category")
+
     df.doc_pos = df.doc_pos.astype("int16")
     df.surprisal = df.surprisal.astype("float32")
     df.document_len = df.document_len.astype("int16")
@@ -296,12 +265,27 @@ def make_csv(args):
 
     # read each file, get surprisal and token lists, and feed to make_df()
     for file in files:
-        name = file.split("/")[-1].split(".")[0]
-        lang = name.split("-")[0]
-        model = "-".join(name.split("-")[1:])
-        dat = torch.load(file)
-        logprob_lists = map(lambda x: x.numpy(), dat[0])
-        token_lists = dat[1]
+        experiment = file.split("/")[0]
+
+        if experiment == "perps-cf" or experiment == "cc100":
+            name = file.split("/")[-1].split(".")[0]
+            lang = name.split("-")[0]
+            model = "-".join(name.split("-")[1:])
+            num_toks = None
+            model_seed = None
+            dat = torch.load(file)
+            logprob_lists = map(lambda x: x.numpy(), dat[0])
+            token_lists = dat[1]
+
+        elif experiment == "perps-cf-diff-sizes":
+            name = file.split("/")[-1].split(".")[0]
+            lang = name.split("-")[0]
+            model = "-".join(name.split("-")[1:])
+            num_toks = file.split("/")[1]
+            model_seed = file.split("/")[2]
+            dat = torch.load(file)
+            logprob_lists = map(lambda x: x.numpy(), dat[0])
+            token_lists = dat[1]
 
         dfs.append(
             make_df(
@@ -309,6 +293,8 @@ def make_csv(args):
                 token_lists,
                 lang=lang,
                 variant=model,
+                num_toks=num_toks,
+                model_seed=model_seed,
                 agg_bpe=True,
                 agg_sentencepiece=False,
             )
@@ -317,11 +303,18 @@ def make_csv(args):
 
     # apply the remove_trailing() function to each document
     # (see the function docstring for explanation)
-    df = (
-        df.groupby(["language", "variant", "document_id"])
-        .apply(remove_trailing)
-        .reset_index(drop=True)
-    )
+    if "num_toks" in df.columns and "model_seed in df.columns":
+        df = (
+            df.groupby(["language", "variant", "num_toks", "model_seed", "document_id"])
+            .apply(remove_trailing)
+            .reset_index(drop=True)
+        )
+    else:
+        df = (
+            df.groupby(["language", "variant", "document_id"])
+            .apply(remove_trailing)
+            .reset_index(drop=True)
+        )
 
     # save to file
     df = df.apply(lambda x: np.negative(x) if x.name == "surprisal" else x)

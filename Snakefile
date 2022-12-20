@@ -87,6 +87,7 @@ rule sample_wiki40b_data:
         "data/logs_thc/log_sample_{language}_100m.out"
     shell: 
         f"""
+        cd data
         python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR} --wiki40b
         """
 
@@ -105,6 +106,8 @@ rule sample_wiki40b_data_100m:
         "data/logs_thc/log_sample_{language}_100m.out"
     shell: 
         f"""
+        mkdir -p data/raw_data/wiki40b-txt-sampled-100m
+        cd data
         python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR_100m} --num_train_tokens 100000000 --wiki40b
         """
 
@@ -124,6 +127,7 @@ rule sample_cc100:
     shell: 
         f"""
         mkdir -p {SAMPLED_DATA_DIR_cc100}
+        cd data
         python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR_cc100} --output_prefix {SAMPLED_DATA_DIR_cc100} --num_train_tokens 20000000 --cc100
         """
 
