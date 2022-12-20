@@ -55,7 +55,7 @@ rule get_wiki40b_data:
 rule get_cc100_data:
     input:
     output:
-        expand("data/cc100/txt/{language}.txt", language=languages_cc100)
+        expand("data/cc100/txt/{{language}}.txt")
     resources:
         time="8:00",
         num_cpus=1,
@@ -701,7 +701,7 @@ rule eval_language_models_cc100:
         cd data
         python per_example_perp.py {BASE_DIR}/{CHECKPOINT_DIR_cc100}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{PREPROCESSED_DATA_DIR_cc100}/{{wildcards.language}}/{{wildcards.variant}} {BASE_DIR}/{CF_BPE_DATA_DIR_cc100}/{{wildcards.language}}/{{wildcards.variant}}/{{wildcards.language}}.test {BASE_DIR}/{EVAL_RESULTS_DIR_cc100}/{{wildcards.language}}-{{wildcards.variant}}.pt
         """
-        
+
 rule eval_language_models_cc100_all:
     input:
         expand("evaluation/cc100/perps-cf/{language}-{variant}.pt", language=languages_cc100, variant=variants)
