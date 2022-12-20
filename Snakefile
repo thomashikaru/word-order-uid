@@ -61,6 +61,8 @@ rule get_cc100_data:
         num_cpus=1,
         select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_get_data_{language}_cc100.out"
     shell:
         """
         mkdir -p data/cc100/txt
