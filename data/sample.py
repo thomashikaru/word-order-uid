@@ -15,20 +15,33 @@ def sample_data(input_file, output_file, num_tokens, seed):
         num_tokens (int): threshold on number of tokens
     """
     random.seed(seed)
+
+    # find the number of lines in the file
+    N = 0
     with open(input_file) as f_in:
-        lines = f_in.readlines()
+        for line in f_in:
+            N += 1
 
-    N = len(lines)
-    idxs = random.sample(range(N), N)
+    # get a sorted list of one million randomly sampled line indices
+    idxs = sorted(random.sample(range(N), min(N, 1_000_000)))
 
+    # iterate once through the list and print the lines whose indices were sampled
+    # stop when the desired number of tokens is reached or the file ends
     tokens = 0
-    with open(output_file, "w") as f_out:
-        for idx in idxs:
-            line = lines[idx]
-            tokens += len(line.split())
-            f_out.write(line)
-            if tokens > num_tokens:
-                break
+    with open(input_file) as f_in, open(output_file, "w") as f_out:
+        if len(idxs) == 0:
+            return
+        curr_index = idxs.pop(0)
+
+        for i, line in enumerate(f_in):
+            if curr_index == i:
+                tokens += len(line.split())
+                f_out.write(line)
+                if tokens > num_tokens:
+                    return
+                if len(idxs) == 0:
+                    return
+                curr_index = idxs.pop(0)
 
 
 def cc100(args):
