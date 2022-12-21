@@ -128,7 +128,7 @@ rule sample_cc100:
         f"""
         mkdir -p {SAMPLED_DATA_DIR_cc100}
         cd data
-        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR_cc100} --output_prefix {SAMPLED_DATA_DIR_cc100} --num_train_tokens 20000000 --cc100
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {BASE_DIR}/{RAW_DATA_DIR_cc100} --output_prefix {BASE_DIR}/{SAMPLED_DATA_DIR_cc100} --num_train_tokens 20000000 --cc100
         """
 
 # convert sampled datasets into CONLLU dependency parses
