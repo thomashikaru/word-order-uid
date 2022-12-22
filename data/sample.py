@@ -83,6 +83,7 @@ if __name__ == "__main__":
     parser.add_argument("--ext_list", default="train,test,valid")
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--cc100", action="store_true")
+    parser.add_argument("--wiki40b", action="store_true")
     args = parser.parse_args()
 
     if args.cc100:
