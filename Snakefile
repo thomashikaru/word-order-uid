@@ -616,7 +616,7 @@ rule all_models_train_wiki40b:
 
 rule all_models_train_cc100:
     input: 
-        expand("data/cc100/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=languages, variant=variants)
+        expand("data/cc100/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt", language=languages_cc100, variant=variants)
 
 rule all_models_train_wiki40b_hi_fa:
     input: 
