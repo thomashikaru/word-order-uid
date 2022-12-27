@@ -979,7 +979,7 @@ rule do_dependency_parsing_diff_sizes:
         module load geos libspatialindex
         mkdir -p {PARSE_DIR}
         cd counterfactual
-        python dep_parse.py --lang {{wildcards.language}} --data_dir {BASE_DIR}/{SAMPLED_DATA_DIR}/{{wildcards.num_toks}} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid'
+        python dep_parse.py --lang {{wildcards.language}} --data_dir {BASE_DIR}/data/{SAMPLED_DATA_DIR}/{{wildcards.num_toks}} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid'
         """.format(BASE_DIR=BASE_DIR, SAMPLED_DATA_DIR="wiki40b-txt-sampled-diff-sizes", PARSE_DIR="wiki40b-txt-parsed-diff-sizes")
 
 # make counterfactual datsets for each language
