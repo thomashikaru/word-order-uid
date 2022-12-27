@@ -88,7 +88,7 @@ rule sample_wiki40b_data:
     shell: 
         f"""
         cd data
-        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR} --wiki40b
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {BASE_DIR}/{RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR} --wiki40b
         """
 
 # sample wiki40b datasets (~100M tokens for en-large)
@@ -108,7 +108,7 @@ rule sample_wiki40b_data_100m:
         f"""
         mkdir -p data/raw_data/wiki40b-txt-sampled-100m
         cd data
-        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR_100m} --num_train_tokens 100000000 --wiki40b
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {BASE_DIR}/{RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR_100m} --num_train_tokens 100000000 --wiki40b
         """
 
 # sample cc100 datasets (~20M tokens per language)
@@ -957,7 +957,7 @@ rule sample_wiki40b_data_diff_sizes:
         f"""
         cd data
         mkdir -p wiki40b-txt-sampled-diff-sizes/{{wildcards.num_toks}}
-        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix wiki40b-txt-sampled-diff-sizes/{{wildcards.num_toks}} --num_train_tokens {{wildcards.num_toks}} --wiki40b
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {BASE_DIR}/{RAW_DATA_DIR} --output_prefix wiki40b-txt-sampled-diff-sizes/{{wildcards.num_toks}} --num_train_tokens {{wildcards.num_toks}} --wiki40b
         """
 
 rule do_dependency_parsing_diff_sizes:
