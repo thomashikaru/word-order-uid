@@ -593,7 +593,7 @@ rule train_language_models_cc100:
     output:
         "data/cc100/checkpoint-cf-bpe/{language}/{variant}/checkpoint_best.pt"
     resources:
-        time="96:00",
+        time="24:00",
         num_cpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
@@ -1128,4 +1128,30 @@ rule postprocess_eval_output_diff_sizes:
         module load geos libspatialindex
         cd evaluation
         python evaluation.py --make_csv --perps_file_pattern 'perps-cf-diff-sizes/*/*/*.pt' --out_file 'eval_results_cf_diff_sizes.feather'
+        """
+
+rule make_plotting_inputs_diff_sizes:
+    input:
+        "evaluation/eval_results_cf_diff_sizes.feather"
+    output:
+        "evaluation/plot_csv_diff_sizes/surprisal_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/surprisal_variance_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/doc_initial_var.csv",
+        "evaluation/plot_csv_diff_sizes/surprisal_deviations_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/delta_surps_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/infs_1.1_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/infs_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/avg_surps_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/delta_surps_by_tok.csv",
+        "evaluation/plot_csv_diff_sizes/max_surps_plot_vals.csv",
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+    shell:
+        """
+        cd evaluation
+        mkdir -p plot_csv_diff_sizes
+        python make_plotting_inputs.py --inputfile eval_results_cf_diff_sizes.feather --data_dir plot_csv_diff_sizes
         """
