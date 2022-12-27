@@ -945,7 +945,7 @@ rule sample_wiki40b_data_diff_sizes:
     input:
         expand("data/raw_data/wiki40b-txt/{{language}}.{part}", part=parts)
     output:
-        expand("data/raw_data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
+        expand("data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
     resources:
         time="12:00",
         num_cpus=1,
@@ -955,12 +955,12 @@ rule sample_wiki40b_data_diff_sizes:
         "data/logs_thc/log_sample_{language}_{num_toks}.out"
     shell: 
         f"""
-        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix {SAMPLED_DATA_DIR_100m} --num_train_tokens {{wildcards.num_toks}}
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix data/wiki40b-txt-sampled-diff-sizes --num_train_tokens {{wildcards.num_toks}}
         """
 
 rule do_dependency_parsing_diff_sizes:
     input:
-        expand("data/raw_data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
+        expand("data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
     output:
         expand("data/wiki40b-txt-parsed-diff-sizes/{{num_toks}}/{{language}}.{part}.conllu", part=parts)
     resources:
@@ -978,7 +978,7 @@ rule do_dependency_parsing_diff_sizes:
         mkdir -p {PARSE_DIR}
         cd counterfactual
         python dep_parse.py --lang {{wildcards.language}} --data_dir ../{SAMPLED_DATA_DIR} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid'
-        """.format(SAMPLED_DATA_DIR="raw_data/wiki40b-txt-sampled-diff-sizes", PARSE_DIR="wiki40b-txt-parsed-diff-sizes")
+        """.format(SAMPLED_DATA_DIR="wiki40b-txt-sampled-diff-sizes", PARSE_DIR="wiki40b-txt-parsed-diff-sizes")
 
 # make counterfactual datsets for each language
 rule make_cf_data_diff_sizes:
