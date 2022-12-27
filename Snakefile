@@ -956,8 +956,8 @@ rule sample_wiki40b_data_diff_sizes:
     shell: 
         f"""
         cd data
-        mkdir -p wiki40b-txt-sampled-diff-sizes
-        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix wiki40b-txt-sampled-diff-sizes --num_train_tokens {{wildcards.num_toks}}
+        mkdir -p wiki40b-txt-sampled-diff-sizes/{{wildcards.num_toks}}
+        python sample.py --lang_code_list {{wildcards.language}} --input_prefix {RAW_DATA_DIR} --output_prefix wiki40b-txt-sampled-diff-sizes/{{wildcards.num_toks}} --num_train_tokens {{wildcards.num_toks}} --wiki40b
         """
 
 rule do_dependency_parsing_diff_sizes:
