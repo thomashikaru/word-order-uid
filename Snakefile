@@ -973,14 +973,14 @@ rule do_dependency_parsing_diff_sizes:
     log:
         "data/logs_thc/log_parse_{language}_{num_toks}.out"
     shell:
-        """
+        f"""
         module load gcc/6.3.0
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
-        mkdir -p {PARSE_DIR}
+        mkdir -p data/wiki40b-txt-parsed-diff-sizes/{{wildcards.num_toks}}
         cd counterfactual
-        python dep_parse.py --lang {{wildcards.language}} --data_dir {BASE_DIR}/data/{SAMPLED_DATA_DIR}/{{wildcards.num_toks}} --parse_dir ../{PARSE_DIR} --partitions 'train,test,valid'
-        """.format(BASE_DIR=BASE_DIR, SAMPLED_DATA_DIR="wiki40b-txt-sampled-diff-sizes", PARSE_DIR="data/wiki40b-txt-parsed-diff-sizes")
+        python dep_parse.py --lang {{wildcards.language}} --data_dir {BASE_DIR}/data/wiki40b-txt-sampled-diff-sizes/{{wildcards.num_toks}} --parse_dir ../data/wiki40b-txt-parsed-diff-sizes/{{wildcards.num_toks}} --partitions 'train,test,valid'
+        """
 
 # make counterfactual datsets for each language
 rule make_cf_data_diff_sizes:
