@@ -762,8 +762,8 @@ rule postprocess_eval_output_cc100:
         time="4:00",
         num_cpus=1,
         select="",
-        rusage="rusage[mem=16000,ngpus_excl_p=0]",
-        mem_per_cpu=16000,
+        rusage="rusage[mem=30000,ngpus_excl_p=0]",
+        mem_per_cpu=30000,
     log:
         "data/logs_thc/log_postprocess_eval_output_cc100.out"
     shell:
@@ -870,8 +870,8 @@ rule make_plotting_inputs_cc100:
         time="4:00",
         num_cpus=1,
         select="",
-        rusage="rusage[mem=16000,ngpus_excl_p=0]",
-        mem_per_cpu=16000,
+        rusage="rusage[mem=24000,ngpus_excl_p=0]",
+        mem_per_cpu=24000,
     log:
         "data/logs_thc/log_make_plotting_inputs_cc100.out"
     shell:
@@ -1127,8 +1127,8 @@ rule postprocess_eval_output_diff_sizes:
         time="4:00",
         num_cpus=1,
         select="",
-        rusage="rusage[mem=16000,ngpus_excl_p=0]",
-        mem_per_cpu=16000,
+        rusage="rusage[mem=30000,ngpus_excl_p=0]",
+        mem_per_cpu=30000,
     log:
         "data/logs_thc/log_postprocess_eval_output_diff_sizes.out"
     shell:
@@ -1158,7 +1158,7 @@ rule make_plotting_inputs_diff_sizes:
         time="4:00",
         num_cpus=1,
         select="",
-        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+        rusage="rusage[mem=24000,ngpus_excl_p=0]",
     log:
         "data/logs_thc/log_make_plotting_inputs_diff_sizes.out"
     shell:
