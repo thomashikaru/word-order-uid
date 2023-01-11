@@ -232,6 +232,7 @@ def make_df(
     df.document_id = df.document_id.astype("int16")
 
     df = df.groupby("document_id").apply(doc_stats).reset_index(drop=True)
+    df = df.groupby("document_id").apply(remove_trailing).reset_index(drop=True)
 
     return df
 
@@ -301,26 +302,29 @@ def make_csv(args):
         )
     df = pd.concat(dfs, ignore_index=True)
 
+    print(df.info())
+
     # apply the remove_trailing() function to each document
     # (see the function docstring for explanation)
-    if "num_toks" in df.columns and "model_seed in df.columns":
-        df = (
-            df.groupby(["language", "variant", "num_toks", "model_seed", "document_id"])
-            .apply(remove_trailing)
-            .reset_index(drop=True)
-        )
-    else:
-        df = (
-            df.groupby(["language", "variant", "document_id"])
-            .apply(remove_trailing)
-            .reset_index(drop=True)
-        )
+    # if "num_toks" in df.columns and "model_seed" in df.columns:
+    #     df = (
+    #         df.groupby(["language", "variant", "num_toks", "model_seed", "document_id"])
+    #         .apply(remove_trailing)
+    #         .reset_index(drop=True)
+    #     )
+    # else:
+    #     df = (
+    #         df.groupby(["language", "variant", "document_id"])
+    #         .apply(remove_trailing)
+    #         .reset_index(drop=True)
+    #     )
 
     # save to file
     df = df.apply(lambda x: np.negative(x) if x.name == "surprisal" else x)
     df["variant"] = df["variant"].apply(lambda x: mapping.get(x, x))
     df.variant = df.variant.astype("category")
     df.language = df.language.astype("category")
+    print(df.info())
     df.to_feather(args.out_file)
     return df
 
