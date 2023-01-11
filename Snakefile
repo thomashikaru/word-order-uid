@@ -759,7 +759,7 @@ rule postprocess_eval_output_cc100:
     output:
         "evaluation/cc100/eval_results_cf_cc100.feather"
     resources:
-        time="4:00",
+        time="8:00",
         num_cpus=1,
         select="",
         rusage="rusage[mem=30000,ngpus_excl_p=0]",
@@ -1119,7 +1119,7 @@ rule postprocess_eval_output_diff_sizes:
     output:
         "evaluation/eval_results_cf_diff_sizes.feather"
     resources:
-        time="4:00",
+        time="8:00",
         num_cpus=1,
         select="",
         rusage="rusage[mem=30000,ngpus_excl_p=0]",
