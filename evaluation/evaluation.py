@@ -324,6 +324,10 @@ def make_csv(args):
     df["variant"] = df["variant"].apply(lambda x: mapping.get(x, x))
     df.variant = df.variant.astype("category")
     df.language = df.language.astype("category")
+
+    if "num_toks" in df.columns and "model_seed" in df.columns:
+        df.num_toks = df.num_toks.astype("category")
+        df.model_seed = df.model_seed.astype("category")
     print(df.info())
     df.to_feather(args.out_file)
     return df

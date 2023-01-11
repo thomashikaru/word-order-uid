@@ -849,23 +849,14 @@ rule make_plotting_inputs_100m:
         """
         cd evaluation
         mkdir -p plot_csv_100m
-        python make_plotting_input.py --inputfile eval_results_cf_100m.feather --data_dir plot_csv_100m
+        python make_plotting_inputs.py --inputfile eval_results_cf_100m.feather --data_dir plot_csv_100m
         """
 
 rule make_plotting_inputs_cc100:
     input:
         "evaluation/cc100/eval_results_cf_cc100.feather"
     output:
-        "evaluation/cc100/plot_csv/surprisal_plot_vals.csv",
-        "evaluation/cc100/plot_csv/surprisal_variance_plot_vals.csv",
-        "evaluation/cc100/plot_csv/doc_initial_var.csv",
-        "evaluation/cc100/plot_csv/surprisal_deviations_plot_vals.csv",
-        "evaluation/cc100/plot_csv/delta_surps_plot_vals.csv",
-        "evaluation/cc100/plot_csv/infs_1.1_plot_vals.csv",
-        "evaluation/cc100/plot_csv/infs_plot_vals.csv",
-        "evaluation/cc100/plot_csv/avg_surps_plot_vals.csv",
-        "evaluation/cc100/plot_csv/delta_surps_by_tok.csv",
-        "evaluation/cc100/plot_csv/max_surps_plot_vals.csv",
+        "evaluation/cc100/plot_csv/{uid_metric}.csv",
     resources:
         time="4:00",
         num_cpus=1,
@@ -873,13 +864,17 @@ rule make_plotting_inputs_cc100:
         rusage="rusage[mem=24000,ngpus_excl_p=0]",
         mem_per_cpu=24000,
     log:
-        "data/logs_thc/log_make_plotting_inputs_cc100.out"
+        "data/logs_thc/log_make_plotting_inputs_{uid_metric}_cc100.out"
     shell:
         """
         cd evaluation
         mkdir -p cc100/plot_csv
-        python make_plotting_input.py --inputfile cc100/eval_results_cf_cc100.feather --data_dir cc100/plot_csv
+        python make_plotting_inputs.py --inputfile cc100/eval_results_cf_cc100.feather --data_dir cc100/plot_csv --metric {wildcards.uid_metric}
         """
+
+rule make_plotting_inputs_cc100_all:
+    input:
+        expand("evaluation/cc100/plot_csv/{uid_metric}.csv", uid_metric=uid_metrics)
 
 rule make_plots:
     input:
@@ -1144,26 +1139,22 @@ rule make_plotting_inputs_diff_sizes:
     input:
         "evaluation/eval_results_cf_diff_sizes.feather"
     output:
-        "evaluation/plot_csv_diff_sizes/surprisal_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/surprisal_variance_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/doc_initial_var.csv",
-        "evaluation/plot_csv_diff_sizes/surprisal_deviations_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/delta_surps_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/infs_1.1_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/infs_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/avg_surps_plot_vals.csv",
-        "evaluation/plot_csv_diff_sizes/delta_surps_by_tok.csv",
-        "evaluation/plot_csv_diff_sizes/max_surps_plot_vals.csv",
+        "evaluation/plot_csv_diff_sizes/{uid_metric}.csv",
     resources:
         time="4:00",
         num_cpus=1,
         select="",
         rusage="rusage[mem=24000,ngpus_excl_p=0]",
+        mem_per_cpu=24000,
     log:
-        "data/logs_thc/log_make_plotting_inputs_diff_sizes.out"
+        "data/logs_thc/log_make_plotting_inputs_{uid_metric}_diff_sizes.out"
     shell:
         """
         cd evaluation
         mkdir -p plot_csv_diff_sizes
-        python make_plotting_inputs.py --inputfile eval_results_cf_diff_sizes.feather --data_dir plot_csv_diff_sizes
+        python make_plotting_inputs.py --inputfile eval_results_cf_diff_sizes.feather --data_dir plot_csv_diff_sizes --metric {wildcards.uid_metric}
         """
+
+rule make_plotting_inputs_diff_sizes_all:
+    input:
+        expand("evaluation/plot_csv_diff_sizes/{uid_metric}.csv", uid_metric=uid_metrics)
