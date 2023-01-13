@@ -775,6 +775,49 @@ rule postprocess_eval_output_cc100:
         python evaluation.py --make_csv --perps_file_pattern 'cc100/perps-cf/*.pt' --out_file 'cc100/eval_results_cf_cc100.feather'
         """
 
+rule postprocess_cc100:
+    input:
+        "evaluation/cc100/perps-cf/{language}-{variant}.pt"
+    output:
+        "evaluation/cc100/perps-cf/{language}-{variant}.csv"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=16000,ngpus_excl_p=0]",
+        mem_per_cpu=16000,
+    log:
+        "data/logs_thc/log_postprocess_cc100_{language}_{variant}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        cd evaluation
+        python postprocess_eval_results.py --inputfile cc100/perps-cf/{wildcards.language}-{wildcards.variant}.pt --language {wildcards.language} --variant {wildcards.variant} --num_toks None --model_seed None --datasest cc100
+        """
+
+rule postprocess_cc100_all:
+    input:
+        expand("evaluation/cc100/perps-cf/{language}-{variant}.csv", language=languages_cc100, variant=variants)
+    output:
+        "evaluation/cc100/perps-cf/results_summary.csv"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+        mem_per_cpu=8000,
+    log:
+        "data/logs_thc/log_postprocess_cc100_all.out"
+    run:
+        import glob
+        import pandas as pd
+        filenames = glob.glob("evaluation/cc100/perps-cf/*.csv")
+        dfs = [pd.read_csv(f) for f in filenames]
+        df = pd.concat(dfs)
+        df.to_csv("evaluation/cc100/perps-cf/results_summary.csv", index=False)
+
 rule make_plotting_inputs:
     input:
         "evaluation/eval_results_cf.feather"
@@ -1158,3 +1201,49 @@ rule make_plotting_inputs_diff_sizes:
 rule make_plotting_inputs_diff_sizes_all:
     input:
         expand("evaluation/plot_csv_diff_sizes/{uid_metric}.csv", uid_metric=uid_metrics)
+
+rule postprocess_diff_sizes:
+    input:
+        "evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.pt"
+    output:
+        "evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.csv"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=16000,ngpus_excl_p=0]",
+        mem_per_cpu=16000,
+    log:
+        "data/logs_thc/log_postprocess_diff_sizes_{num_toks}_{model_seed}_{language}_{variant}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        cd evaluation
+        python postprocess_eval_results.py --inputfile perps-cf-diff-sizes/{wildcards.num_toks}/{wildcards.model_seed}/{wildcards.language}-{wildcards.variant}.pt --language {wildcards.language} --variant {wildcards.variant} --num_toks {wildcards.num_toks} --model_seed {wildcards.model_seed} --dataset wiki40b
+        """
+
+rule postprocess_diff_sizes_all:
+    input:
+        expand("evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.csv", language=["en", "ru", "hu", "tr", "hi"], variant=variants, num_toks=[2222222, 6666666], model_seed=[1,2])
+    output:
+        "evaluation/perps-cf-diff-sizes/results_summary.csv"
+    resources:
+        time="4:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=8000,ngpus_excl_p=0]",
+        mem_per_cpu=8000,
+    log:
+        "data/logs_thc/log_postprocess_diff_sizes_all.out"
+    run:
+        import glob
+        import pandas as pd
+        filenames = glob.glob("evaluation/perps-cf-diff-sizes/*/*/*.csv")
+        dfs = [pd.read_csv(f) for f in filenames]
+        df = pd.concat(dfs)
+        df.to_csv("evaluation/perps-cf-diff-sizes/results_summary.csv", index=False)
+
+
+    
