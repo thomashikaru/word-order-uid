@@ -794,7 +794,7 @@ rule postprocess_cc100:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         cd evaluation
-        python postprocess_eval_results.py --inputfile cc100/perps-cf/{wildcards.language}-{wildcards.variant}.pt --language {wildcards.language} --variant {wildcards.variant} --num_toks None --model_seed None --datasest cc100
+        python postprocess_eval_results.py --inputfile cc100/perps-cf/{wildcards.language}-{wildcards.variant}.pt --language {wildcards.language} --variant {wildcards.variant} --num_toks None --model_seed None --dataset cc100
         """
 
 rule postprocess_cc100_all:
