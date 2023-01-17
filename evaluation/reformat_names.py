@@ -25,9 +25,9 @@ mapping = {
 }
 
 if __name__ == "__main__":
-    filenames = glob.glob("./plot_csv/*.csv")
-
-    for filename in filenames:
-        df = pd.read_csv(filename)
-        df.variant = df.variant.replace(mapping)
-        df.to_csv(filename)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--inputfile")
+    args = parser.parse_args()
+    df = pd.read_csv(args.inputfile)
+    df.variant = df.variant.replace(mapping)
+    df.to_csv(args.inputfile)

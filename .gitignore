@@ -168,8 +168,14 @@ data/sentencepiece/
 data/mosesdecoder/
 data/oldlogs/
 data/perps/
+data/old_code/
+evaluation/test/
 
 .vscode
 
 counterfactual/dep-len
 counterfactual/freqs
+
+*.ipynb
+
+evaluation/foo.txt

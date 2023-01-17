@@ -26,29 +26,27 @@ colors = c("#999999",
            "gold", 
            "gold")
 
-positions <- c("Real", "Reverse", "Approx", "Min-DL-Loc", 
-               "Min-DL-Opt", "Efficient-OV", "Efficient-VO", "Random-1", "Random-2", "Random-3", "Random-4", "Random-5")
-colors = c("#999999",
-           "#D55E00",
-           "#E69F00",
-           "#009E73",
-           "#66CC99",
-           "#CC79A7", 
-           "#9999CC",
-           "gold",
-           "gold",
-           "gold", 
-           "gold", 
-           "gold")
+# positions <- c("Real", "Reverse", "Approx", "Min-DL-Loc", 
+#                "Min-DL-Opt", "Efficient-OV", "Efficient-VO", "Random-1", "Random-2", "Random-3", "Random-4", "Random-5")
+# colors = c("#999999",
+#            "#D55E00",
+#            "#E69F00",
+#            "#009E73",
+#            "#66CC99",
+#            "#CC79A7", 
+#            "#9999CC",
+#            "gold",
+#            "gold",
+#            "gold", 
+#            "gold", 
+#            "gold")
 
 
 BASE_SIZE = 22
-DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation"
 
 # make a point plot with facets for language, grammar variant on x-axis, and 
 # a specified variable on the y-axis (e.g. mean surprisal)
-make_point_plot <- function(csv_file, title, imgname, value, error, ncol) {
-  data <- read.csv(paste(DATA_DIR, "plot_csv", csv_file, sep="/"))
+make_point_plot <- function(data, title, imgname, value, error, ncol) {
   data[["min_ci"]] = data[[value]] - 1.96 * data[[error]]
   data[["max_ci"]] = data[[value]] + 1.96 * data[[error]]
   # data[["min_ci"]] = data[[value]] - data[[error]]
@@ -129,8 +127,12 @@ make_bar_plot <- function(csv_file, title, imgname, value, error) {
 # FIGURES from paper
 
 # joint plot for surprisal and surprisal variance
-surprisal <- make_point_plot("surprisal.csv", "Mean Test Surprisal", "surprisal", "surprisalmean", "surprisalsem", 2)
-variance <- make_point_plot("surprisal_variance.csv", "Mean Surprisal Variance", "surprisal_variance", "surprisalmean", "surprisalsem", 2)
+DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation/cc100/perps-cf"
+data <- read.csv(paste(DATA_DIR, "results_summary.csv", sep="/"))
+# data <- data %>% filter(num_toks == 6666666 & model_seed == 1)
+
+surprisal <- make_point_plot(data, "Mean Test Surprisal", "surprisal", "surprisal_mean", "surprisal_sem", 2)
+variance <- make_point_plot(data, "Mean Surprisal Variance", "surprisal_variance", "surprisal_var_mean", "surprisal_var_sem", 2)
 
 ggarrange(surprisal, variance,
           labels = c("A", "B"),
@@ -145,8 +147,8 @@ ggsave(filename = paste("joint_surprisal_and_variance", ".svg", sep = ""),
        width=12.75, height=7)
 
 # joint plot for surprisal variance (dataset mean surprisal) and UID_power metric
-mean_regress <- make_point_plot("surprisal_deviations.csv", "Surprisal Deviation \nfrom Dataset Mean", "surprisal_variance_dataset_mean", "surp_diff_squaredmean", "surp_diff_squaredsem", 2)
-uid_power <- make_point_plot("infs_1.1.csv", "UID_power \n(k=1.1)", "uid_power_1.1", "surprisalmean", "surprisalsem", 2)
+mean_regress <- make_point_plot(data, "Surprisal Deviation \nfrom Dataset Mean", "surprisal_variance_dataset_mean", "surp_diff_squared_mean", "surp_diff_squared_sem", 2)
+uid_power <- make_point_plot(data, "UID_power \n(k=1.1)", "uid_power_1.1", "uidp_1_1_mean", "uidp_1_1_sem", 2)
 
 ggarrange(mean_regress, uid_power,
           labels = c("A", "B"),
@@ -162,8 +164,8 @@ ggsave(filename = paste("joint_mean_regress_and_uid_power", ".svg", sep = ""),
 
 
 # joint plot for doc-initial surprisal variance and UID_loc metric
-doc_initial <- make_point_plot("doc_initial_var.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem", 2)
-uid_loc <- make_point_plot("delta_surps.csv", "Mean token-to-token \n\u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem", 2)
+doc_initial <- make_point_plot(data, "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surprisal_var_doc_initial_mean", "surprisal_var_doc_initial_sem", 2)
+uid_loc <- make_point_plot(data, "Mean token-to-token \n\u0394surprisal", "delta_surp", "delta_surp_mean", "delta_surp_sem", 2)
 
 ggarrange(doc_initial, uid_loc,
           labels = c("A", "B"),
@@ -178,80 +180,52 @@ ggsave(filename = paste("joint_doc_initial_and_uid_loc", ".svg", sep = ""),
        width=12.75, height=7)
 
 
-# SURPRISAL VARIANCE by language+variant (Doc Initial)
-# first get surprisal variance for each sentence, then average across all sentences in dataset
-make_point_plot("doc_initial_var.csv", "Surprisal Deviation from \nDataset Mean", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem")
-# make_bar_plot("doc_initial_var.csv", "Surprisal Deviation from \nDataset Mean", "surprisal_variance_dataset_mean", "surprisalmean", "surprisalsem")
-
-# SURPRISAL Deviation from dataset mean by language+variant
-# mean deviation is computed for each sentence, then mean and std over all sentences in dataset
-make_point_plot("surprisal_deviationss.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surp_diff_squaredmean", "surp_diff_squaredsem")
-# make_bar_plot("surprisal_deviations.csv", "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surp_diff_squaredmean", "surp_diff_squaredsem")
-
-# Average token-to-token delta surprisal
-# mean delta_surprisal is computed for each sentence, then mean and std over all sentences in dataset
-# note: the delta_surprisal is undefined for the first token in each document (since there is no previous token)
-make_point_plot("delta_surps.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
-# make_bar_plot("delta_surps.csv", "Mean token-to-token \u0394surprisal", "delta_surp", "delta_surpmean", "delta_surpsem")
-
-# MAX surprisal
-make_point_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem", 2)
-# make_bar_plot("max_surps.csv", "Maximum surprisal", "max_surp", "surprisalmean", "surprisalsem")
-
-# UID_power surprisal
-make_point_plot("infs_1.25.csv", "UID_power (k=1.25)", "uid_power_1.25", "surprisalmean", "surprisalsem")
-# make_bar_plot("infs_1.25.csv", "UID_power (k=1.25)l", "uid_power_1.25", "surprisalmean", "surprisalsem")
-
-make_point_plot("infs_1.1.csv", "UID_power (k=1.1)", "uid_power_1.1", "surprisalmean", "surprisalsem")
-# make_bar_plot("infs_1.1.csv", "UID_power (k=1.1)l", "uid_power_1.1", "surprisalmean", "surprisalsem")
-
-
 # TOKEN-plot: Average surprisal
 # the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
 # containing a mean and std over all surprisals fitting those criteria
 # we could loop over different values of sentence_len
-data <- read.csv(paste(DATA_DIR, "plot_csv", "avg_surps.csv", sep="/"))
-data %>% 
-  filter(variant %in% positions_sub & sentence_len == 20) %>%
-  mutate(variant = factor(variant, levels=positions_sub)) %>%
-  ggplot(data=., aes(x=sentence_pos, y=surprisalmean, color=variant, 
-                     ymin=surprisalmean - 1.96*surprisalsem, ymax=surprisalmean + 1.96*surprisalsem)) +
-  geom_pointrange(alpha=0.3, size=0.5) + 
-  geom_line(stat="smooth", alpha=0.5, size=1, span=0.5, se = FALSE) +
-  facet_wrap(~language, scales="fixed", ncol=4) +
-  ggtitle("Surprisal by token position") + 
-  theme_light(base_size = BASE_SIZE) + 
-  theme(aspect.ratio = 0.66) +
-  scale_color_manual(values = colors_sub) +
-  labs(x="token position in sentence", y="mean surprisal")
-ggsave(filename = paste("surprisal_by_token_position.svg", sep = ""), 
-       path = paste(DATA_DIR, "plots", sep="/"),
-       width=12.75, height=7)
-ggsave(filename = paste("surprisal_by_token_position.png", sep = ""), 
-       path = paste(DATA_DIR, "plots", sep="/"),
-       width=12.75, height=7)
-
-# TOKEN-plot: Average change in surprisal
-# the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
-# containing a mean and std over all delta_surprisals fitting those criteria
-# note: the delta_surprisal is undefined for the first token in each document (since there is no previous token)
-# we could loop over different values of sentence_len
-data <- read.csv(paste(DATA_DIR, "plot_csv", "delta_surps_by_tok.csv", sep="/"))
-data %>% 
-  filter(variant %in% positions_sub & sentence_len == 15) %>%
-  mutate(variant = factor(variant, levels=positions_sub)) %>%
-  ggplot(data=., aes(x=sentence_pos, y=delta_surpmean, color=variant, 
-                     ymin=delta_surpmean - 1.96*delta_surpsem, ymax=delta_surpmean + 1.96*delta_surpsem)) +
-  geom_pointrange(alpha=0.3, size=0.5) + 
-  geom_line(stat="smooth", alpha=0.3, size=1, span=0.5, se = FALSE) +
-  facet_wrap(~language, scales="fixed", ncol=4) +
-  ggtitle("\u0394Surprisal by token position") + 
-  theme_light(base_size = BASE_SIZE) + 
-  scale_color_manual(values = colors_sub)
-ggsave(filename = paste("delta_surprisal_by_token_position.svg", sep = ""), 
-       path = paste(DATA_DIR, "plots", sep="/"),
-       width=12.75, height=8.5)
-ggsave(filename = paste("delta_surprisal_by_token_position.png", sep = ""), 
-       path = paste(DATA_DIR, "plots", sep="/"),
-       width=12.75, height=8.5)
+# data <- read.csv(paste(DATA_DIR, "plot_csv", "avg_surps.csv", sep="/"))
+# data %>% 
+#   filter(variant %in% positions_sub & sentence_len == 20) %>%
+#   mutate(variant = factor(variant, levels=positions_sub)) %>%
+#   ggplot(data=., aes(x=sentence_pos, y=surprisalmean, color=variant, 
+#                      ymin=surprisalmean - 1.96*surprisalsem, ymax=surprisalmean + 1.96*surprisalsem)) +
+#   geom_pointrange(alpha=0.3, size=0.5) + 
+#   geom_line(stat="smooth", alpha=0.5, size=1, span=0.5, se = FALSE) +
+#   facet_wrap(~language, scales="fixed", ncol=4) +
+#   ggtitle("Surprisal by token position") + 
+#   theme_light(base_size = BASE_SIZE) + 
+#   theme(aspect.ratio = 0.66) +
+#   scale_color_manual(values = colors_sub) +
+#   labs(x="token position in sentence", y="mean surprisal")
+# ggsave(filename = paste("surprisal_by_token_position.svg", sep = ""), 
+#        path = paste(DATA_DIR, "plots", sep="/"),
+#        width=12.75, height=7)
+# ggsave(filename = paste("surprisal_by_token_position.png", sep = ""), 
+#        path = paste(DATA_DIR, "plots", sep="/"),
+#        width=12.75, height=7)
+# 
+# # TOKEN-plot: Average change in surprisal
+# # the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
+# # containing a mean and std over all delta_surprisals fitting those criteria
+# # note: the delta_surprisal is undefined for the first token in each document (since there is no previous token)
+# # we could loop over different values of sentence_len
+# data <- read.csv(paste(DATA_DIR, "plot_csv", "delta_surps_by_tok.csv", sep="/"))
+# data %>% 
+#   filter(variant %in% positions_sub & sentence_len == 15) %>%
+#   mutate(variant = factor(variant, levels=positions_sub)) %>%
+#   ggplot(data=., aes(x=sentence_pos, y=delta_surpmean, color=variant, 
+#                      ymin=delta_surpmean - 1.96*delta_surpsem, ymax=delta_surpmean + 1.96*delta_surpsem)) +
+#   geom_pointrange(alpha=0.3, size=0.5) + 
+#   geom_line(stat="smooth", alpha=0.3, size=1, span=0.5, se = FALSE) +
+#   facet_wrap(~language, scales="fixed", ncol=4) +
+#   ggtitle("\u0394Surprisal by token position") + 
+#   theme_light(base_size = BASE_SIZE) + 
+#   scale_color_manual(values = colors_sub)
+# ggsave(filename = paste("delta_surprisal_by_token_position.svg", sep = ""), 
+#        path = paste(DATA_DIR, "plots", sep="/"),
+#        width=12.75, height=8.5)
+# ggsave(filename = paste("delta_surprisal_by_token_position.png", sep = ""), 
+#        path = paste(DATA_DIR, "plots", sep="/"),
+#        width=12.75, height=8.5)
 
