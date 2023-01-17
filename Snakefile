@@ -357,12 +357,12 @@ rule postprocess_wiki40b:
         module load python_gpu/3.8.5 hdf5 eth_proxy
         module load geos libspatialindex
         cd evaluation
-        python postprocess_eval_results.py --inputfile perps-cf-diff-sizes/{wildcards.language}-{wildcards.variant}.pt --language {wildcards.language} --variant {wildcards.variant} --num_toks 20000000 --model_seed none --dataset wiki40b
+        python postprocess_eval_results.py --inputfile perps-cf/{wildcards.language}-{wildcards.variant}.pt --language {wildcards.language} --variant {wildcards.variant} --num_toks 20000000 --model_seed none --dataset wiki40b
         """
 
 rule postprocess_wiki40b_all:
     input:
-        expand("evaluation/perps-cf-diff-sizes/{language}-{variant}.csv", language=languages, variant=variants)
+        expand("evaluation/perps-cf/{language}-{variant}.csv", language=languages, variant=variants)
     output:
         "evaluation/perps-cf/results_summary.csv"
     resources:
