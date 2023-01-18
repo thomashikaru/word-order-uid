@@ -60,7 +60,7 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
                             color="variant", 
                             ymin="min_ci", 
                             ymax="max_ci")) +
-    geom_point(stat="identity", size=2) +
+    geom_point(stat="identity", size=2, aes(shape=factor(model_seed))) +
     geom_errorbar(stat="identity") + 
     facet_wrap(~language, scales="fixed", ncol=ncol) +
     ggtitle(title) +
@@ -127,7 +127,7 @@ make_bar_plot <- function(csv_file, title, imgname, value, error) {
 # FIGURES from paper
 
 # joint plot for surprisal and surprisal variance
-DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation/cc100/perps-cf"
+DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation/perps-cf-diff-sizes"
 data <- read.csv(paste(DATA_DIR, "results_summary.csv", sep="/"))
 # data <- data %>% filter(num_toks == 6666666 & model_seed == 1)
 

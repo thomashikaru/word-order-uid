@@ -868,7 +868,7 @@ rule postprocess_diff_sizes:
 
 rule postprocess_diff_sizes_all:
     input:
-        expand("evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.csv", language=["en", "ru", "hu", "tr", "hi"], variant=variants, num_toks=[2222222, 6666666], model_seed=[1,2])
+        expand("evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.csv", language=languages, variant=variants, num_toks=[2222222, 6666666, 20000000], model_seed=[1,2])
     output:
         "evaluation/perps-cf-diff-sizes/results_summary.csv"
     resources:
