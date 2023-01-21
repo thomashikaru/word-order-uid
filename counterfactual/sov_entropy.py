@@ -29,8 +29,12 @@ if __name__ == "__main__":
         for token in sentence:
             if args.lemmatize:
                 if token.deprel.startswith("nsubj"):
-                    subj[token.lemma.lower()] += 1
-                    verb[sentence[token.head].lemma.lower()] += 1
+                    subj[token.lemma.lower() if token.lemma else token.form] += 1
+                    verb[
+                        sentence[token.head].lemma.lower()
+                        if sentence[token.head].lemma
+                        else sentence[token.head].form
+                    ] += 1
                 if token.deprel.startswith("obj"):
                     obj[token.lemma.lower()] += 1
             else:
