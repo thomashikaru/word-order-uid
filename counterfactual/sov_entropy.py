@@ -17,6 +17,7 @@ if __name__ == "__main__":
     parser.add_argument("--filename")
     parser.add_argument("--language")
     parser.add_argument("--outfile")
+    parser.add_argument("--lemmatize")
     args = parser.parse_args()
 
     subj = defaultdict(int)
@@ -26,11 +27,18 @@ if __name__ == "__main__":
     corpus = pyconll.load_from_file(args.filename)
     for sentence in corpus:
         for token in sentence:
-            if token.deprel.startswith("nsubj"):
-                subj[token.form.lower()] += 1
-                verb[sentence[token.head].form.lower()] += 1
-            if token.deprel.startswith("obj"):
-                obj[token.form.lower()] += 1
+            if args.lemmatize:
+                if token.deprel.startswith("nsubj"):
+                    subj[token.lemma.lower()] += 1
+                    verb[sentence[token.head].lemma.lower()] += 1
+                if token.deprel.startswith("obj"):
+                    obj[token.lemma.lower()] += 1
+            else:
+                if token.deprel.startswith("nsubj"):
+                    subj[token.form.lower()] += 1
+                    verb[sentence[token.head].form.lower()] += 1
+                if token.deprel.startswith("obj"):
+                    obj[token.form.lower()] += 1
 
     subj_counts = Counter(subj)
     total = sum(subj_counts.values())
