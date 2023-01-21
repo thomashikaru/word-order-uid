@@ -36,7 +36,7 @@ if __name__ == "__main__":
                         else sentence[token.head].form
                     ] += 1
                 if token.deprel.startswith("obj"):
-                    obj[token.lemma.lower()] += 1
+                    obj[token.lemma.lower() if token.lemma else token.form] += 1
             else:
                 if token.deprel.startswith("nsubj"):
                     subj[token.form.lower()] += 1
