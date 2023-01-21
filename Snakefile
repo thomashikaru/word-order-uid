@@ -918,3 +918,44 @@ rule measure_dl:
 rule measure_dl_wiki40b:
     input:
         expand("data/wiki40b-txt-cf-deplens/{language}/{variant}/testset_deplens.txt", language=languages, variant=variants)
+
+######################################
+### entropy measurement
+######################################
+
+rule measure_entropy:
+    input:
+        expand("data/wiki40b-txt-parsed/{{language}}.test.conllu"),
+    output:
+        expand("counterfactual/wiki40b-entropy/{{language}}.csv")
+    resources:
+        time="04:00",
+        num_cpus=1,
+        select="",
+        rusage="rusage[mem=4096,ngpus_excl_p=0]",
+    log:
+        "data/logs_thc/log_measure_entropy_{language}.out"
+    shell:
+        """
+        module load gcc/6.3.0
+        module load python_gpu/3.8.5 hdf5 eth_proxy
+        module load geos libspatialindex
+        mkdir -p wiki40b-entropy
+        cd counterfactual
+        python sov_entropy.py --language {{wildcards.language}} --filename ../{PARSE_DIR}/{{wildcards.language}}.test.conllu --outfile wiki40b-entropy/{{wildcards.language}}.csv
+        """.format(PARSE_DIR=PARSE_DIR)
+
+rule measure_entropy_wiki40b:
+    input:
+        expand("counterfactual/wiki40b-entropy/{{language}}.csv", language=languages)
+    output:
+        "counterfactual/wiki40b-entropy/summary.csv"
+    log:
+        "data/logs_thc/log_measure_entropy_summary.out"
+    run:
+        import glob
+        import pandas as pd
+        filenames = glob.glob("counterfactual/wiki40b-entropy/*.csv")
+        dfs = [pd.read_csv(f) for f in filenames]
+        df = pd.concat(dfs)
+        df.to_csv("counterfactual/wiki40b-entropy/summary.csv", index=False)

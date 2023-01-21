@@ -51,29 +51,23 @@ deps = [
 N_DEPS = len(deps)
 N_COLS = 9
 
-example = """1	The	the	DET	DEF	Definite=Def|PronType=Art	2	det	_	_
-2	danger	danger	NOUN	SG-NOM	Number=Sing	8	nsubj	_	_
-3	to	to	ADP	_	_	4	case	_	_
-4	Germany	Germany	PROPN	SG-NOM	Number=Sing	2	nmod	_	_
-5	from	from	ADP	_	_	7	case	_	_
-6	the	the	DET	DEF	Definite=Def|PronType=Art	7	det	_	_
-7	Hussites	Hussites	NOUN	PL-NOM	Number=Plur	2	nmod	_	_
-8	induced	induce	VERB	PAST	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	_
-9	Frederick	Frederick	PROPN	SG-NOM	Number=Sing	8	obj	_	_
-10	to	to	PART	_	_	11	mark	_	_
-11	ally	ally	VERB	INF	VerbForm=Inf	8	advcl	_	_
-12	himself	he	PRON	RFL-P3SG	Case=Acc|Gender=Masc|Number=Sing|Person=3|PronType=Prs|Reflex=Yes	11	obj	_	_
-13	with	with	ADP	_	_	15	case	_	_
-14	Emperor	Emperor	ADJ	POS	Degree=Pos	15	amod	_	_
-15	Sigismund	Sigismund	NOUN	SG-NOM	Number=Sing	11	obl	_	_
-16	;	;	PUNCT	SemiColon	_	8	punct	_	_"""
+example = """# text = The quick brown fox jumped over the lazy dog
+1	The	the	DET	DEF	Definite=Def|PronType=Art	4	det	_	TokenRange=0:3
+2	quick	quick	ADJ	POS	Degree=Pos	4	amod	_	TokenRange=4:9
+3	brown	brown	ADJ	POS	Degree=Pos	4	amod	_	TokenRange=10:15
+4	fox	fox	NOUN	SG-NOM	Number=Sing	5	nsubj	_	TokenRange=16:19
+5	jumped	jump	VERB	PAST	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	TokenRange=20:26
+6	over	over	ADP	_	_	9	case	_	TokenRange=27:31
+7	the	the	DET	DEF	Definite=Def|PronType=Art	9	det	_	TokenRange=32:35
+8	lazy	lazy	ADJ	POS	Degree=Pos	9	amod	_	TokenRange=36:40
+9	dog	dog	NOUN	SG-NOM	Number=Sing	5	obl	_	TokenRange=41:44"""
 
 
 def verify_input(text):
     lines = text.split("\n")
     lines = filter(lambda x: not x.startswith("#"), lines)
     for i, line in enumerate(lines):
-        fields = line.split("\t")
+        fields = line.split()
         if len(fields) != 10:
             return False
         if int(fields[0]) != i + 1:
