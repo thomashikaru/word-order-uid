@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument("--filename")
     parser.add_argument("--language")
     parser.add_argument("--outfile")
-    parser.add_argument("--lemmatize")
+    parser.add_argument("--lemmatize", action="store_true")
     args = parser.parse_args()
 
     subj = defaultdict(int)
