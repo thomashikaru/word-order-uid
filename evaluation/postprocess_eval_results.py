@@ -450,6 +450,18 @@ def postprocess(args):
     df_summary["max_surp_sem"].append(sem(d.surprisal))
     df_summary["max_surp_std"].append(np.std(d.surprisal))
 
+    # surprisal variance (divisive normalization)
+    df["surprisal_norm"] = df.surprisal / df_summary["surprisal_mean"][0]
+    d = (
+        df.groupby(["document_id", "sentence_id"], observed=True)
+        .surprisal_norm.agg(np.var)
+        .dropna()
+        .reset_index()
+    )
+    df_summary["surprisal_var_norm_mean"].append(np.mean(d.surprisal_norm))
+    df_summary["surprisal_var_norm_sem"].append(sem(d.surprisal_norm))
+    df_summary["surprisal_var_norm_std"].append(np.std(d.surprisal_norm))
+
     df_summary = pd.DataFrame(df_summary)
     df_summary["language"] = args.language
     df_summary["variant"] = args.variant
