@@ -831,6 +831,7 @@ rule train_language_models_diff_sizes:
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
         mem_per_cpu="30g",
         mem_per_gpu="10g",
+        mem_mb=30000,
     log:
         "data/logs_thc/log_train_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
