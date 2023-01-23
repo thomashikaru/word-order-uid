@@ -681,6 +681,7 @@ rule sample_wiki40b_data_diff_sizes:
         expand("data/wiki40b-txt-sampled-diff-sizes/{{num_toks}}/{{language}}.{part}", part=parts)
     resources:
         time="12:00",
+        time_slurm="12:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
@@ -703,6 +704,7 @@ rule do_dependency_parsing_diff_sizes:
         expand("data/wiki40b-txt-parsed-diff-sizes/{{num_toks}}/{{language}}.{part}.conllu", part=parts)
     resources:
         time="24:00",
+        time_slurm="24:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
@@ -730,6 +732,7 @@ rule make_cf_data_diff_sizes:
         expand("data/wiki40b-txt-cf-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{{language}}.{part}", part=parts)
     resources:
         time="08:00",
+        time_slurm="08:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
@@ -758,6 +761,7 @@ rule apply_bpe_diff_sizes:
         expand("data/wiki40b-txt-cf-bpe-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{{language}}.{part}", part=parts),
     resources:
         time="01:00",
+        time_slurm="01:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
@@ -785,6 +789,7 @@ rule prepare_fairseq_data_diff_sizes:
         expand("data/data-bin-cf-bpe-diff-sizes/{{num_toks}}/{{language}}/{{variant}}/{part}.bin", part=parts),
     resources:
         time="04:00",
+        time_slurm="04:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
@@ -819,6 +824,7 @@ rule train_language_models_diff_sizes:
         "data/checkpoint-cf-bpe-diff-sizes/{num_toks}/{model_seed}/{language}/{variant}/checkpoint_best.pt"
     resources:
         time="24:00",
+        time_slurm="24:00:00",
         num_cpus=1,
         num_gpus=1,
         select="select[gpu_mtotal0>=10000]",
@@ -847,6 +853,7 @@ rule eval_language_models_diff_sizes:
         "evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.pt"
     resources:
         time="4:00",
+        time_slurm="04:00:00",
         num_cpus=1,
         num_gpus=1,
         select="select[gpu_mtotal0>=10000]",
@@ -872,6 +879,7 @@ rule postprocess_diff_sizes:
         "evaluation/perps-cf-diff-sizes/{num_toks}/{model_seed}/{language}-{variant}.csv"
     resources:
         time="4:00",
+        time_slurm="04:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
@@ -896,6 +904,7 @@ rule postprocess_diff_sizes_all:
         "evaluation/perps-cf-diff-sizes/results_summary.csv"
     resources:
         time="4:00",
+        time_slurm="04:00:00",
         num_cpus=1,
         num_gpus=0,
         select="",
