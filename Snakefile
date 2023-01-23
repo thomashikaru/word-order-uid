@@ -686,7 +686,7 @@ rule sample_wiki40b_data_diff_sizes:
         num_gpus=0,
         select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
-        mem_per_cpu=4000,
+        mem_per_cpu="4g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_sample_{language}_{num_toks}.out"
@@ -709,7 +709,7 @@ rule do_dependency_parsing_diff_sizes:
         num_gpus=0,
         select="",
         rusage="rusage[mem=2048,ngpus_excl_p=0]",
-        mem_per_cpu=2048,
+        mem_per_cpu="2g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_parse_{language}_{num_toks}.out"
@@ -737,7 +737,7 @@ rule make_cf_data_diff_sizes:
         num_gpus=0,
         select="",
         rusage="rusage[mem=4096,ngpus_excl_p=0]",
-        mem_per_cpu=4096,
+        mem_per_cpu="4g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_cf_{language}_{variant}_{num_toks}.out"
@@ -766,7 +766,7 @@ rule apply_bpe_diff_sizes:
         num_gpus=0,
         select="",
         rusage="rusage[mem=4000,ngpus_excl_p=0]",
-        mem_per_cpu=4000,
+        mem_per_cpu="4g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_apply_bpe_{language}_{variant}_{num_toks}.out"
@@ -794,7 +794,7 @@ rule prepare_fairseq_data_diff_sizes:
         num_gpus=0,
         select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
-        mem_per_cpu=8000,
+        mem_per_cpu="8g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_preprocess_{language}_{variant}_{num_toks}.out"
@@ -829,8 +829,8 @@ rule train_language_models_diff_sizes:
         num_gpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
-        mem_per_cpu=30000,
-        mem_per_gpu=10000,
+        mem_per_cpu="30g",
+        mem_per_gpu="10g",
     log:
         "data/logs_thc/log_train_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
@@ -858,8 +858,8 @@ rule eval_language_models_diff_sizes:
         num_gpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
-        mem_per_cpu=30000,
-        mem_per_gpu=10000,
+        mem_per_cpu="30g",
+        mem_per_gpu="10g",
     log:
         "data/logs_thc/log_eval_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
@@ -884,7 +884,7 @@ rule postprocess_diff_sizes:
         num_gpus=0,
         select="",
         rusage="rusage[mem=16000,ngpus_excl_p=0]",
-        mem_per_cpu=16000,
+        mem_per_cpu="16g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_postprocess_diff_sizes_{num_toks}_{model_seed}_{language}_{variant}.out"
@@ -909,7 +909,7 @@ rule postprocess_diff_sizes_all:
         num_gpus=0,
         select="",
         rusage="rusage[mem=8000,ngpus_excl_p=0]",
-        mem_per_cpu=8000,
+        mem_per_cpu="8g",
         mem_per_gpu=0,
     log:
         "data/logs_thc/log_postprocess_diff_sizes_all.out"
