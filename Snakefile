@@ -829,8 +829,8 @@ rule train_language_models_diff_sizes:
         num_gpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
-        mem_per_cpu=1000,
-        mem_per_gpu=30000,
+        mem_per_cpu=30000,
+        mem_per_gpu=10000,
     log:
         "data/logs_thc/log_train_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
@@ -858,8 +858,8 @@ rule eval_language_models_diff_sizes:
         num_gpus=1,
         select="select[gpu_mtotal0>=10000]",
         rusage="rusage[mem=30000,ngpus_excl_p=1]",
-        mem_per_cpu=1000,
-        mem_per_gpu=30000,
+        mem_per_cpu=30000,
+        mem_per_gpu=10000,
     log:
         "data/logs_thc/log_eval_{language}_{variant}_{num_toks}_{model_seed}.out"
     shell:
