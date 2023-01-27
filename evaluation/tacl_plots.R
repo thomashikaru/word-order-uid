@@ -11,6 +11,9 @@ pseudo_grams = c("Real", "Reverse", "Sort-Freq", "Sort-Freq-Rev", "Min-DL-Loc")
 # order for showing variants and their corresponding colors
 positions <- c("Real", "Reverse", "Sort-Freq", "Sort-Freq-Rev", "Approx", "Min-DL-Loc", 
                "Min-DL-Opt", "Efficient-OV", "Efficient-VO", "Random-1", "Random-2", "Random-3", "Random-4", "Random-5")
+positions_new <- c("Real", "Reverse", "Sort_Freq", "Sort_Freq_Rev", "Approx", "Min_DL_Loc", 
+                   "Min_DL_Opt", "Efficient_OV", "Efficient_VO", "Random_1", "Random_2", "Random_3", "Random_4", "Random_5")
+
 colors = c("#999999",
            "#D55E00",
            "#56B4E9", 
@@ -52,8 +55,8 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
   # data[["min_ci"]] = data[[value]] - data[[error]]
   # data[["max_ci"]] = data[[value]] + data[[error]]
   plot <- data %>% 
-    filter(variant %in% positions) %>%
-    mutate(variant = factor(variant, levels=positions),
+    filter(variant %in% positions_new) %>%
+    mutate(variant = factor(variant, levels=positions_new),
            class = variant %in% pseudo_grams) %>%
     ggplot(data=., aes_string(x="variant", 
                             y=value, 
@@ -73,7 +76,7 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
           strip.text = element_text(color="black", 
                                    margin = margin(1,0,1,0, "pt")),
           aspect.ratio = 0.4) +
-    scale_x_discrete(limits = positions) +
+    scale_x_discrete(limits = positions_new) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 3)) +
     scale_color_manual(values = colors, name="Variant") +
     labs(x="", y="")
@@ -127,8 +130,8 @@ make_bar_plot <- function(csv_file, title, imgname, value, error) {
 # FIGURES from paper
 
 # joint plot for surprisal and surprisal variance
-DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation/cc100/perps-cf"
-data <- read.csv(paste(DATA_DIR, "results_summary.csv", sep="/"))
+DATA_DIR = "/Users/thomasclark/mit/word-order-uid/evaluation/perps-cf-diff-sizes"
+data <- read.csv(paste(DATA_DIR, "results_summary_intermediate.csv", sep="/"))
 # data <- data %>% filter(num_toks == 6666666 & model_seed == 1)
 
 surprisal <- make_point_plot(data, "Mean Test Surprisal", "surprisal", "surprisal_mean", "surprisal_sem", 2)

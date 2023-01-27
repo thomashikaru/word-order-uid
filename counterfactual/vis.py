@@ -83,10 +83,10 @@ def convert_sentence(sentence):
         idx, head = int(word["index"]), int(word["reordered_head"])
         if head == 0:
             continue
-        dir = "right"
+        dir = "left"
         if idx > head:
             idx, head = head, idx
-            dir = "left"
+            dir = "right"
         arcs.append(
             {"start": idx - 1, "end": head - 1, "label": word["dep"], "dir": dir,}
         )
@@ -110,7 +110,11 @@ st.title("Counterfactual Grammar Visualization")
 
 # input original parse (includes default example)
 st.header("Original Parse")
-text = st.text_area("Enter text in CoNLL format:", value=example, height=400)
+text = st.text_area(
+    "Enter text in CoNLL format (hint: use https://lindat.mff.cuni.cz/services/udpipe/ to get a parse for a sentence)",
+    value=example,
+    height=400,
+)
 text = text.strip()
 
 if not verify_input(text):
@@ -141,7 +145,7 @@ dlbox = st.container()
 # sliders for dh weights
 st.header("Dependent-Head Weights")
 st.caption(
-    "A positive weight for a given relation means that the dependent will occur before the head in linear order."
+    "A positive weight for a given relation means that the dependent will occur before the head in linear order. For dependents on the same side of a head, those with higher weights will be placed farther from the head in linear order."
 )
 dhcols = st.columns(N_COLS)
 # n_rows = ceil(N_DEPS / N_COLS)
@@ -155,33 +159,34 @@ for i, dhcol in enumerate(dhcols):
                 dh_weights[dep] = st.slider(
                     dep, -1.0, 1.0, dh_weights[dep], key="dh" + dep, format="%.2f"
                 )
+                distance_weights[dep] = dh_weights[dep]
         start += 1
 
-# sliders for distance weights
-st.header("Distance Weights")
-st.caption(
-    "For dependents on the same side of a head, those with higher weights will be placed farther from the head in linear order."
-)
-distcols = st.columns(N_COLS)
-start = 0
-for i, distcol in enumerate(distcols):
-    with distcol:
-        slider_vals = {}
-        # for dep in deps[start : min(start + n_rows, N_DEPS)]:
-        for dep in deps[start::N_COLS]:
-            if dep in distance_weights:
-                distance_weights[dep] = st.slider(
-                    dep,
-                    -1.0,
-                    1.0,
-                    distance_weights[dep],
-                    key="dist" + dep,
-                    format="%.2f",
-                )
-        start += 1
+# # sliders for distance weights
+# st.header("Distance Weights")
+# st.caption(
+#     "For dependents on the same side of a head, those with higher weights will be placed farther from the head in linear order."
+# )
+# distcols = st.columns(N_COLS)
+# start = 0
+# for i, distcol in enumerate(distcols):
+#     with distcol:
+#         slider_vals = {}
+#         # for dep in deps[start : min(start + n_rows, N_DEPS)]:
+#         for dep in deps[start::N_COLS]:
+#             if dep in distance_weights:
+#                 distance_weights[dep] = st.slider(
+#                     dep,
+#                     -1.0,
+#                     1.0,
+#                     distance_weights[dep],
+#                     key="dist" + dep,
+#                     format="%.2f",
+#                 )
+#         start += 1
 
-st.header("Grammar Type")
-grammar = st.selectbox("Select one of the following", ("RANDOM", "MIN_DL_PROJ"))
+# st.header("Grammar Type")
+# grammar = st.selectbox("Select one of the following", ("RANDOM", "MIN_DL_PROJ"))
 
 st.header("About")
 st.caption(
@@ -191,7 +196,7 @@ st.caption(
 # update the treebox
 with treebox:
     try:
-        sentence = orderSentence(sentence, grammar, dh_weights, distance_weights)
+        sentence = orderSentence(sentence, "APPROX", dh_weights, distance_weights)
         reorder_heads(sentence)
         for i, s in enumerate(sentence):
             s["index"] = i + 1
