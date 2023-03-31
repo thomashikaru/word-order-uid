@@ -1,7 +1,6 @@
 # generating plots for TACL submission
 library(ggplot2)
 library(dplyr)
-# library(arrow)
 library(ggpubr)
 
 # list of pseudo-grammars
@@ -29,6 +28,7 @@ colors = c("#999999",
            "gold")
 
 BASE_SIZE = 22
+BASE_DIR = "/Users/thomasclark/mit/word-order-uid"
 
 # make a point plot with facets for language, grammar variant on x-axis, and 
 # a specified variable on the y-axis (e.g. mean surprisal)
@@ -64,12 +64,6 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
     scale_y_continuous(breaks = scales::pretty_breaks(n = 3)) +
     scale_color_manual(values = colors, name="Variant") +
     labs(x="", y="")
-  # ggsave(filename = paste(imgname, "_point.png", sep = ""), 
-  #        path = paste(DATA_DIR, "plots", sep="/"),
-  #        width=12.75, height=7.5)
-  # ggsave(filename = paste(imgname, "_point.svg", sep = ""), 
-  #        path = paste(DATA_DIR, "plots", sep="/"),
-  #        width=12.75, height=7.5)
   
   return(plot)
 }
@@ -77,7 +71,6 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
 # FIGURES from paper
 
 # joint plot for surprisal and surprisal variance
-BASE_DIR = "/Users/thomasclark/mit/word-order-uid"
 DATA_DIR = paste(BASE_DIR, "evaluation/perps-cf-diff-sizes", sep="/")
 data <- read.csv(paste(DATA_DIR, "results_summary.csv", sep="/"))
 data <- data %>% filter(num_toks == 20000000 & model_seed == 1)
@@ -144,54 +137,3 @@ ggsave(filename = paste("joint_doc_initial_and_uid_loc", ".png", sep = ""),
 ggsave(filename = paste("joint_doc_initial_and_uid_loc", ".svg", sep = ""),
        path = paste(DATA_DIR, "plots", sep="/"),
        width=12.75, height=7)
-
-
-# TOKEN-plot: Average surprisal
-# the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
-# containing a mean and std over all surprisals fitting those criteria
-# we could loop over different values of sentence_len
-# data <- read.csv(paste(DATA_DIR, "plot_csv", "avg_surps.csv", sep="/"))
-# data %>% 
-#   filter(variant %in% positions_sub & sentence_len == 20) %>%
-#   mutate(variant = factor(variant, levels=positions_sub)) %>%
-#   ggplot(data=., aes(x=sentence_pos, y=surprisalmean, color=variant, 
-#                      ymin=surprisalmean - 1.96*surprisalsem, ymax=surprisalmean + 1.96*surprisalsem)) +
-#   geom_pointrange(alpha=0.3, size=0.5) + 
-#   geom_line(stat="smooth", alpha=0.5, size=1, span=0.5, se = FALSE) +
-#   facet_wrap(~language, scales="fixed", ncol=4) +
-#   ggtitle("Surprisal by token position") + 
-#   theme_light(base_size = BASE_SIZE) + 
-#   theme(aspect.ratio = 0.66) +
-#   scale_color_manual(values = colors_sub) +
-#   labs(x="token position in sentence", y="mean surprisal")
-# ggsave(filename = paste("surprisal_by_token_position.svg", sep = ""), 
-#        path = paste(DATA_DIR, "plots", sep="/"),
-#        width=12.75, height=7)
-# ggsave(filename = paste("surprisal_by_token_position.png", sep = ""), 
-#        path = paste(DATA_DIR, "plots", sep="/"),
-#        width=12.75, height=7)
-# 
-# # TOKEN-plot: Average change in surprisal
-# # the input dataframe has one row for each combination of (language, variant, sentence_len, sentence_pos)
-# # containing a mean and std over all delta_surprisals fitting those criteria
-# # note: the delta_surprisal is undefined for the first token in each document (since there is no previous token)
-# # we could loop over different values of sentence_len
-# data <- read.csv(paste(DATA_DIR, "plot_csv", "delta_surps_by_tok.csv", sep="/"))
-# data %>% 
-#   filter(variant %in% positions_sub & sentence_len == 15) %>%
-#   mutate(variant = factor(variant, levels=positions_sub)) %>%
-#   ggplot(data=., aes(x=sentence_pos, y=delta_surpmean, color=variant, 
-#                      ymin=delta_surpmean - 1.96*delta_surpsem, ymax=delta_surpmean + 1.96*delta_surpsem)) +
-#   geom_pointrange(alpha=0.3, size=0.5) + 
-#   geom_line(stat="smooth", alpha=0.3, size=1, span=0.5, se = FALSE) +
-#   facet_wrap(~language, scales="fixed", ncol=4) +
-#   ggtitle("\u0394Surprisal by token position") + 
-#   theme_light(base_size = BASE_SIZE) + 
-#   scale_color_manual(values = colors_sub)
-# ggsave(filename = paste("delta_surprisal_by_token_position.svg", sep = ""), 
-#        path = paste(DATA_DIR, "plots", sep="/"),
-#        width=12.75, height=8.5)
-# ggsave(filename = paste("delta_surprisal_by_token_position.png", sep = ""), 
-#        path = paste(DATA_DIR, "plots", sep="/"),
-#        width=12.75, height=8.5)
-
