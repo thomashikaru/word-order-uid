@@ -1,7 +1,7 @@
 # generating plots for TACL submission
 library(ggplot2)
 library(dplyr)
-library(arrow)
+# library(arrow)
 library(ggpubr)
 
 # list of pseudo-grammars
@@ -35,6 +35,8 @@ BASE_SIZE = 22
 make_point_plot <- function(data, title, imgname, value, error, ncol) {
   data[["min_ci"]] = data[[value]] - 1.96 * data[[error]]
   data[["max_ci"]] = data[[value]] + 1.96 * data[[error]]
+  data$language <- recode_factor(data$language, en = "English", de = "German", ru = "Russian", vi = "Vietnamese",
+       hi = "Hindi", fa = "Farsi", fr = "French", id = "Indonesian", tr = "Turkish", hu = "Hungarian")
   plot <- data %>% 
     filter(variant %in% positions_new) %>%
     mutate(variant = factor(variant, levels=positions_new),
@@ -46,15 +48,16 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
                             ymax="max_ci")) +
     geom_point(stat="identity", size=2) +
     geom_errorbar(stat="identity") + 
-    facet_wrap(~language, scales="fixed", ncol=ncol) +
+    facet_wrap(~language, scales="free_y", ncol=ncol) +
     ggtitle(title) +
     theme_light(base_size = BASE_SIZE) + 
-    theme(legend.text=element_text(size=16), 
+    theme(legend.text=element_text(size=16, family="serif"), 
           strip.background = element_rect(fill="#f2f2f2"), 
           legend.position="right", 
           axis.text.x = element_blank(), 
           axis.ticks.x = element_blank(), 
-          strip.text = element_text(color="black", 
+          text = element_text(family="serif"),
+          strip.text = element_text(color="black", family="serif",
                                    margin = margin(1,0,1,0, "pt")),
           aspect.ratio = 0.4) +
     scale_x_discrete(limits = positions_new) +
@@ -77,9 +80,9 @@ make_point_plot <- function(data, title, imgname, value, error, ncol) {
 BASE_DIR = "/Users/thomasclark/mit/word-order-uid"
 DATA_DIR = paste(BASE_DIR, "evaluation/perps-cf-diff-sizes", sep="/")
 data <- read.csv(paste(DATA_DIR, "results_summary.csv", sep="/"))
-data <- data %>% filter(num_toks == 20000000)
+data <- data %>% filter(num_toks == 20000000 & model_seed == 1)
 
-DATA_DIR_CC = paste(BASE_DIR, "evaluation/cc100/perps-cf")
+DATA_DIR_CC = paste(BASE_DIR, "evaluation/cc100/perps-cf", sep="/")
 data.cc <- read.csv(paste(DATA_DIR_CC, "results_summary.csv", sep="/"))
 
 data$surp_var_div_mean = data$surprisal_var_mean / data$surprisal_mean
@@ -105,7 +108,7 @@ ggsave(filename = paste("joint_surprisal_and_variance", ".svg", sep = ""),
 variance.cc <- make_point_plot(data.cc, "Mean Surprisal Variance\n(CC100 Dataset)", "surprisal_variance_cc100", "surprisal_var_mean", "surprisal_var_sem", 1)
 ggsave(filename = paste("suprisal_variance_cc100", ".png", sep = ""),
        path = paste(DATA_DIR_CC, "plots", sep="/"),
-       width=8, height=10)
+       width=6, height=7.5)
 
 surprisal_var_norm <- make_point_plot(data, "Surprisal Variance (Normalized)", "surprisal_var_norm", "surprisal_var_norm_mean", "surprisal_var_norm_sem", 2)
 

@@ -15,7 +15,9 @@ BASE_DIR = "/Users/thomasclark/mit/word-order-uid"
 DATA_DIR = paste(BASE_DIR, "evaluation/perps-cf-diff-sizes/20000000/1", sep="/")
 
 # helper function (a somewhat hacky way to get axis to present in right order)
-f <- function(x) sub("[^_]*_[^_]*_","",x) 
+f <- function(x) {
+  sub("[^_]*_[^_]*_","",x) 
+}
 
 data.1 <- read.csv(paste(DATA_DIR, "en-REAL_REAL_example_sentences.csv", sep="/"))
 data.2 <- read.csv(paste(DATA_DIR, "en-REVERSE_example_sentences.csv", sep="/"))
@@ -42,7 +44,7 @@ ggplot(., aes(y = surprisal, x=reorder(id, sentence_pos), group=1)) +
   theme(axis.text.x = element_text(angle=45, size=15, hjust=1, vjust=1),
         strip.text = element_text(color="black", margin = margin(1,0,1,0, "pt"), size=20),
         strip.background = element_rect(fill="#e9f7f6"),
-        aspect.ratio=0.2)
+        aspect.ratio=0.2, text=element_text(family="serif"))
 
 # save to files
 ggsave(filename = paste("example_sentence.svg", sep = ""), 
