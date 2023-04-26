@@ -1043,7 +1043,7 @@
 <text x='61.61' y='445.40' text-anchor='end' style='font-size: 17.60px;fill: #4D4D4D; font-family: "Times";' textLength='17.60px' lengthAdjust='spacingAndGlyphs'>30</text>
 <polyline points='65.99,439.58 71.47,439.58 ' style='stroke-width: 1.07; stroke: #B3B3B3; stroke-linecap: butt;' />
 <text x='71.47' y='28.42' style='font-size: 26.40px; font-family: "Times";' textLength='270.41px' lengthAdjust='spacingAndGlyphs'>Mean Surprisal Variance </text>
-<text x='71.47' y='56.93' style='font-size: 26.40px; font-family: "Times";' textLength='194.95px' lengthAdjust='spacingAndGlyphs'>(Doc Initial Sents)</text>
+<text x='71.47' y='56.93' style='font-size: 26.40px; font-family: "Times";' textLength='244.03px' lengthAdjust='spacingAndGlyphs'>(Doc-initial Sentences)</text>
 <text x='5.05' y='15.11' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='10.11px' lengthAdjust='spacingAndGlyphs'>A</text>
 </g>
 <defs>
@@ -2102,8 +2102,8 @@
 <polyline points='451.22,459.76 456.70,459.76 ' style='stroke-width: 1.07; stroke: #B3B3B3; stroke-linecap: butt;' />
 <polyline points='451.22,438.07 456.70,438.07 ' style='stroke-width: 1.07; stroke: #B3B3B3; stroke-linecap: butt;' />
 <polyline points='451.22,416.39 456.70,416.39 ' style='stroke-width: 1.07; stroke: #B3B3B3; stroke-linecap: butt;' />
-<text x='456.70' y='28.42' style='font-size: 26.40px; font-family: "Times";' textLength='228.66px' lengthAdjust='spacingAndGlyphs'>Mean token-to-token </text>
-<text x='456.70' y='56.93' style='font-size: 26.40px; font-family: "Times";' textLength='109.94px' lengthAdjust='spacingAndGlyphs'>Δsurprisal</text>
+<text x='456.70' y='28.42' style='font-size: 26.40px; font-family: "Times";' textLength='246.25px' lengthAdjust='spacingAndGlyphs'>Mean Token-to-Token </text>
+<text x='456.70' y='56.93' style='font-size: 26.40px; font-family: "Times";' textLength='114.36px' lengthAdjust='spacingAndGlyphs'>ΔSurprisal</text>
 <text x='390.29' y='15.11' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='10.11px' lengthAdjust='spacingAndGlyphs'>B</text>
 <rect x='770.47' y='104.92' width='147.53' height='294.16' style='stroke-width: 2.13; stroke: none; fill: #FFFFFF;' />
 <text x='781.43' y='132.84' style='font-size: 22.00px; font-family: "Times";' textLength='65.97px' lengthAdjust='spacingAndGlyphs'>Variant</text>

@@ -123,8 +123,8 @@ ggsave(filename = paste("joint_mean_regress_and_uid_power", ".svg", sep = ""),
 
 
 # joint plot for doc-initial surprisal variance and UID_loc metric
-doc_initial <- make_point_plot(data, "Mean Surprisal Variance \n(Doc Initial Sents)", "surprisal_variance_doc_initial", "surprisal_var_doc_initial_mean", "surprisal_var_doc_initial_sem", 2)
-uid_loc <- make_point_plot(data, "Mean token-to-token \n\u0394surprisal", "delta_surp", "delta_surp_mean", "delta_surp_sem", 2)
+doc_initial <- make_point_plot(data, "Mean Surprisal Variance \n(Doc-initial Sentences)", "surprisal_variance_doc_initial", "surprisal_var_doc_initial_mean", "surprisal_var_doc_initial_sem", 2)
+uid_loc <- make_point_plot(data, "Mean Token-to-Token \n\u0394Surprisal", "delta_surp", "delta_surp_mean", "delta_surp_sem", 2)
 
 ggarrange(doc_initial, uid_loc,
           labels = c("A", "B"),

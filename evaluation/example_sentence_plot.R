@@ -39,7 +39,7 @@ ggplot(., aes(y = surprisal, x=reorder(id, sentence_pos), group=1)) +
   scale_x_discrete(labels=f) +
   geom_line(color="blue", size=2) +
   geom_point(size=3, color="red") +
-  labs(x="token", y="surprisal") +
+  labs(x="Token", y="Surprisal") +
   theme_light(base_size = BASE_SIZE) +
   theme(axis.text.x = element_text(angle=45, size=15, hjust=1, vjust=1),
         strip.text = element_text(color="black", margin = margin(1,0,1,0, "pt"), size=20),
